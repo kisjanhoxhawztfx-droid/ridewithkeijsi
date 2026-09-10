@@ -14,8 +14,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+const rawSiteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").trim().replace(/^\uFEFF/, "");
+const siteUrl = rawSiteUrl.startsWith("http") ? rawSiteUrl : `https://${rawSiteUrl}`;
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Ride with Keijsi — Emisioni & Platforma Numër 1 për Motorra",
     template: "%s | Ride with Keijsi",
