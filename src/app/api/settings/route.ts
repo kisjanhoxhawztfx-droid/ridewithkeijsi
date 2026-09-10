@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import db from "@/lib/db";
 import { getAdminSession } from "@/lib/auth";
 import { getSiteSettings, getSocialLinks, getCustomSections } from "@/lib/settings";
@@ -88,6 +89,14 @@ export async function POST(req: Request) {
         }
       }
     }
+
+    // Purge ISR caches immediately across public site
+    revalidatePath("/", "layout");
+    revalidatePath("/taxi");
+    revalidatePath("/contact");
+    revalidatePath("/motorra");
+    revalidatePath("/episodes");
+    revalidatePath("/luxury");
 
     return NextResponse.json({ success: true, message: "Settings updated successfully" });
   } catch (err: unknown) {
