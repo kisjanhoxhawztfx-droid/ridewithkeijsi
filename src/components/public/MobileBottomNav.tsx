@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,10 +41,12 @@ export default function MobileBottomNav() {
   return (
     <nav
       aria-label="Mobile Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070b14]/95 backdrop-blur-2xl border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.85)] px-2 pt-1.5 pb-safe"
-      style={{ paddingBottom: "max(env(safe-area-inset-bottom, 8px), 8px)" }}
+      className="md:hidden fixed bottom-5 sm:bottom-6 left-3.5 right-3.5 sm:left-6 sm:right-6 z-50 bg-[#080d18]/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.95),0_0_25px_rgba(0,178,254,0.2)] px-2.5 py-2.5 max-w-lg mx-auto"
+      style={{
+        bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+      }}
     >
-      <div className="flex items-center justify-around max-w-lg mx-auto">
+      <div className="flex items-center justify-around max-w-md mx-auto">
         {navItems.map((item) => {
           const isActive = item.exact
             ? pathname === item.href
