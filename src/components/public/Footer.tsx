@@ -58,7 +58,7 @@ export default function Footer({
                 href="https://instagram.com/ridewithkeijsi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-pink-500 hover:bg-pink-500/20 hover:border-pink-500/40 hover:scale-105 transition-all"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#00b2fe] hover:bg-[#00b2fe]/20 hover:border-[#00b2fe]/40 hover:scale-105 transition-all"
                 title="Instagram"
               >
                 <InstagramIcon className="w-4 h-4" />

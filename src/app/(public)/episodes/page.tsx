@@ -121,18 +121,18 @@ export default async function EpisodesPage({ searchParams }: EpisodesPageProps) 
           href="/episodes?tab=foryou"
           className={`group relative flex items-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl text-sm sm:text-base font-extrabold transition-all duration-300 shadow-md active:scale-95 ${
             activeTab === "foryou"
-              ? "bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white shadow-[0_0_24px_rgba(236,72,153,0.45)] border border-pink-400/50"
-              : "bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 hover:text-white border border-white/10 hover:border-pink-500/40"
+              ? "bg-gradient-to-r from-[#00b2fe] to-[#0077b6] text-black shadow-[0_0_24px_rgba(0,178,254,0.45)] border border-[#00b2fe]"
+              : "bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 hover:text-white border border-white/10 hover:border-[#00b2fe]/40"
           }`}
         >
           <Heart className={`w-5 h-5 transition-transform group-hover:scale-110 ${
-            activeTab === "foryou" ? "fill-white text-white" : "text-pink-400 fill-pink-500/20"
+            activeTab === "foryou" ? "fill-black text-black" : "text-[#00b2fe] fill-[#00b2fe]/20"
           }`} />
           <span>For You</span>
           <span
             className={`px-2.5 py-0.5 rounded-full text-xs font-black transition-colors ${
               activeTab === "foryou"
-                ? "bg-black/25 text-white"
+                ? "bg-black/25 text-black"
                 : "bg-white/10 text-gray-300 group-hover:bg-white/20"
             }`}
           >
@@ -142,8 +142,8 @@ export default async function EpisodesPage({ searchParams }: EpisodesPageProps) 
             <span
               className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
                 activeTab === "foryou"
-                  ? "bg-white text-pink-600 shadow-sm"
-                  : "bg-pink-500/20 text-pink-400 border border-pink-500/30 animate-pulse"
+                  ? "bg-black text-[#00b2fe] shadow-sm"
+                  : "bg-[#00b2fe]/20 text-[#00b2fe] border border-[#00b2fe]/30 animate-pulse"
               }`}
             >
               NEW
@@ -198,12 +198,12 @@ export default async function EpisodesPage({ searchParams }: EpisodesPageProps) 
         <section className="space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
             <div className="flex items-center gap-2 text-xs text-gray-400">
-              <InstagramIcon className="w-4 h-4 text-pink-400" />
+              <InstagramIcon className="w-4 h-4 text-[#00b2fe]" />
               <span>
-                <strong className="text-white font-bold">{forYouPosts.length}</strong> postime nga @ridewithkeijsi me <strong className="text-pink-400">#episod</strong>
+                <strong className="text-white font-bold">{forYouPosts.length}</strong> postime nga @ridewithkeijsi me <strong className="text-[#00b2fe]">#episod</strong>
               </span>
             </div>
-            <span className="text-xs text-pink-400 font-bold">Auto-sync nga Instagram</span>
+            <span className="text-xs text-[#00b2fe] font-bold">Auto-sync nga Instagram</span>
           </div>
 
           {forYouPosts.length > 0 ? (
@@ -214,10 +214,10 @@ export default async function EpisodesPage({ searchParams }: EpisodesPageProps) 
             </div>
           ) : (
             <div className="surface-card p-12 text-center max-w-md mx-auto space-y-4 rounded-3xl border border-white/10">
-              <Heart className="w-10 h-10 text-pink-400 mx-auto opacity-70" />
+              <Heart className="w-10 h-10 text-[#00b2fe] mx-auto opacity-70" />
               <h3 className="text-base font-bold text-white font-[&apos;Outfit&apos;]">For You — Së Shpejti</h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Kur @ridewithkeijsi poston në Instagram me <strong className="text-pink-400">#episod</strong>, postimet shfaqen automatikisht këtu.
+                Kur @ridewithkeijsi poston në Instagram me <strong className="text-[#00b2fe]">#episod</strong>, postimet shfaqen automatikisht këtu.
               </p>
               <a
                 href="https://instagram.com/ridewithkeijsi"

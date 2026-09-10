@@ -154,10 +154,10 @@ export default async function ContactPage() {
                 href="https://instagram.com/ridewithkeijsi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-pink-600/15 to-white/[0.02] hover:bg-pink-600/25 border border-pink-600/35 hover:border-pink-500 shadow-md hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all"
+                className="group flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#00b2fe]/15 to-white/[0.02] hover:bg-[#00b2fe]/25 border border-[#00b2fe]/35 hover:border-[#00b2fe] shadow-md hover:shadow-[0_0_20px_rgba(0,178,254,0.3)] transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-pink-600/25 text-pink-400 group-hover:scale-110 transition-transform shadow-[0_0_10px_rgba(236,72,153,0.3)]">
+                  <div className="p-2.5 rounded-xl bg-[#00b2fe]/25 text-[#00b2fe] group-hover:scale-110 transition-transform shadow-[0_0_10px_rgba(0,178,254,0.3)]">
                     <InstagramIcon className="w-5 h-5" />
                   </div>
                   <div>
@@ -165,7 +165,7 @@ export default async function ContactPage() {
                     <span className="text-[10px] text-gray-400 font-medium">Ndiqni Prapaskenat</span>
                   </div>
                 </div>
-                <span className="text-pink-400 group-hover:translate-x-1 transition-transform font-bold">↗</span>
+                <span className="text-[#00b2fe] group-hover:translate-x-1 transition-transform font-bold">↗</span>
               </a>
             </div>
           </div>

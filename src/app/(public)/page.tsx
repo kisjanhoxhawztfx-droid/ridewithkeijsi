@@ -135,15 +135,15 @@ export default async function HomePage() {
             <div className="pt-6 border-t border-white/10 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-[10px] font-black text-pink-400 uppercase tracking-wider">
-                    <Heart className="w-3 h-3" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00b2fe]/10 border border-[#00b2fe]/30 text-[10px] font-black text-[#00b2fe] uppercase tracking-wider">
+                    <Heart className="w-3 h-3 text-[#00b2fe]" />
                     FOR YOU
                   </span>
                   <span className="text-xs text-gray-500">Nga @ridewithkeijsi me #episod</span>
                 </div>
                 <Link
                   href="/episodes?tab=foryou"
-                  className="text-xs font-bold text-pink-400 hover:text-pink-300 flex items-center gap-1 transition-colors"
+                  className="text-xs font-bold text-[#00b2fe] hover:text-[#00d2ff] flex items-center gap-1 transition-colors"
                 >
                   Shiko të gjitha <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
@@ -165,12 +165,12 @@ export default async function HomePage() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-5">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="section-badge !bg-pink-500/10 !border-pink-500/30 !text-pink-400">
+                <span className="section-badge !bg-[#00b2fe]/10 !border-[#00b2fe]/30 !text-[#00b2fe]">
                   02. MARKETPLACE
                 </span>
               </div>
               <h2 className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-                <Bike className="w-5 h-5 text-pink-400" />
+                <Bike className="w-5 h-5 text-[#00b2fe]" />
                 <span>Motorra në Shitje</span>
               </h2>
               <p className="text-[11px] sm:text-xs text-gray-400">
@@ -197,7 +197,7 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="p-8 text-center bg-white/[0.02] rounded-xl border border-white/5">
-              <InstagramIcon className="w-8 h-8 text-pink-400 mx-auto mb-2" />
+              <InstagramIcon className="w-8 h-8 text-[#00b2fe] mx-auto mb-2" />
               <p className="text-xs text-gray-400">Nuk ka motorra për momentin.</p>
             </div>
           )}
@@ -357,10 +357,10 @@ export default async function HomePage() {
             <div className="pt-4 border-t border-white/10">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-wider font-['Outfit'] flex items-center gap-1.5">
-                  <InstagramIcon className="w-3.5 h-3.5 text-pink-400" />
+                  <InstagramIcon className="w-3.5 h-3.5 text-amber-400" />
                   POSTIMET NGA @TAXI_KEIJSI
                 </span>
-                <Link href="/taxi" className="text-xs font-bold text-pink-400 hover:underline">
+                <Link href="/taxi" className="text-xs font-bold text-amber-400 hover:underline">
                   Shiko të gjitha
                 </Link>
               </div>
@@ -407,7 +407,7 @@ export default async function HomePage() {
                 href="https://instagram.com/ridewithkeijsi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary text-xs font-bold hover:!border-pink-500 hover:text-pink-400 text-center justify-center min-h-[42px]"
+                className="btn-secondary text-xs font-bold hover:!border-[#00b2fe] hover:text-[#00b2fe] text-center justify-center min-h-[42px]"
               >
                 <InstagramIcon className="w-4 h-4" />
                 <span>Instagram</span>

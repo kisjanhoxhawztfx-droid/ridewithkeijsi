@@ -33,12 +33,9 @@ export default function InstagramPostCard({ post, variant = "motorra" }: Instagr
   const isVideo = post.mediaType === "VIDEO";
   const videoSrc = post.mediaUrl;
 
-  const accentColor = isMotorra ? "pink" : "cyan";
   const borderClass = isSold
     ? "border-gray-600/40"
-    : isMotorra
-    ? "border-pink-500/30 hover:border-pink-400/60"
-    : "border-[#00b2fe]/30 hover:border-[#00b2fe]/60";
+    : "border-[#00b2fe]/30 hover:border-[#00b2fe]/70";
 
   const shortCaption = post.caption.length > 100 ? post.caption.slice(0, 100) + "..." : post.caption;
   const needsExpand = post.caption.length > 100;
@@ -46,8 +43,8 @@ export default function InstagramPostCard({ post, variant = "motorra" }: Instagr
   return (
     <div
       className={`relative rounded-2xl overflow-hidden border bg-[#0a0d14] transition-all duration-300 group ${borderClass} ${
-        isSold ? "opacity-70" : "hover:shadow-xl"
-      } ${isMotorra ? "hover:shadow-pink-500/10" : "hover:shadow-[#00b2fe]/10"}`}
+        isSold ? "opacity-70" : "hover:shadow-xl hover:shadow-[#00b2fe]/15"
+      }`}
     >
       {/* Media: Video Player or Clickable Thumbnail (For You is 4/3 or 16/10 aspect for cleaner compact look) */}
       <div className={`relative overflow-hidden bg-[#060810] ${!isMotorra ? "aspect-[4/3]" : "aspect-square"}`}>
@@ -107,12 +104,12 @@ export default function InstagramPostCard({ post, variant = "motorra" }: Instagr
             {!isSold && (
               <div className="absolute top-3 left-3 pointer-events-none">
                 {isMotorra ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-pink-500/90 text-white text-[10px] font-black uppercase tracking-wide backdrop-blur-sm">
-                    <ShoppingBag className="w-3 h-3" />
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#00b2fe] text-black text-[10px] font-black uppercase tracking-wide backdrop-blur-sm shadow-md font-['Outfit']">
+                    <ShoppingBag className="w-3 h-3 text-black" />
                     Në Shitje
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#00b2fe]/90 text-white text-[10px] font-black uppercase tracking-wide backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#00b2fe] text-black text-[10px] font-black uppercase tracking-wide backdrop-blur-sm shadow-md font-['Outfit']">
                     For You
                   </span>
                 )}
@@ -175,9 +172,7 @@ export default function InstagramPostCard({ post, variant = "motorra" }: Instagr
             className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-full transition-all ${
               isSold
                 ? "bg-gray-800 text-gray-400 cursor-default pointer-events-none"
-                : isMotorra
-                ? "bg-pink-500/15 hover:bg-pink-500/30 text-pink-400 hover:text-pink-300 border border-pink-500/30"
-                : "bg-[#00b2fe]/15 hover:bg-[#00b2fe]/30 text-[#00b2fe] hover:text-[#00d2ff] border border-[#00b2fe]/30"
+                : "bg-[#00b2fe]/15 hover:bg-[#00b2fe] text-[#00b2fe] hover:text-black border border-[#00b2fe]/30 font-extrabold"
             }`}
           >
             <InstagramIcon className="w-3 h-3" />

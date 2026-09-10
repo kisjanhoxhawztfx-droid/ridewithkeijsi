@@ -41,9 +41,13 @@ export default function MobileBottomNav() {
   return (
     <nav
       aria-label="Mobile Navigation"
-      className="md:hidden fixed bottom-5 sm:bottom-6 left-3 right-3 sm:left-6 sm:right-6 z-50 bg-[#080d18]/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_12px_45px_rgba(0,0,0,0.95),0_0_25px_rgba(0,178,254,0.2)] px-2 py-2 max-w-lg mx-auto"
+      className="md:hidden fixed left-1/2 -translate-x-1/2 z-50 w-[calc(100%-24px)] max-w-md bg-[#080d18]/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_12px_45px_rgba(0,0,0,0.95),0_0_25px_rgba(0,178,254,0.2)] px-2 py-2 pointer-events-auto select-none touch-none"
       style={{
         bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+        transform: "translateX(-50%) translateZ(0)",
+        WebkitTransform: "translateX(-50%) translateZ(0)",
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden",
       }}
     >
       <div className="flex items-center justify-around max-w-md mx-auto">

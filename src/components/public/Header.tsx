@@ -168,7 +168,7 @@ export default function Header({ socialLinks = [] }: HeaderProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram @ridewithkeijsi"
-                className="p-1.5 rounded-full hover:bg-pink-600/20 hover:scale-110 transition-all text-pink-500 flex items-center justify-center"
+                className="p-1.5 rounded-full hover:bg-[#00b2fe]/20 hover:scale-110 transition-all text-[#00b2fe] flex items-center justify-center"
                 title="Faqja Zyrtare në Instagram"
               >
                 <InstagramIcon className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -314,7 +314,7 @@ export default function Header({ socialLinks = [] }: HeaderProps) {
                     href="https://instagram.com/ridewithkeijsi"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-pink-600/10 hover:bg-pink-600/20 border border-pink-600/30 text-pink-400 text-[11px] font-bold font-['Outfit'] transition-all min-h-[38px]"
+                    className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-[#00b2fe]/10 hover:bg-[#00b2fe]/20 border border-[#00b2fe]/30 text-[#00b2fe] text-[11px] font-bold font-['Outfit'] transition-all min-h-[38px]"
                   >
                     <InstagramIcon className="w-3.5 h-3.5 flex-shrink-0" />
                     <span>Instagram</span>

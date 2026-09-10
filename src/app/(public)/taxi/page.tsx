@@ -38,23 +38,23 @@ export default async function TaxiPage() {
     <div className="pt-2 sm:pt-4 pb-24 sm:pb-36 w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-20 sm:space-y-32">
       
       {/* 1. HERO SECTION: Taxi Keijsi Header & Direct Call/WhatsApp Booking */}
-      <section className="relative rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-b from-[#0c1424] via-[#070b14] to-[#04060a] p-6 sm:p-12 lg:p-14 shadow-2xl">
-        {/* Background glow accents */}
-        <div className="absolute -top-24 -left-24 w-72 sm:w-96 h-72 sm:h-96 bg-[#00b2fe]/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 right-0 w-60 sm:w-80 h-60 sm:h-80 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative rounded-3xl overflow-hidden border border-amber-400/30 bg-gradient-to-b from-[#0e1624] via-[#090f18] to-[#04060a] p-6 sm:p-12 lg:p-14 shadow-2xl">
+        {/* Background glow accents - subtle taxi yellow & cyan mix */}
+        <div className="absolute -top-24 -left-24 w-72 sm:w-96 h-72 sm:h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 right-0 w-60 sm:w-80 h-60 sm:h-80 bg-[#00b2fe]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 items-center">
           {/* Left Column: Headlines & Call/WhatsApp CTA */}
           <div className="lg:col-span-7 space-y-7 text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00b2fe]/15 border border-[#00b2fe]/30 text-xs font-black text-[#00d2ff] tracking-wider uppercase backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-[#00b2fe] animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/15 border border-amber-400/40 text-xs font-black text-amber-400 tracking-wider uppercase backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
               <span>SHËRBIM TAKSIE 24/7</span>
-              <span className="text-gray-500">•</span>
-              <span className="text-gray-300">TIRANË & SHQIPËRI</span>
+              <span className="text-amber-500/50">•</span>
+              <span className="text-gray-200">TIRANË & SHQIPËRI</span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white font-['Outfit'] uppercase leading-tight tracking-wide">
-              TAXI <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00b2fe] via-[#00d2ff] to-white drop-shadow-[0_0_20px_rgba(0,178,254,0.6)]">KEIJSI</span>
+              TAXI <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-[#00b2fe] drop-shadow-[0_0_25px_rgba(245,158,11,0.5)]">KEIJSI</span>
             </h1>
 
             <p className="text-xs sm:text-sm lg:text-base text-gray-300 leading-relaxed font-normal max-w-xl">
@@ -63,13 +63,13 @@ export default async function TaxiPage() {
 
             {/* Direct Contact Buttons (Phone Call + WhatsApp Booking) */}
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              {/* Call Now Button */}
+              {/* Call Now Button with subtle taxi yellow styling */}
               {settings.taxi_phone && (
                 <a
                   href={`tel:${settings.taxi_phone}`}
-                  className="btn-primary !from-[#00b2fe] !to-[#0077b6] text-xs sm:text-sm font-black !py-3 !px-6 shadow-[0_0_25px_rgba(0,178,254,0.45)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[46px] hover:scale-105 transition-all"
+                  className="btn-primary !from-amber-400 !to-yellow-500 hover:!from-amber-300 hover:!to-yellow-400 !text-black text-xs sm:text-sm font-black !py-3 !px-6 shadow-[0_0_25px_rgba(245,158,11,0.45)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[46px] hover:scale-105 transition-all"
                 >
-                  <Phone className="w-3.5 h-3.5 fill-current flex-shrink-0 animate-bounce" />
+                  <Phone className="w-3.5 h-3.5 fill-black flex-shrink-0 animate-bounce" />
                   <span>Telefono Tani: {settings.taxi_phone}</span>
                 </a>
               )}
@@ -199,12 +199,12 @@ export default async function TaxiPage() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-5">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="section-badge !bg-pink-500/10 !border-pink-500/30 !text-pink-400">
+              <span className="section-badge !bg-amber-500/10 !border-amber-500/30 !text-amber-400">
                 01. INSTAGRAM @TAXI_KEIJSI
               </span>
             </div>
             <h2 className="text-xl sm:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-              <InstagramIcon className="w-5 h-5 sm:w-6 sm:h-6 text-pink-400" />
+              <InstagramIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
               <span>Postimet nga @taxi_keijsi</span>
             </h2>
             <p className="text-xs sm:text-sm text-gray-400">
@@ -216,7 +216,7 @@ export default async function TaxiPage() {
             href="https://instagram.com/taxi_keijsi"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-pink-400 hover:text-pink-300 group transition-colors self-start sm:self-auto py-1"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-400 hover:text-amber-300 group transition-colors self-start sm:self-auto py-1"
           >
             <span>Ndiqni @taxi_keijsi</span>
             <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -232,7 +232,7 @@ export default async function TaxiPage() {
           </div>
         ) : (
           <div className="p-12 text-center bg-white/[0.02] rounded-2xl border border-white/5">
-            <InstagramIcon className="w-8 h-8 text-pink-400 mx-auto mb-2 opacity-70" />
+            <InstagramIcon className="w-8 h-8 text-amber-400 mx-auto mb-2 opacity-70" />
             <p className="text-xs text-gray-400">Postimet nga @taxi_keijsi do të sinkronizohen së shpejti.</p>
           </div>
         )}

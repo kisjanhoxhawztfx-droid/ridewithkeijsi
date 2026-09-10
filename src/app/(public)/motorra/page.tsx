@@ -24,12 +24,12 @@ export default async function MotorraPage() {
     <div className="pt-1 sm:pt-3 pb-20 sm:pb-28 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-12 sm:space-y-16">
 
       {/* 1. Header Banner Hero */}
-      <section className="relative rounded-3xl overflow-hidden border border-pink-500/30 bg-gradient-to-b from-[#1a0f24] via-[#0e0816] to-[#050308] p-8 sm:p-14 shadow-2xl text-center space-y-6">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-b from-[#0e1422] via-[#080d16] to-[#04060a] p-8 sm:p-14 shadow-2xl text-center space-y-6">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#00b2fe]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl mx-auto space-y-5">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/15 border border-pink-500/30 text-xs font-black text-pink-400 tracking-wider uppercase backdrop-blur-md">
-            <InstagramIcon className="w-4 h-4 text-pink-400" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00b2fe]/15 border border-[#00b2fe]/30 text-xs font-black text-[#00d2ff] tracking-wider uppercase backdrop-blur-md">
+            <InstagramIcon className="w-4 h-4 text-[#00b2fe]" />
             <span>AUTO-SYNC NGA @ridewithkeijsi</span>
           </div>
 
@@ -39,7 +39,7 @@ export default async function MotorraPage() {
 
           <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
             <span className="flex items-center gap-1.5">
-              <ShoppingBag className="w-3.5 h-3.5 text-pink-400" />
+              <ShoppingBag className="w-3.5 h-3.5 text-[#00b2fe]" />
               <strong className="text-white">{forSale.length}</strong> Në Shitje
             </span>
             <span className="w-px h-4 bg-white/10" />
@@ -55,12 +55,12 @@ export default async function MotorraPage() {
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
           <div className="flex items-center gap-2 text-sm text-gray-300">
-            <ShoppingBag className="w-4 h-4 text-pink-400" />
+            <ShoppingBag className="w-4 h-4 text-[#00b2fe]" />
             <span>
               <strong className="text-white font-bold">{forSale.length}</strong> motorra në shitje
             </span>
           </div>
-          <span className="text-xs text-pink-400 font-bold flex items-center gap-1.5">
+          <span className="text-xs text-[#00b2fe] font-bold flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4" />
             Sinkronizuar me @ridewithkeijsi
           </span>
@@ -74,7 +74,7 @@ export default async function MotorraPage() {
           </div>
         ) : (
           <div className="surface-card p-12 text-center max-w-md mx-auto space-y-4 rounded-3xl border border-white/10">
-            <Sparkles className="w-10 h-10 text-pink-400 mx-auto opacity-70" />
+            <Sparkles className="w-10 h-10 text-[#00b2fe] mx-auto opacity-70" />
             <h3 className="text-base font-bold text-white font-[&apos;Outfit&apos;]">Nuk ka motorra aktualisht</h3>
             <p className="text-gray-400 text-xs leading-relaxed">
               Kur @ridewithkeijsi poston në Instagram me <strong>#shitet</strong>, motorri shfaqet automatikisht këtu.
