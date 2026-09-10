@@ -48,9 +48,9 @@ export default async function LuxuryPage() {
             </div>
 
             {/* Gold Gradient Title */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white font-['Outfit'] uppercase leading-tight tracking-wide flex flex-wrap items-center gap-3">
-              <span className="flex items-center gap-2.5">
-                <CrownIcon className="w-8 h-8 sm:w-12 sm:h-12 text-[#ffd700] drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]" />
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white font-['Outfit'] uppercase leading-tight tracking-wide flex flex-wrap items-center gap-2 sm:gap-3">
+              <span className="flex items-center gap-2">
+                <CrownIcon className="w-7 h-7 sm:w-10 sm:h-10 text-[#ffd700] drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]" />
                 <span>LUXURY</span>
               </span>
               <span className="bg-gradient-to-r from-[#ffd700] via-[#ffe066] to-[#d4af37] bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(255,215,0,0.6)]">
@@ -59,18 +59,18 @@ export default async function LuxuryPage() {
             </h1>
 
             {/* Subtitle */}
-            <p className="text-sm sm:text-base lg:text-lg text-gray-300 leading-relaxed font-normal max-w-xl">
+            <p className="text-xs sm:text-sm lg:text-base text-gray-300 leading-relaxed font-normal max-w-xl">
               Shërbime me qira për makina luksoze, limuzina ceremoniale, furgona Maybach VIP, Rolls-Royce dhe Bentley me shofer personal të trajnuar. Përvoja më prestigjioze e udhëtimit në Shqipëri.
             </p>
 
             {/* Direct Contact Buttons (Phone Call + WhatsApp Booking) */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               {/* Call Now Button */}
               <a
                 href={`tel:${phone}`}
-                className="btn-primary !from-[#ffd700] !to-[#b8860b] hover:!from-[#ffe033] hover:!to-[#d4af37] !text-black text-xs sm:text-sm font-black !py-4 !px-8 shadow-[0_0_30px_rgba(255,215,0,0.45)] w-full sm:w-auto text-center flex items-center justify-center gap-2.5 min-h-[50px] hover:scale-105 transition-all"
+                className="btn-primary !from-[#ffd700] !to-[#b8860b] hover:!from-[#ffe033] hover:!to-[#d4af37] !text-black text-xs sm:text-sm font-black !py-3 !px-6 shadow-[0_0_30px_rgba(255,215,0,0.45)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[46px] hover:scale-105 transition-all"
               >
-                <Phone className="w-4 h-4 fill-black text-black flex-shrink-0 animate-bounce" />
+                <Phone className="w-3.5 h-3.5 fill-black text-black flex-shrink-0 animate-bounce" />
                 <span>Telefono Tani: {phone}</span>
               </a>
 
@@ -79,25 +79,25 @@ export default async function LuxuryPage() {
                 href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent("Përshëndetje Luxury Services, dëshiroj të kërkoj informacion dhe rezervim për makinat luksoze.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary !from-green-600 !to-emerald-700 hover:!from-green-500 hover:!to-emerald-600 text-xs sm:text-sm font-extrabold !py-4 !px-8 shadow-[0_0_25px_rgba(34,197,94,0.4)] w-full sm:w-auto text-center flex items-center justify-center gap-2.5 min-h-[50px]"
+                className="btn-primary !from-green-600 !to-emerald-700 hover:!from-green-500 hover:!to-emerald-600 text-xs sm:text-sm font-extrabold !py-3 !px-6 shadow-[0_0_25px_rgba(34,197,94,0.4)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[46px]"
               >
-                <WhatsAppIcon className="w-5 h-5 flex-shrink-0" />
+                <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
                 <span>Porosit në WhatsApp</span>
               </a>
             </div>
 
             {/* Feature Badges */}
-            <div className="pt-4 flex flex-wrap items-center gap-3 text-xs text-gray-400">
-              <span className="flex items-center gap-1.5 bg-white/5 border border-[#ffd700]/35 px-3.5 py-1.5 rounded-full text-gray-300 font-medium">
-                <CrownIcon className="w-3.5 h-3.5 text-[#ffd700]" />
+            <div className="pt-3 flex flex-wrap items-center gap-2.5 text-[11px] text-gray-400">
+              <span className="flex items-center gap-1.5 bg-white/5 border border-[#ffd700]/35 px-3 py-1 rounded-full text-gray-300 font-medium">
+                <CrownIcon className="w-3 h-3 text-[#ffd700]" />
                 Flotë Premium e Zgjedhur
               </span>
-              <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full text-gray-300 font-medium">
-                <Shield className="w-3.5 h-3.5 text-green-400" />
+              <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-300 font-medium">
+                <Shield className="w-3 h-3 text-green-400" />
                 Shofer Personal me Kostum
               </span>
-              <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full text-gray-300 font-medium">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-300 font-medium">
+                <Sparkles className="w-3 h-3 text-amber-400" />
                 Konfidencialitet Absolut
               </span>
             </div>
@@ -105,38 +105,38 @@ export default async function LuxuryPage() {
 
           {/* Right Column: Hero Visual Feature Box */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-3xl p-6 sm:p-8 border border-[#ffd700]/40 shadow-[0_0_45px_rgba(255,215,0,0.18)] bg-gradient-to-b from-[#181308]/95 via-[#0e0c06]/95 to-[#050402]/95 backdrop-blur-xl space-y-5">
-              <div className="flex items-center justify-between pb-4 border-b border-[#ffd700]/20">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-[#ffd700]/20 text-[#ffd700] shadow-[0_0_20px_rgba(255,215,0,0.35)]">
-                    <CrownIcon className="w-5 h-5" />
+            <div className="relative rounded-3xl p-5 sm:p-7 border border-[#ffd700]/40 shadow-[0_0_45px_rgba(255,215,0,0.18)] bg-gradient-to-b from-[#181308]/95 via-[#0e0c06]/95 to-[#050402]/95 backdrop-blur-xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#ffd700]/20">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-xl bg-[#ffd700]/20 text-[#ffd700] shadow-[0_0_20px_rgba(255,215,0,0.35)]">
+                    <CrownIcon className="w-4 h-4" />
                   </div>
-                  <h3 className="text-sm sm:text-base font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#ffe57f] to-white uppercase tracking-wider font-['Outfit']">
+                  <h3 className="text-xs sm:text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#ffe57f] to-white uppercase tracking-wider font-['Outfit']">
                     Kategoritë Kryesore të Flotës
                   </h3>
                 </div>
-                <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-[#ffd700]/15 text-[#ffd700] border border-[#ffd700]/40 uppercase tracking-wider shadow-[0_0_10px_rgba(255,215,0,0.2)]">
+                <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-[#ffd700]/15 text-[#ffd700] border border-[#ffd700]/40 uppercase tracking-wider shadow-[0_0_10px_rgba(255,215,0,0.2)]">
                   VIP Elite
                 </span>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* Category 1: Rolls-Royce & Bentley */}
-                <div className="group relative p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#ffd700]/[0.09] to-white/[0.02] border border-[#ffd700]/30 hover:border-[#ffd700]/80 hover:bg-[#ffd700]/[0.15] transition-all duration-300 shadow-md hover:shadow-[0_0_30px_rgba(255,215,0,0.25)]">
-                  <div className="flex items-start gap-4">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#ffd700]/35 to-[#ffd700]/10 border border-[#ffd700]/50 flex items-center justify-center text-[#ffd700] shadow-inner flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <CrownIcon className="w-5 h-5" />
+                <div className="group relative p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-[#ffd700]/[0.09] to-white/[0.02] border border-[#ffd700]/30 hover:border-[#ffd700]/80 hover:bg-[#ffd700]/[0.15] transition-all duration-300 shadow-md">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#ffd700]/35 to-[#ffd700]/10 border border-[#ffd700]/50 flex items-center justify-center text-[#ffd700] shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <CrownIcon className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-[#ffd700] transition-colors">
                           Rolls-Royce & Bentley
                         </strong>
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-[#ffd700]/25 text-[#ffd700] border border-[#ffd700]/40 uppercase whitespace-nowrap">
+                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-[#ffd700]/25 text-[#ffd700] border border-[#ffd700]/40 uppercase whitespace-nowrap">
                           Ultra Luxury
                         </span>
                       </div>
-                      <p className="text-xs sm:text-[13px] text-gray-200 font-normal leading-relaxed mt-1.5">
+                      <p className="text-[11px] sm:text-xs text-gray-200 font-normal leading-relaxed mt-1">
                         Phantom, Ghost, Flying Spur — niveli më i lartë i madhështisë, stilit dhe prestigjit botëror.
                       </p>
                     </div>
@@ -144,21 +144,21 @@ export default async function LuxuryPage() {
                 </div>
 
                 {/* Category 2: Maybach VIP Vans */}
-                <div className="group relative p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/[0.09] to-white/[0.02] border border-amber-500/30 hover:border-amber-400/80 hover:bg-amber-500/[0.15] transition-all duration-300 shadow-md hover:shadow-[0_0_30px_rgba(245,158,11,0.25)]">
-                  <div className="flex items-start gap-4">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/35 to-amber-500/10 border border-amber-500/50 flex items-center justify-center text-amber-400 shadow-inner flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <Gem className="w-5 h-5" />
+                <div className="group relative p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/[0.09] to-white/[0.02] border border-amber-500/30 hover:border-amber-400/80 hover:bg-amber-500/[0.15] transition-all duration-300 shadow-md">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/35 to-amber-500/10 border border-amber-500/50 flex items-center justify-center text-amber-400 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <Gem className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-amber-400 transition-colors">
                           Furgona Maybach VIP
                         </strong>
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-amber-500/25 text-amber-400 border border-amber-500/40 uppercase whitespace-nowrap">
+                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-amber-500/25 text-amber-400 border border-amber-500/40 uppercase whitespace-nowrap">
                           Mobile Lounge
                         </span>
                       </div>
-                      <p className="text-xs sm:text-[13px] text-gray-200 font-normal leading-relaxed mt-1.5">
+                      <p className="text-[11px] sm:text-xs text-gray-200 font-normal leading-relaxed mt-1">
                         Sallon privat ekzekutiv me Smart TV 4K, sedilje masazhi, minibar, Wi-Fi dhe ambient pune.
                       </p>
                     </div>
@@ -166,22 +166,22 @@ export default async function LuxuryPage() {
                 </div>
 
                 {/* Category 3: Limuzina & SUV Presidencialë */}
-                <div className="group relative p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-yellow-500/[0.09] to-white/[0.02] border border-yellow-500/30 hover:border-yellow-400/80 hover:bg-yellow-500/[0.15] transition-all duration-300 shadow-md hover:shadow-[0_0_30px_rgba(234,179,8,0.25)]">
-                  <div className="flex items-start gap-4">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-yellow-500/35 to-yellow-500/10 border border-yellow-500/50 flex items-center justify-center text-yellow-400 shadow-inner flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <Award className="w-5 h-5" />
+                <div className="group relative p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-yellow-500/[0.09] to-white/[0.02] border border-yellow-500/30 hover:border-yellow-400/80 hover:bg-yellow-500/[0.15] transition-all duration-300 shadow-md">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-500/35 to-yellow-500/10 border border-yellow-500/50 flex items-center justify-center text-yellow-400 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <Award className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-yellow-400 transition-colors">
                           Limuzina & SUV Presidencialë
                         </strong>
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-yellow-500/25 text-yellow-400 border border-yellow-500/40 uppercase whitespace-nowrap">
+                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-yellow-500/25 text-yellow-400 border border-yellow-500/40 uppercase whitespace-nowrap">
                           Eskortë & Siguri
                         </span>
                       </div>
-                      <p className="text-xs sm:text-[13px] text-gray-200 font-normal leading-relaxed mt-1.5">
-                        Mercedes S-Class, Stretch Limousine për evente, Cadillac Escalade me nivel të lartë sigurie.
+                      <p className="text-[11px] sm:text-xs text-gray-200 font-normal leading-relaxed mt-1">
+                        Mercedes S-Class, Stretch Limousine për evente, Cadillac Escalade me siguri maksimale.
                       </p>
                     </div>
                   </div>

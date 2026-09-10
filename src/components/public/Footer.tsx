@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, ArrowUpRight, Phone } from "lucide-react";
-import { YouTubeIcon, InstagramIcon, TikTokIcon, CrownIcon } from "@/components/ui/Icons";
+import { Mail, Phone, ArrowUpRight } from "lucide-react";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, CrownIcon } from "@/components/ui/Icons";
 
 interface FooterProps {
   socialLinks?: Array<{ platform: string; url: string; label: string }>;
@@ -44,7 +44,7 @@ export default function Footer({
             <p className="text-gray-400 text-xs sm:text-sm max-w-md leading-relaxed">
               {tagline}
             </p>
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center flex-wrap gap-2.5 pt-2">
               <a
                 href="https://youtube.com/@RideWithkeijsi"
                 target="_blank"
@@ -62,6 +62,24 @@ export default function Footer({
                 title="Instagram"
               >
                 <InstagramIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="https://tiktok.com/@keijsi09"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-500/40 hover:scale-105 transition-all"
+                title="TikTok @keijsi09"
+              >
+                <TikTokIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="https://web.facebook.com/people/Ride-With-Keijsi/61579447413922/#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-blue-500 hover:bg-blue-600/20 hover:border-blue-500/40 hover:scale-105 transition-all"
+                title="Facebook"
+              >
+                <FacebookIcon className="w-4 h-4" />
               </a>
               <a
                 href={`mailto:${email}`}

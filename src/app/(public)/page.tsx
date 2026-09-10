@@ -9,7 +9,7 @@ import TaxiPostCard from "@/components/public/TaxiPostCard";
 import LuxuryCard from "@/components/public/LuxuryCard";
 import InstagramPostCard from "@/components/public/InstagramPostCard";
 import { ChevronRight, Sparkles, Tv, Bike, Users, Phone, Star, Car, Shield, Heart } from "lucide-react";
-import { YouTubeIcon, InstagramIcon, WhatsAppIcon, GoogleIcon, CrownIcon } from "@/components/ui/Icons";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, WhatsAppIcon, GoogleIcon, CrownIcon } from "@/components/ui/Icons";
 
 export const revalidate = 60;
 
@@ -392,25 +392,45 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-2.5 sm:gap-3 justify-center">
+            <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <a
                 href="https://youtube.com/@RideWithkeijsi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary !from-red-600 !to-red-700 hover:!from-red-500 hover:!to-red-600 shadow-[0_0_20px_rgba(239,68,68,0.4)] text-xs font-bold w-full text-center"
+                className="btn-primary !from-red-600 !to-red-700 hover:!from-red-500 hover:!to-red-600 shadow-[0_0_20px_rgba(239,68,68,0.4)] text-xs font-bold text-center justify-center min-h-[42px]"
               >
                 <YouTubeIcon className="w-4 h-4" />
-                <span>Abonohu në YouTube</span>
+                <span>YouTube</span>
               </a>
 
               <a
                 href="https://instagram.com/ridewithkeijsi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary text-xs font-bold hover:!border-pink-500 hover:text-pink-400 w-full text-center justify-center"
+                className="btn-secondary text-xs font-bold hover:!border-pink-500 hover:text-pink-400 text-center justify-center min-h-[42px]"
               >
                 <InstagramIcon className="w-4 h-4" />
-                <span>Na Ndiqni në Instagram</span>
+                <span>Instagram</span>
+              </a>
+
+              <a
+                href="https://tiktok.com/@keijsi09"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary text-xs font-bold hover:!border-cyan-500 hover:text-cyan-400 text-center justify-center min-h-[42px]"
+              >
+                <TikTokIcon className="w-4 h-4" />
+                <span>TikTok</span>
+              </a>
+
+              <a
+                href="https://web.facebook.com/people/Ride-With-Keijsi/61579447413922/#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary text-xs font-bold hover:!border-blue-500 hover:text-blue-400 text-center justify-center min-h-[42px]"
+              >
+                <FacebookIcon className="w-4 h-4" />
+                <span>Facebook</span>
               </a>
             </div>
           </div>

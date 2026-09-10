@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, Shield, Home, Tv, Bike, MessageCircle, ChevronRight } from "lucide-react";
-import { YouTubeIcon, InstagramIcon, TaxiIcon, CrownIcon } from "@/components/ui/Icons";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TaxiIcon, CrownIcon } from "@/components/ui/Icons";
 
 interface HeaderProps {
   socialLinks?: Array<{ platform: string; url: string; label: string }>;
@@ -148,30 +148,52 @@ export default function Header({ socialLinks = [] }: HeaderProps) {
             })}
           </nav>
 
-          {/* RIGHT: Official Social Channels (YouTube & Instagram Zmadhuar) */}
+          {/* RIGHT: Official Social Channels (YouTube, Instagram, TikTok, Facebook) */}
           <div className="flex items-center gap-3">
             {/* Desktop Socials */}
-            <div className="flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/20 rounded-full px-3.5 py-1.5 shadow-md transition-all">
+            <div className="flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/20 rounded-full px-3 py-1.5 shadow-md transition-all">
               <a
                 href="https://youtube.com/@RideWithkeijsi"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube @RideWithkeijsi"
-                className="p-1.5 rounded-full hover:bg-red-600/20 hover:scale-115 transition-all text-red-500 flex items-center justify-center"
+                className="p-1.5 rounded-full hover:bg-red-600/20 hover:scale-110 transition-all text-red-500 flex items-center justify-center"
                 title="Kanal Zyrtar në YouTube"
               >
-                <YouTubeIcon className="w-6 h-6 sm:w-7 sm:h-7" />
+                <YouTubeIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               </a>
-              <div className="w-[1px] h-5 bg-white/20" />
+              <div className="w-[1px] h-4 bg-white/20" />
               <a
                 href="https://instagram.com/ridewithkeijsi"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram @ridewithkeijsi"
-                className="p-1.5 rounded-full hover:bg-pink-600/20 hover:scale-115 transition-all text-pink-500 flex items-center justify-center"
+                className="p-1.5 rounded-full hover:bg-pink-600/20 hover:scale-110 transition-all text-pink-500 flex items-center justify-center"
                 title="Faqja Zyrtare në Instagram"
               >
-                <InstagramIcon className="w-6 h-6 sm:w-7 sm:h-7" />
+                <InstagramIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+              </a>
+              <div className="w-[1px] h-4 bg-white/20" />
+              <a
+                href="https://tiktok.com/@keijsi09"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok @keijsi09"
+                className="p-1.5 rounded-full hover:bg-cyan-500/20 hover:scale-110 transition-all text-cyan-400 flex items-center justify-center"
+                title="TikTok @keijsi09"
+              >
+                <TikTokIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5" />
+              </a>
+              <div className="w-[1px] h-4 bg-white/20" />
+              <a
+                href="https://web.facebook.com/people/Ride-With-Keijsi/61579447413922/#"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook Ride With Keijsi"
+                className="p-1.5 rounded-full hover:bg-blue-600/20 hover:scale-110 transition-all text-blue-500 flex items-center justify-center"
+                title="Faqja Zyrtare në Facebook"
+              >
+                <FacebookIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5" />
               </a>
             </div>
           </div>
@@ -196,8 +218,8 @@ export default function Header({ socialLinks = [] }: HeaderProps) {
             onClick={() => setMobileMenuOpen(false)}
           />
 
-          {/* Left Side Drawer - Compact & Perfectly Structured (~270px width) */}
-          <div className="relative z-50 w-[72vw] max-w-[275px] h-full bg-[#070b12] border-r border-white/15 flex flex-col justify-between p-4 sm:p-5 shadow-[15px_0_50px_rgba(0,0,0,0.95)] animate-in slide-in-from-left duration-250 overflow-y-auto">
+          {/* Left Side Drawer - Compact & Perfectly Structured (~275px width) */}
+          <div className="relative z-50 w-[75vw] max-w-[280px] h-full bg-[#070b12] border-r border-white/15 flex flex-col justify-between p-4 sm:p-5 shadow-[15px_0_50px_rgba(0,0,0,0.95)] animate-in slide-in-from-left duration-250 overflow-y-auto">
             
             <div className="space-y-4">
               {/* Drawer Top Bar: Brand + Close Button */}
@@ -296,6 +318,26 @@ export default function Header({ socialLinks = [] }: HeaderProps) {
                   >
                     <InstagramIcon className="w-3.5 h-3.5 flex-shrink-0" />
                     <span>Instagram</span>
+                  </a>
+
+                  <a
+                    href="https://tiktok.com/@keijsi09"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-[11px] font-bold font-['Outfit'] transition-all min-h-[38px]"
+                  >
+                    <TikTokIcon className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>TikTok</span>
+                  </a>
+
+                  <a
+                    href="https://web.facebook.com/people/Ride-With-Keijsi/61579447413922/#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-blue-600/10 hover:bg-blue-600/20 border border-blue-600/30 text-blue-400 text-[11px] font-bold font-['Outfit'] transition-all min-h-[38px]"
+                  >
+                    <FacebookIcon className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Facebook</span>
                   </a>
                 </div>
               </div>
