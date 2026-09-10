@@ -37,10 +37,6 @@ export default async function MotorraPage() {
             MOTORRA <span className="text-[#00b2fe] drop-shadow-[0_0_20px_rgba(0,178,254,0.6)]">NË SHITJE</span>
           </h1>
 
-          <p className="text-sm sm:text-base lg:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed font-normal">
-            Postimet me <strong className="text-pink-400">#shitet</strong> nga Instagram @ridewithkeijsi sinkronizohen automatikisht këtu. Kur motori shitet, lëviz vetë tek &quot;E Shitura&quot;.
-          </p>
-
           <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
             <span className="flex items-center gap-1.5">
               <ShoppingBag className="w-3.5 h-3.5 text-pink-400" />
