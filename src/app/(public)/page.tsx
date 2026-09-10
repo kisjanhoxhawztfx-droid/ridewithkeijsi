@@ -98,11 +98,11 @@ export default async function HomePage() {
               <div className="flex items-center gap-2">
                 <span className="section-badge">01. EMISIONI ZYRTAR</span>
               </div>
-              <h2 className="text-xl sm:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-                <Tv className="w-5 h-5 sm:w-6 sm:h-6 text-[#00b2fe]" />
+              <h2 className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
+                <Tv className="w-5 h-5 text-[#00b2fe]" />
                 <span>Episodet më të Fundit</span>
               </h2>
-              <p className="text-xs sm:text-sm text-gray-400">
+              <p className="text-[11px] sm:text-xs text-gray-400">
                 Xhiro ekskluzive, teste motorrash dhe intervista nga YouTube @RideWithkeijsi
               </p>
             </div>
@@ -112,7 +112,7 @@ export default async function HomePage() {
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#00b2fe] hover:text-[#00d2ff] group transition-colors self-start sm:self-auto py-1"
             >
               <span>Shiko të gjitha ({totalEpisodesCount})</span>
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
@@ -169,11 +169,11 @@ export default async function HomePage() {
                   02. MARKETPLACE
                 </span>
               </div>
-              <h2 className="text-xl sm:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-                <Bike className="w-5 h-5 sm:w-6 sm:h-6 text-pink-400" />
+              <h2 className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
+                <Bike className="w-5 h-5 text-pink-400" />
                 <span>Motorra në Shitje</span>
               </h2>
-              <p className="text-xs sm:text-sm text-gray-400">
+              <p className="text-[11px] sm:text-xs text-gray-400">
                 Auto-sync nga @ridewithkeijsi — postimet me #shitet shfaqen automatikisht
               </p>
             </div>
@@ -183,7 +183,7 @@ export default async function HomePage() {
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#00b2fe] hover:text-[#00d2ff] group transition-colors self-start sm:self-auto py-1"
             >
               <span>Eksploro të gjithë ({motorraForSale.length})</span>
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
@@ -224,9 +224,9 @@ export default async function HomePage() {
                 </span>
               </div>
 
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white font-['Outfit'] flex flex-wrap items-center gap-2">
+              <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white font-['Outfit'] flex flex-wrap items-center gap-2">
                 <span className="flex items-center gap-2 text-white">
-                  <CrownIcon className="w-7 h-7 sm:w-9 sm:h-9 text-[#ffd700] drop-shadow-[0_0_15px_rgba(255,215,0,0.8)]" />
+                  <CrownIcon className="w-6 h-6 sm:w-8 sm:h-8 text-[#ffd700] drop-shadow-[0_0_15px_rgba(255,215,0,0.8)]" />
                   <span>LUXURY</span>
                 </span>
                 <span className="bg-gradient-to-r from-[#ffd700] via-[#ffe066] to-[#d4af37] bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,215,0,0.5)]">
@@ -234,18 +234,18 @@ export default async function HomePage() {
                 </span>
               </h2>
 
-              <p className="text-xs sm:text-sm text-gray-300 max-w-2xl leading-relaxed">
+              <p className="text-[11px] sm:text-xs text-gray-300/90 max-w-2xl leading-relaxed">
                 Makina luksoze, limuzina ceremoniale, furgona Maybach VIP, Rolls-Royce dhe Bentley me qira me shofer personal për dasma, transferta aeroporti dhe evente VIP.
               </p>
             </div>
 
             {/* Direct Contact Buttons (Phone + WhatsApp) */}
-            <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+            <div className="flex flex-col sm:flex-row gap-2.5 flex-shrink-0">
               <a
                 href={`tel:${luxuryPhone}`}
-                className="btn-primary !from-[#ffd700] !to-[#b8860b] hover:!from-[#ffe033] hover:!to-[#d4af37] !text-black text-xs font-black !py-3 !px-5 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,215,0,0.4)]"
+                className="btn-primary !from-[#ffd700] !to-[#b8860b] hover:!from-[#ffe033] hover:!to-[#d4af37] !text-black text-xs font-black !py-2.5 !px-4 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,215,0,0.4)]"
               >
-                <Phone className="w-4 h-4 fill-black text-black" />
+                <Phone className="w-3.5 h-3.5 fill-black text-black" />
                 <span>{luxuryPhone}</span>
               </a>
 
@@ -253,18 +253,18 @@ export default async function HomePage() {
                 href={`https://wa.me/${cleanLuxuryWhatsapp}?text=${encodeURIComponent("Përshëndetje Luxury Services, dëshiroj të rezervoj një makinë luksoze.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary !from-green-600 !to-emerald-700 hover:!from-green-500 hover:!to-emerald-600 text-xs font-bold !py-3 !px-5 flex items-center justify-center gap-2"
+                className="btn-primary !from-green-600 !to-emerald-700 hover:!from-green-500 hover:!to-emerald-600 text-xs font-bold !py-2.5 !px-4 flex items-center justify-center gap-2"
               >
-                <WhatsAppIcon className="w-4 h-4" />
+                <WhatsAppIcon className="w-3.5 h-3.5" />
                 <span>WhatsApp VIP</span>
               </a>
 
               <Link
                 href="/luxury"
-                className="btn-secondary text-xs font-bold !py-3 !px-5 flex items-center justify-center gap-1.5 hover:!border-[#ffd700] hover:text-[#ffd700]"
+                className="btn-secondary text-xs font-bold !py-2.5 !px-4 flex items-center justify-center gap-1.5 hover:!border-[#ffd700] hover:text-[#ffd700]"
               >
-                <span>Shiko Flotën</span>
-                <ChevronRight className="w-4 h-4 text-[#ffd700]" />
+                <span>Flota</span>
+                <ChevronRight className="w-3.5 h-3.5 text-[#ffd700]" />
               </Link>
             </div>
           </div>
@@ -273,7 +273,7 @@ export default async function HomePage() {
           {luxuryVehicles.length > 0 && (
             <div className="pt-4 border-t border-white/10 relative z-10">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider font-['Outfit'] flex items-center gap-1.5">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider font-['Outfit'] flex items-center gap-1.5">
                   <CrownIcon className="w-3.5 h-3.5 text-[#ffd700]" />
                   FLOTA E PREZANTUAR (ROLLS-ROYCE, BENTLEY, MAYBACH, LIMUZINA)
                 </span>
@@ -298,28 +298,28 @@ export default async function HomePage() {
 
       {/* 5. Section 04: TAXI KEIJSI Showcase */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-br from-[#09111e] via-[#070b12] to-[#04070c] p-6 sm:p-12 lg:p-14 shadow-2xl space-y-10">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-br from-[#09111e] via-[#070b12] to-[#04070c] p-6 sm:p-10 lg:p-12 shadow-2xl space-y-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-center gap-2">
                 <span className="section-badge !bg-amber-500/10 !border-amber-500/30 !text-amber-400">
                   04. SHËRBIM TAKSIE 24/7
                 </span>
-                <span className="text-xs text-yellow-400 font-bold flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 fill-yellow-400" />
+                <span className="text-[11px] text-yellow-400 font-bold flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-yellow-400" />
                   5.0 Google Reviews
                 </span>
               </div>
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-white font-['Outfit']">
+              <h2 className="text-xl sm:text-3xl font-extrabold text-white font-['Outfit']">
                 Taxi <span className="text-[#00b2fe]">Keijsi</span> — Udhëtoni me Siguri & Komoditet
               </h2>
-              <p className="text-xs sm:text-sm text-gray-300 max-w-xl">
+              <p className="text-[11px] sm:text-xs text-gray-300 max-w-xl">
                 Shërbim taksie 24/7 në Tiranë, transferta në Aeroportin e Rinasit (TIA) dhe udhëtime në çdo qytet të Shqipërisë me makina moderne.
               </p>
             </div>
 
             {/* Quick Contact Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-2.5">
               {settings.taxi_phone && (
                 <a
                   href={`tel:${settings.taxi_phone}`}

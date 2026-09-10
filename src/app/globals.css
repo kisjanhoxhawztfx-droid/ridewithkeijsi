@@ -70,6 +70,12 @@ body {
   flex-direction: column;
 }
 
+/* Subtle ultra-clean outer framing border that encloses the viewport without covering any content */
+.page-outer-frame {
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 0 0 2px rgba(0, 0, 0, 0.95);
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

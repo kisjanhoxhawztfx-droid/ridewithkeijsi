@@ -45,17 +45,17 @@ export default function HeroSection({
             </div>
 
             {/* Main Title */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white font-['Outfit'] uppercase leading-[1.15]">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white font-['Outfit'] uppercase leading-[1.2]">
               RIDE WITH{" "}
               <span className="relative inline-block">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00b2fe] via-[#00d2ff] to-[#ffffff] drop-shadow-[0_0_25px_rgba(0,178,254,0.5)]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00b2fe] via-[#00d2ff] to-[#ffffff] drop-shadow-[0_0_20px_rgba(0,178,254,0.45)]">
                   KEIJSI
                 </span>
               </span>
             </h1>
 
             {/* Description */}
-            <p className="text-sm sm:text-base lg:text-lg text-gray-300 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm lg:text-base text-gray-300/90 leading-relaxed font-normal">
               {heroSubtitle}
             </p>
 

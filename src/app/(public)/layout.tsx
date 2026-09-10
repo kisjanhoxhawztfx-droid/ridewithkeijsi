@@ -14,7 +14,7 @@ export default async function PublicLayout({
   ]);
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-[#05070a] text-white overflow-x-hidden">
+    <div className="min-h-screen w-full flex flex-col bg-[#05070a] text-white overflow-x-hidden page-outer-frame">
       <Header socialLinks={socialLinks} />
       <main className="flex-1 w-full pb-16 md:pb-0">{children}</main>
       <Footer
