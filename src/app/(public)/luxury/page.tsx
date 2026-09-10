@@ -27,10 +27,10 @@ export default async function LuxuryPage() {
   const cleanWhatsapp = whatsapp.replace(/[^0-9]/g, "");
 
   return (
-    <div className="pt-1 sm:pt-3 pb-20 sm:pb-28 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-16 sm:space-y-24">
+    <div className="pt-2 sm:pt-4 pb-24 sm:pb-36 w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-20 sm:space-y-32">
       
       {/* 1. HERO SECTION: Luxury Gold Crown Header */}
-      <section className="relative rounded-3xl overflow-hidden border border-[#d4af37]/45 bg-gradient-to-b from-[#161d2e] via-[#0e131e] to-[#05070a] p-8 sm:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.95)]">
+      <section className="relative rounded-3xl overflow-hidden border border-[#d4af37]/40 bg-gradient-to-b from-[#161d2e] via-[#0e131e] to-[#05070a] p-6 sm:p-12 lg:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.95)]">
         {/* Ambient Gold Glows */}
         <div className="absolute -top-28 -left-28 w-80 sm:w-[500px] h-80 sm:h-[500px] bg-[#ffd700]/15 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute top-1/2 right-0 w-72 sm:w-96 h-72 sm:h-96 bg-amber-600/10 rounded-full blur-[100px] pointer-events-none" />

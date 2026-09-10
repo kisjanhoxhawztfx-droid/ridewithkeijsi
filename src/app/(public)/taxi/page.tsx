@@ -35,10 +35,10 @@ export default async function TaxiPage() {
     : "5.0";
 
   return (
-    <div className="pt-1 sm:pt-3 pb-20 sm:pb-28 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-16 sm:space-y-24">
+    <div className="pt-2 sm:pt-4 pb-24 sm:pb-36 w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-20 sm:space-y-32">
       
       {/* 1. HERO SECTION: Taxi Keijsi Header & Direct Call/WhatsApp Booking */}
-      <section className="relative rounded-3xl overflow-hidden border border-[#00b2fe]/35 bg-gradient-to-b from-[#0c1424] via-[#070b14] to-[#04060a] p-8 sm:p-14 shadow-2xl">
+      <section className="relative rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-b from-[#0c1424] via-[#070b14] to-[#04060a] p-6 sm:p-12 lg:p-14 shadow-2xl">
         {/* Background glow accents */}
         <div className="absolute -top-24 -left-24 w-72 sm:w-96 h-72 sm:h-96 bg-[#00b2fe]/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 right-0 w-60 sm:w-80 h-60 sm:h-80 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />

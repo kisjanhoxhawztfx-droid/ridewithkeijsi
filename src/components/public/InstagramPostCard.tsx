@@ -40,8 +40,8 @@ export default function InstagramPostCard({ post, variant = "motorra" }: Instagr
     ? "border-pink-500/30 hover:border-pink-400/60"
     : "border-[#00b2fe]/30 hover:border-[#00b2fe]/60";
 
-  const shortCaption = post.caption.length > 120 ? post.caption.slice(0, 120) + "..." : post.caption;
-  const needsExpand = post.caption.length > 120;
+  const shortCaption = post.caption.length > 100 ? post.caption.slice(0, 100) + "..." : post.caption;
+  const needsExpand = post.caption.length > 100;
 
   return (
     <div
@@ -49,8 +49,8 @@ export default function InstagramPostCard({ post, variant = "motorra" }: Instagr
         isSold ? "opacity-70" : "hover:shadow-xl"
       } ${isMotorra ? "hover:shadow-pink-500/10" : "hover:shadow-[#00b2fe]/10"}`}
     >
-      {/* Media: Video Player or Clickable Thumbnail */}
-      <div className="relative aspect-square overflow-hidden bg-[#060810]">
+      {/* Media: Video Player or Clickable Thumbnail (For You is 4/3 or 16/10 aspect for cleaner compact look) */}
+      <div className={`relative overflow-hidden bg-[#060810] ${!isMotorra ? "aspect-[4/3]" : "aspect-square"}`}>
         {isPlaying && videoSrc ? (
           <div className="w-full h-full relative">
             <video
@@ -137,16 +137,16 @@ export default function InstagramPostCard({ post, variant = "motorra" }: Instagr
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <div className={`space-y-2.5 ${!isMotorra ? "p-3.5 sm:p-4" : "p-4"}`}>
         {/* Caption */}
         <div>
-          <p className="text-xs text-gray-300 leading-relaxed whitespace-pre-line">
+          <p className="text-[11px] sm:text-xs text-gray-300 leading-relaxed whitespace-pre-line">
             {expanded ? post.caption : shortCaption}
           </p>
           {needsExpand && (
             <button
               onClick={() => setExpanded(!expanded)}
-              className="mt-1 text-[10px] text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors"
+              className="mt-1 text-[9px] text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors"
             >
               {expanded ? (
                 <>

@@ -148,7 +148,7 @@ export default async function HomePage() {
                   Shiko të gjitha <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl">
                 {forYouPosts.map((post) => (
                   <InstagramPostCard key={post.id} post={post} variant="foryou" />
                 ))}
