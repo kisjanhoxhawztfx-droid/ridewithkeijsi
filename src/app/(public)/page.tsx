@@ -75,7 +75,7 @@ export default async function HomePage() {
   const cleanLuxuryWhatsapp = luxuryWhatsapp.replace(/[^0-9]/g, "");
 
   return (
-    <div className="space-y-12 sm:space-y-20 pb-16 sm:pb-24 w-full">
+    <div className="space-y-16 sm:space-y-28 lg:space-y-36 pb-20 sm:pb-32 w-full">
       {/* 1. Cinematic Hero Section */}
       <HeroSection
         heroTitle={settings.hero_title}
@@ -91,7 +91,7 @@ export default async function HomePage() {
 
       {/* 2. Section 01: Ride with Keijsi (Episodes) */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="surface-card p-5 sm:p-8 border border-white/10 space-y-6">
+        <div className="surface-card p-6 sm:p-10 lg:p-12 border border-white/10 space-y-8">
           {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-5">
             <div className="space-y-1">
@@ -160,7 +160,7 @@ export default async function HomePage() {
 
       {/* 3. Section 02: Motorra (Marketplace / Instagram) */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="surface-card p-5 sm:p-8 border border-white/10 space-y-6">
+        <div className="surface-card p-6 sm:p-10 lg:p-12 border border-white/10 space-y-8">
           {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-5">
             <div className="space-y-1">
@@ -189,7 +189,7 @@ export default async function HomePage() {
 
           {/* Grid of Motorra Cards from Instagram */}
           {motorraForSale.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
               {motorraForSale.map((post) => (
                 <InstagramPostCard key={post.id} post={post} variant="motorra" />
 
@@ -206,7 +206,7 @@ export default async function HomePage() {
 
       {/* 4. Section 03: 👑 LUXURY SERVICES (NEW) */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#d4af37]/40 bg-gradient-to-br from-[#141b27] via-[#0c1017] to-[#05070a] p-6 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.85)] space-y-8">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#d4af37]/40 bg-gradient-to-br from-[#141b27] via-[#0c1017] to-[#05070a] p-6 sm:p-12 lg:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.85)] space-y-10">
           {/* Ambient Gold Glows */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-[#ffd700]/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -298,7 +298,7 @@ export default async function HomePage() {
 
       {/* 5. Section 04: TAXI KEIJSI Showcase */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-br from-[#09111e] via-[#070b12] to-[#04070c] p-6 sm:p-10 shadow-2xl space-y-8">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-br from-[#09111e] via-[#070b12] to-[#04070c] p-6 sm:p-12 lg:p-14 shadow-2xl space-y-10">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">

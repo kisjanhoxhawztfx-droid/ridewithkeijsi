@@ -25,6 +25,12 @@ export const metadata: Metadata = {
   },
   description:
     "Shikoni të gjitha episodet e plota të Ride with Keijsi, motorrat më të fundit në shitje nga Instagrami, dhe të rejat më të nxehta të motorsportit shqiptar.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Ride with Keijsi",
+  },
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",
