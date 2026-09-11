@@ -27,6 +27,35 @@ interface ForYouGridProps {
 export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/episodes?tab=foryou" }: ForYouGridProps) {
   const [selectedPost, setSelectedPost] = useState<ForYouPostItem | null>(null);
   const [captionExpanded, setCaptionExpanded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const [activeMediaUrl, setActiveMediaUrl] = useState<string | null>(null);
+  const [isLoadingVideo, setIsLoadingVideo] = useState(false);
+
+  const handleSelectPost = (post: ForYouPostItem) => {
+    setSelectedPost(post);
+    setCaptionExpanded(false);
+    setVideoError(false);
+    setActiveMediaUrl(post.mediaUrl);
+  };
+
+  const handleVideoError = async () => {
+    if (!selectedPost || isLoadingVideo) return;
+    setIsLoadingVideo(true);
+    try {
+      const res = await fetch(`/api/foryou/refresh-video?id=${selectedPost.id}`);
+      const data = await res.json();
+      if (data.success && data.mediaUrl) {
+        setActiveMediaUrl(data.mediaUrl);
+        setVideoError(false);
+        setIsLoadingVideo(false);
+        return;
+      }
+    } catch {
+      // ignore
+    }
+    setVideoError(true);
+    setIsLoadingVideo(false);
+  };
 
   if (!posts || posts.length === 0) return null;
 
@@ -39,10 +68,7 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
           return (
             <div
               key={post.id}
-              onClick={() => {
-                setSelectedPost(post);
-                setCaptionExpanded(false);
-              }}
+              onClick={() => handleSelectPost(post)}
               className="group relative aspect-[9/13] rounded-xl overflow-hidden bg-[#0a0f18] border border-white/10 hover:border-[#00b2fe] cursor-pointer shadow-md hover:shadow-[0_0_20px_rgba(0,178,254,0.35)] transition-all duration-300 active:scale-95"
             >
               {thumb ? (
@@ -114,16 +140,30 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
               </button>
             </div>
 
-            {/* Media Player or Large Photo */}
-            <div className="relative aspect-[9/14] sm:aspect-square w-full bg-black overflow-hidden flex-shrink-0">
-              {selectedPost.mediaType === "VIDEO" && selectedPost.mediaUrl ? (
-                <video
-                  src={selectedPost.mediaUrl}
-                  controls
-                  autoPlay
-                  playsInline
-                  className="w-full h-full object-contain"
-                />
+            {/* Media Player, Instagram Embed, or Large Photo */}
+            <div className="relative aspect-[9/14] sm:aspect-square w-full bg-black overflow-hidden flex-shrink-0 flex items-center justify-center">
+              {selectedPost.mediaType === "VIDEO" ? (
+                !videoError && activeMediaUrl ? (
+                  <video
+                    key={activeMediaUrl}
+                    src={activeMediaUrl}
+                    controls
+                    autoPlay
+                    playsInline
+                    onError={handleVideoError}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <div className="w-full h-full relative flex items-center justify-center bg-black">
+                    <iframe
+                      src={`${selectedPost.permalink.replace(/\/$/, "")}/embed/`}
+                      className="w-full h-full border-0"
+                      scrolling="no"
+                      allowTransparency
+                      allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                    />
+                  </div>
+                )
               ) : selectedPost.thumbnailUrl || selectedPost.mediaUrl ? (
                 <Image
                   src={selectedPost.thumbnailUrl || selectedPost.mediaUrl || ""}

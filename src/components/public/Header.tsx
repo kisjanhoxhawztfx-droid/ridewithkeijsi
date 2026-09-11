@@ -150,17 +150,29 @@ export default function Header({ socialLinks = [] }: HeaderProps) {
 
           {/* RIGHT: Official Social Channels */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Mobile single Instagram icon (clean, sleek, fits within 390px) */}
-            <a
-              href="https://instagram.com/ridewithkeijsi"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram @ridewithkeijsi"
-              className="sm:hidden p-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-[#00b2fe] active:scale-95 transition-all flex items-center justify-center min-w-[38px] min-h-[38px] shadow-sm"
-              title="Instagram @ridewithkeijsi"
-            >
-              <InstagramIcon className="w-4 h-4" />
-            </a>
+            {/* Mobile YouTube & Instagram icons (clean, sleek, fits within 390px) */}
+            <div className="flex sm:hidden items-center gap-1.5">
+              <a
+                href="https://youtube.com/@RideWithkeijsi"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube @RideWithkeijsi"
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-red-500 active:scale-95 transition-all flex items-center justify-center min-w-[38px] min-h-[38px] shadow-sm"
+                title="YouTube @RideWithkeijsi"
+              >
+                <YouTubeIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="https://instagram.com/ridewithkeijsi"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram @ridewithkeijsi"
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-[#00b2fe] active:scale-95 transition-all flex items-center justify-center min-w-[38px] min-h-[38px] shadow-sm"
+                title="Instagram @ridewithkeijsi"
+              >
+                <InstagramIcon className="w-4 h-4" />
+              </a>
+            </div>
 
             {/* Desktop Socials Pill */}
             <div className="hidden sm:flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/20 rounded-full px-3 py-1.5 shadow-md transition-all">
