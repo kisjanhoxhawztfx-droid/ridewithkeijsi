@@ -10,7 +10,7 @@ import LuxuryCard from "@/components/public/LuxuryCard";
 import InstagramPostCard from "@/components/public/InstagramPostCard";
 import ForYouGrid from "@/components/public/ForYouGrid";
 import { ChevronRight, Sparkles, Tv, Bike, Users, Phone, Star, Car, Shield, Heart } from "lucide-react";
-import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, WhatsAppIcon, GoogleIcon, CrownIcon } from "@/components/ui/Icons";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, WhatsAppIcon, GoogleIcon, CrownIcon, TaxiIcon } from "@/components/ui/Icons";
 
 export const revalidate = 60;
 
@@ -91,13 +91,13 @@ export default async function HomePage() {
       />
 
       {/* Section Transition Divider */}
-      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-1 sm:py-2">
-        <div className="relative flex items-center justify-center">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#00b2fe]/40 to-transparent" />
-          <span className="absolute px-3 py-1 rounded-full bg-[#080d16] border border-[#00b2fe]/40 text-[9px] sm:text-[10px] font-black tracking-widest text-[#00b2fe] uppercase shadow-[0_0_15px_rgba(0,178,254,0.25)]">
-            ✦ 01. EMISIONI &amp; VIDEOT
-          </span>
+      <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#00b2fe]/35 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#080d16] border border-[#00b2fe]/40 text-[10px] sm:text-xs font-black tracking-widest text-[#00b2fe] uppercase shadow-[0_0_15px_rgba(0,178,254,0.2)] flex items-center gap-1.5 whitespace-nowrap">
+          <Sparkles className="w-3.5 h-3.5 text-[#00b2fe]" />
+          <span>01. EMISIONI &amp; VIDEOT</span>
         </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-[#00b2fe]/35 via-transparent to-transparent" />
       </div>
 
       {/* 2. Section 01: Ride with Keijsi (Episodes) */}
@@ -106,9 +106,6 @@ export default async function HomePage() {
           {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3.5 border-b border-white/10 pb-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="section-badge">01. EMISIONI ZYRTAR</span>
-              </div>
               <h2 className="text-base sm:text-xl lg:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
                 <Tv className="w-4 h-4 text-[#00b2fe]" />
                 <span>Episodet më të Fundit</span>
@@ -168,13 +165,13 @@ export default async function HomePage() {
       </section>
 
       {/* Section Transition Divider */}
-      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-2 sm:py-3">
-        <div className="relative flex items-center justify-center">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#00b2fe]/40 to-transparent" />
-          <span className="absolute px-3 py-1 rounded-full bg-[#080d16] border border-[#00b2fe]/40 text-[9px] sm:text-[10px] font-black tracking-widest text-[#00b2fe] uppercase shadow-[0_0_15px_rgba(0,178,254,0.25)]">
-            ✦ 02. MARKETPLACE &amp; MOTORRA
-          </span>
+      <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#00b2fe]/35 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#080d16] border border-[#00b2fe]/40 text-[10px] sm:text-xs font-black tracking-widest text-[#00b2fe] uppercase shadow-[0_0_15px_rgba(0,178,254,0.2)] flex items-center gap-1.5 whitespace-nowrap">
+          <Bike className="w-3.5 h-3.5 text-[#00b2fe]" />
+          <span>02. MARKETPLACE &amp; MOTORRA</span>
         </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-[#00b2fe]/35 via-transparent to-transparent" />
       </div>
 
       {/* 3. Section 02: Motorra (Marketplace / Instagram) */}
@@ -183,11 +180,6 @@ export default async function HomePage() {
           {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3.5 border-b border-white/10 pb-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="section-badge !bg-[#00b2fe]/10 !border-[#00b2fe]/30 !text-[#00b2fe]">
-                  02. MARKETPLACE
-                </span>
-              </div>
               <h2 className="text-base sm:text-xl lg:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
                 <Bike className="w-4 h-4 text-[#00b2fe]" />
                 <span>Motorra në Shitje</span>
@@ -224,13 +216,13 @@ export default async function HomePage() {
       </section>
 
       {/* Section Transition Divider */}
-      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-2 sm:py-3">
-        <div className="relative flex items-center justify-center">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#ffd700]/50 to-transparent" />
-          <span className="absolute px-3 py-1 rounded-full bg-[#0c111c] border border-[#ffd700]/50 text-[9px] sm:text-[10px] font-black tracking-widest text-[#ffd700] uppercase shadow-[0_0_20px_rgba(255,215,0,0.35)]">
-            👑 03. SHËRBIME ME QIRA VIP
-          </span>
+      <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#ffd700]/35 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#0c111c] border border-[#ffd700]/40 text-[10px] sm:text-xs font-black tracking-widest text-[#ffd700] uppercase shadow-[0_0_20px_rgba(255,215,0,0.25)] flex items-center gap-1.5 whitespace-nowrap">
+          <CrownIcon className="w-3.5 h-3.5 text-[#ffd700]" />
+          <span>03. SHËRBIME ME QIRA VIP</span>
         </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-[#ffd700]/35 via-transparent to-transparent" />
       </div>
 
       {/* 4. Section 03: 👑 LUXURY SERVICES (NEW) */}
@@ -243,10 +235,6 @@ export default async function HomePage() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-[#ffd700]/40 text-[10px] sm:text-[11px] font-black text-[#ffd700] uppercase tracking-wider">
-                  <CrownIcon className="w-3.5 h-3.5 text-[#ffd700] fill-[#ffd700]" />
-                  03. SHËRBIME ME QIRA VIP
-                </span>
                 <span className="text-[11px] sm:text-xs text-[#ffd700] font-bold flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-[#ffd700]" />
                   24/7 me Shofer Personal
@@ -326,13 +314,13 @@ export default async function HomePage() {
       </section>
 
       {/* Section Transition Divider */}
-      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-2 sm:py-3">
-        <div className="relative flex items-center justify-center">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-amber-400/50 to-transparent" />
-          <span className="absolute px-3 py-1 rounded-full bg-[#0c121e] border border-amber-400/50 text-[9px] sm:text-[10px] font-black tracking-widest text-amber-400 uppercase shadow-[0_0_20px_rgba(245,158,11,0.35)]">
-            🚖 04. SHËRBIM TAKSIE 24/7
-          </span>
+      <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-400/35 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#0c121e] border border-amber-400/40 text-[10px] sm:text-xs font-black tracking-widest text-amber-400 uppercase shadow-[0_0_20px_rgba(245,158,11,0.25)] flex items-center gap-1.5 whitespace-nowrap">
+          <TaxiIcon className="w-3.5 h-3.5 text-amber-400" />
+          <span>04. SHËRBIM TAKSIE 24/7</span>
         </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-amber-400/35 via-transparent to-transparent" />
       </div>
 
       {/* 5. Section 04: TAXI KEIJSI Showcase */}
@@ -341,9 +329,6 @@ export default async function HomePage() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="section-badge !bg-amber-500/10 !border-amber-500/30 !text-amber-400">
-                  04. SHËRBIM TAKSIE 24/7
-                </span>
                 <span className="text-[11px] text-yellow-400 font-bold flex items-center gap-1">
                   <Star className="w-3 h-3 fill-yellow-400" />
                   5.0 Google Reviews
@@ -357,12 +342,12 @@ export default async function HomePage() {
               </p>
             </div>
 
-            {/* Quick Contact Buttons */}
+            {/* Quick Contact Buttons (Taxi yellow and emerald WhatsApp) */}
             <div className="flex flex-col sm:flex-row gap-2">
               {settings.taxi_phone && (
                 <a
                   href={`tel:${settings.taxi_phone}`}
-                  className="btn-primary !from-amber-400 !to-yellow-500 hover:!from-amber-300 hover:!to-yellow-400 !text-black text-xs font-bold !py-2.5 !px-4 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(245,158,11,0.35)]"
+                  className="inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-black text-xs bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-[0_4px_16px_rgba(245,158,11,0.3)] hover:from-amber-300 hover:to-yellow-300 transition-all"
                 >
                   <Phone className="w-3.5 h-3.5 fill-black text-black" />
                   <span>{settings.taxi_phone}</span>
@@ -374,7 +359,7 @@ export default async function HomePage() {
                   href={`https://wa.me/${cleanTaxiWhatsapp}?text=${encodeURIComponent("Përshëndetje Taxi Keijsi, dëshiroj të porosis një taksi.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-primary !from-green-600 !to-emerald-700 hover:!from-green-500 hover:!to-emerald-600 text-xs font-bold !py-2.5 !px-4 flex items-center justify-center gap-2"
+                  className="inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_4px_16px_rgba(16,185,129,0.3)] hover:from-emerald-400 hover:to-green-500 transition-all"
                 >
                   <WhatsAppIcon className="w-3.5 h-3.5" />
                   <span>WhatsApp</span>
@@ -414,13 +399,13 @@ export default async function HomePage() {
       </section>
 
       {/* Section Transition Divider */}
-      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-2 sm:py-3">
-        <div className="relative flex items-center justify-center">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#00b2fe]/40 to-transparent" />
-          <span className="absolute px-3 py-1 rounded-full bg-[#080d17] border border-white/25 text-[9px] sm:text-[10px] font-black tracking-widest text-gray-200 uppercase shadow-md">
-            ✦ 05. KOMUNITETI &amp; SOCIAL
-          </span>
+      <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#00b2fe]/35 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#080d17] border border-white/20 text-[10px] sm:text-xs font-black tracking-widest text-gray-200 uppercase shadow-md flex items-center gap-1.5 whitespace-nowrap">
+          <Sparkles className="w-3 h-3 text-[#00b2fe]" />
+          <span>05. KOMUNITETI &amp; SOCIAL</span>
         </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-[#00b2fe]/35 via-transparent to-transparent" />
       </div>
 
       {/* 6. Section 05: Community & Social Channels */}
@@ -430,9 +415,6 @@ export default async function HomePage() {
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-center">
             <div className="lg:col-span-8 space-y-2 sm:space-y-2.5">
-              <div className="flex items-center gap-2">
-                <span className="section-badge">05. KOMUNITETI</span>
-              </div>
               <h2 className="text-base sm:text-xl lg:text-2xl font-extrabold text-white font-['Outfit'] leading-tight">
                 Bashkohuni me Komunitetin e <span className="text-[#00b2fe]">Ride with Keijsi</span>
               </h2>

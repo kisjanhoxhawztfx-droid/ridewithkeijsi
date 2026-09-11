@@ -27,7 +27,7 @@ export default function HeroSection({
   totalMotorcycles = 4,
 }: HeroSectionProps) {
   return (
-    <section className="relative pt-1 sm:pt-3 pb-16 sm:pb-24 overflow-hidden w-full">
+    <section className="relative pt-1 sm:pt-3 pb-6 sm:pb-12 overflow-hidden w-full">
       {/* Background ambient lighting and subtle radial glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[320px] sm:w-[600px] lg:w-[800px] h-[300px] sm:h-[400px] bg-[#00b2fe]/10 blur-[100px] sm:blur-[140px] rounded-full pointer-events-none" />
       <div className="absolute top-10 right-5 w-[200px] sm:w-[400px] h-[200px] sm:h-[300px] bg-[#00d2ff]/5 blur-[80px] sm:blur-[100px] rounded-full pointer-events-none" />
@@ -59,46 +59,46 @@ export default function HeroSection({
               {heroSubtitle}
             </p>
 
-            {/* Action Buttons */}
-            <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5">
+            {/* Action Buttons: 2 columns on mobile, flex on desktop */}
+            <div className="pt-1 grid grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3.5 w-full">
               <Link
                 href={featuredEpisode ? `/episodes/${featuredEpisode.slug}` : ctaLink}
-                className="btn-primary group !py-2.5 sm:!py-3 !px-5 sm:!px-7 text-xs sm:text-sm font-bold shadow-[0_0_25px_rgba(0,178,254,0.4)] w-full sm:w-auto text-center"
+                className="btn-primary group !py-2.5 sm:!py-3 !px-3 sm:!px-7 text-xs sm:text-sm font-bold shadow-[0_0_25px_rgba(0,178,254,0.4)] w-full sm:w-auto text-center justify-center"
               >
                 <Play className="w-3.5 h-3.5 fill-current group-hover:scale-110 transition-transform flex-shrink-0" />
-                <span>{ctaText}</span>
+                <span className="truncate">{ctaText}</span>
               </Link>
 
               <Link
                 href={secondaryCtaLink}
-                className="btn-secondary !py-2.5 sm:!py-3 !px-4 sm:!px-6 text-xs sm:text-sm font-bold group w-full sm:w-auto text-center justify-center"
+                className="btn-secondary !py-2.5 sm:!py-3 !px-3 sm:!px-6 text-xs sm:text-sm font-bold group w-full sm:w-auto text-center justify-center"
               >
-                <span>{secondaryCtaText}</span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-[#00b2fe]" />
+                <span className="truncate">{secondaryCtaText}</span>
+                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-[#00b2fe] flex-shrink-0" />
               </Link>
             </div>
 
             {/* Stats Row */}
-            <div className="pt-4 sm:pt-5 grid grid-cols-3 gap-2.5 sm:gap-4 border-t border-white/10 max-w-lg">
-              <div className="p-2 sm:p-0 rounded-xl sm:rounded-none bg-white/[0.02] sm:bg-transparent">
-                <div className="text-lg sm:text-2xl font-extrabold text-white font-['Outfit']">
+            <div className="pt-3 sm:pt-4 grid grid-cols-3 gap-1.5 sm:gap-4 border-t border-white/10 max-w-lg text-center">
+              <div className="p-1.5 sm:p-0 rounded-xl bg-white/[0.02] sm:bg-transparent">
+                <div className="text-base sm:text-2xl font-extrabold text-white font-['Outfit']">
                   {totalEpisodes}+
                 </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Episode YouTube</div>
+                <div className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Episode</div>
               </div>
 
-              <div className="p-2 sm:p-0 rounded-xl sm:rounded-none bg-white/[0.02] sm:bg-transparent">
-                <div className="text-lg sm:text-2xl font-extrabold text-[#00b2fe] font-['Outfit']">
+              <div className="p-1.5 sm:p-0 rounded-xl bg-white/[0.02] sm:bg-transparent">
+                <div className="text-base sm:text-2xl font-extrabold text-[#00b2fe] font-['Outfit']">
                   {totalMotorcycles}+
                 </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Motorra në Shitje</div>
+                <div className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Motorra</div>
               </div>
 
-              <div className="p-2 sm:p-0 rounded-xl sm:rounded-none bg-white/[0.02] sm:bg-transparent">
-                <div className="text-lg sm:text-2xl font-extrabold text-white font-['Outfit']">
+              <div className="p-1.5 sm:p-0 rounded-xl bg-white/[0.02] sm:bg-transparent">
+                <div className="text-base sm:text-2xl font-extrabold text-white font-['Outfit']">
                   100%
                 </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Pasion & Motorsport</div>
+                <div className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Pasion</div>
               </div>
             </div>
           </div>

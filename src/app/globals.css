@@ -39,12 +39,10 @@
     --radius-xl: 24px;
     --radius-full: 9999px;
   }
-}
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  *, ::before, ::after {
+    box-sizing: border-box;
+  }
 }
 
 html {
