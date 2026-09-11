@@ -91,21 +91,21 @@ export default async function EpisodesPage({ searchParams }: EpisodesPageProps) 
       </section>
 
       {/* 2. Butonat: Episodet / For You */}
-      <div className="flex flex-wrap items-center gap-3.5 sm:gap-5">
+      <div className="flex flex-wrap items-center gap-2.5 sm:gap-3.5">
         <Link
           href="/episodes"
-          className={`group relative flex items-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl text-sm sm:text-base font-extrabold transition-all duration-300 shadow-md active:scale-95 ${
+          className={`group relative flex items-center gap-2 px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 shadow-md active:scale-95 ${
             activeTab !== "foryou"
-              ? "bg-[#00b2fe] text-black shadow-[0_0_24px_rgba(0,178,254,0.4)] border border-[#00d2ff]"
+              ? "bg-[#00b2fe] text-black shadow-[0_0_20px_rgba(0,178,254,0.35)] border border-[#00d2ff]"
               : "bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 hover:text-white border border-white/10 hover:border-white/25"
           }`}
         >
-          <Tv className={`w-5 h-5 transition-transform group-hover:scale-110 ${
+          <Tv className={`w-4 h-4 transition-transform group-hover:scale-110 ${
             activeTab !== "foryou" ? "text-black stroke-[2.5]" : "text-[#00b2fe]"
           }`} />
           <span>Episodet YouTube</span>
           <span
-            className={`px-2.5 py-0.5 rounded-full text-xs font-black transition-colors ${
+            className={`px-2 py-0.5 rounded-full text-[11px] font-black transition-colors ${
               activeTab !== "foryou"
                 ? "bg-black/20 text-black"
                 : "bg-white/10 text-gray-300 group-hover:bg-white/20"
@@ -117,18 +117,18 @@ export default async function EpisodesPage({ searchParams }: EpisodesPageProps) 
 
         <Link
           href="/episodes?tab=foryou"
-          className={`group relative flex items-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl text-sm sm:text-base font-extrabold transition-all duration-300 shadow-md active:scale-95 ${
+          className={`group relative flex items-center gap-2 px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 shadow-md active:scale-95 ${
             activeTab === "foryou"
-              ? "bg-gradient-to-r from-[#00b2fe] to-[#0077b6] text-black shadow-[0_0_24px_rgba(0,178,254,0.45)] border border-[#00b2fe]"
+              ? "bg-gradient-to-r from-[#00b2fe] to-[#0077b6] text-black shadow-[0_0_20px_rgba(0,178,254,0.35)] border border-[#00b2fe]"
               : "bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 hover:text-white border border-white/10 hover:border-[#00b2fe]/40"
           }`}
         >
-          <Heart className={`w-5 h-5 transition-transform group-hover:scale-110 ${
+          <Heart className={`w-4 h-4 transition-transform group-hover:scale-110 ${
             activeTab === "foryou" ? "fill-black text-black" : "text-[#00b2fe] fill-[#00b2fe]/20"
           }`} />
           <span>For You</span>
           <span
-            className={`px-2.5 py-0.5 rounded-full text-xs font-black transition-colors ${
+            className={`px-2 py-0.5 rounded-full text-[11px] font-black transition-colors ${
               activeTab === "foryou"
                 ? "bg-black/25 text-black"
                 : "bg-white/10 text-gray-300 group-hover:bg-white/20"
