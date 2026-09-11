@@ -64,42 +64,42 @@ export default async function LuxuryPage() {
             </p>
 
             {/* Direct Contact Buttons (Phone Call + WhatsApp Booking) */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              {/* Call Now Button */}
+            <div className="pt-1 grid grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full">
+              {/* Call Now Button (Gold, NO .btn-primary) */}
               <a
                 href={`tel:${phone}`}
-                className="btn-primary !from-[#ffd700] !to-[#b8860b] hover:!from-[#ffe033] hover:!to-[#d4af37] !text-black text-xs sm:text-sm font-black !py-3 !px-6 shadow-[0_0_30px_rgba(255,215,0,0.45)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[46px] hover:scale-105 transition-all"
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-3 sm:px-6 rounded-xl font-black text-xs sm:text-sm bg-gradient-to-r from-[#ffd700] via-[#ffe066] to-[#d4af37] text-black shadow-[0_4px_20px_rgba(255,215,0,0.35)] hover:from-[#ffe033] hover:to-[#d4af37] transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
               >
-                <Phone className="w-3.5 h-3.5 fill-black text-black flex-shrink-0 animate-bounce" />
-                <span>Telefono Tani: {phone}</span>
+                <Phone className="w-3.5 h-3.5 fill-black text-black flex-shrink-0" />
+                <span className="truncate">Telefono Tani</span>
               </a>
 
-              {/* WhatsApp Fast Booking Button */}
+              {/* WhatsApp Fast Booking Button (Emerald, NO .btn-primary) */}
               <a
                 href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent("Përshëndetje Luxury Services, dëshiroj të kërkoj informacion dhe rezervim për makinat luksoze.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary !from-green-600 !to-emerald-700 hover:!from-green-500 hover:!to-emerald-600 text-xs sm:text-sm font-extrabold !py-3 !px-6 shadow-[0_0_25px_rgba(34,197,94,0.4)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[46px]"
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-3 sm:px-6 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 text-white shadow-[0_4px_20px_rgba(16,185,129,0.35)] hover:from-emerald-400 hover:to-green-400 transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
               >
                 <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
-                <span>Porosit në WhatsApp</span>
+                <span className="truncate">WhatsApp</span>
               </a>
             </div>
 
-            {/* Feature Badges */}
-            <div className="pt-3 flex flex-wrap items-center gap-2.5 text-[11px] text-gray-400">
-              <span className="flex items-center gap-1.5 bg-white/5 border border-[#ffd700]/35 px-3 py-1 rounded-full text-gray-300 font-medium">
-                <CrownIcon className="w-3 h-3 text-[#ffd700]" />
-                Flotë Premium e Zgjedhur
-              </span>
-              <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-300 font-medium">
-                <Shield className="w-3 h-3 text-green-400" />
-                Shofer Personal me Kostum
-              </span>
-              <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-300 font-medium">
-                <Sparkles className="w-3 h-3 text-amber-400" />
-                Konfidencialitet Absolut
-              </span>
+            {/* Symmetrical 3-column micro feature tags */}
+            <div className="pt-1.5 grid grid-cols-3 gap-1.5 sm:gap-2.5 w-full">
+              <div className="flex items-center justify-center gap-1.5 bg-white/[0.04] border border-[#ffd700]/30 py-1.5 px-2 rounded-xl text-[10px] sm:text-[11px] text-gray-300 font-semibold text-center">
+                <CrownIcon className="w-3 h-3 text-[#ffd700] flex-shrink-0" />
+                <span className="truncate">Flotë VIP</span>
+              </div>
+              <div className="flex items-center justify-center gap-1.5 bg-white/[0.04] border border-white/10 py-1.5 px-2 rounded-xl text-[10px] sm:text-[11px] text-gray-300 font-semibold text-center">
+                <Shield className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                <span className="truncate">Shofer Personal</span>
+              </div>
+              <div className="flex items-center justify-center gap-1.5 bg-white/[0.04] border border-white/10 py-1.5 px-2 rounded-xl text-[10px] sm:text-[11px] text-gray-300 font-semibold text-center">
+                <Sparkles className="w-3 h-3 text-amber-400 flex-shrink-0" />
+                <span className="truncate">Konfidencial</span>
+              </div>
             </div>
           </div>
 
@@ -192,18 +192,20 @@ export default async function LuxuryPage() {
         </div>
       </section>
 
-      {/* Visual Divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#ffd700]/30 to-transparent" />
+      {/* Glowing Pill Transition Divider */}
+      <div className="flex items-center justify-center my-6 sm:my-10">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#ffd700]/35 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#ffd700]/10 border border-[#ffd700]/35 text-[10px] sm:text-xs font-black tracking-widest text-[#ffd700] uppercase shadow-[0_0_15px_rgba(255,215,0,0.2)] flex items-center gap-1.5">
+          <CrownIcon className="w-3.5 h-3.5 text-[#ffd700]" />
+          <span>01. FLOTA LUKSOZE</span>
+        </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-[#ffd700]/35 via-transparent to-transparent" />
+      </div>
 
       {/* 2. FLEET SHOWCASE: Luxury Cars Grid */}
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="section-badge !bg-amber-500/10 !border-[#ffd700]/40 !text-[#ffd700]">
-                👑 FLOTA LUKSOZE
-              </span>
-            </div>
             <h2 className="text-lg sm:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
               <CrownIcon className="w-5 h-5 text-[#ffd700]" />
               <span>Zgjidhni Makinën Tuaj të Preferuar</span>
@@ -235,8 +237,15 @@ export default async function LuxuryPage() {
         </div>
       </section>
 
-      {/* Visual Divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-amber-400/25 to-transparent" />
+      {/* Glowing Pill Transition Divider */}
+      <div className="flex items-center justify-center my-6 sm:my-10">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#ffd700]/35 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#ffd700]/10 border border-[#ffd700]/35 text-[10px] sm:text-xs font-black tracking-widest text-[#ffd700] uppercase shadow-[0_0_15px_rgba(255,215,0,0.2)] flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-[#ffd700]" />
+          <span>02. SHËRBIME VIP TË DEDIKUARA</span>
+        </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-[#ffd700]/35 via-transparent to-transparent" />
+      </div>
 
       {/* 3. VIP SPECIALIZED SERVICES (REFINED & SPACIOUS) */}
       <section className="surface-card p-5 sm:p-8 lg:p-10 border border-[#ffd700]/25 space-y-6 bg-gradient-to-br from-[#0c111a] via-[#070a10] to-[#040609] rounded-2xl sm:rounded-3xl">

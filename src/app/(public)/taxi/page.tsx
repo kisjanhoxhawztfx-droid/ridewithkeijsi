@@ -35,179 +35,176 @@ export default async function TaxiPage() {
     : "5.0";
 
   return (
-    <div className="pt-2 sm:pt-4 pb-24 sm:pb-36 w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-10 sm:space-y-14">
+    <div className="pt-2 sm:pt-4 pb-28 sm:pb-36 w-full max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 space-y-6 sm:space-y-10">
       
-      {/* 1. HERO SECTION: Taxi Keijsi Header & Direct Call/WhatsApp Booking */}
-      <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-amber-400/30 bg-gradient-to-b from-[#0e1624] via-[#090f18] to-[#04060a] p-5 sm:p-10 lg:p-12 shadow-2xl">
-        {/* Background glow accents - subtle taxi yellow & cyan mix */}
-        <div className="absolute -top-24 -left-24 w-72 sm:w-96 h-72 sm:h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 right-0 w-60 sm:w-80 h-60 sm:h-80 bg-[#00b2fe]/10 rounded-full blur-3xl pointer-events-none" />
+      {/* 1. HERO SECTION: Taxi Keijsi Header & Compact CTA */}
+      <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-amber-400/30 bg-gradient-to-b from-[#111827] via-[#0b101b] to-[#04060b] p-4 sm:p-8 lg:p-10 shadow-2xl">
+        {/* Subtle background glow accents */}
+        <div className="absolute -top-24 -left-24 w-72 sm:w-96 h-72 sm:h-96 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 right-0 w-60 sm:w-80 h-60 sm:h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
-          {/* Left Column: Headlines & Call/WhatsApp CTA */}
-          <div className="lg:col-span-7 space-y-5 text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/15 border border-amber-400/40 text-[11px] font-black text-amber-400 tracking-wider uppercase backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-              <span>SHËRBIM TAKSIE 24/7</span>
-              <span className="text-amber-500/50">•</span>
-              <span className="text-gray-200">TIRANË & SHQIPËRI</span>
-            </div>
-
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white font-['Outfit'] uppercase leading-tight tracking-wide">
-              TAXI <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-[#00b2fe] drop-shadow-[0_0_25px_rgba(245,158,11,0.5)]">KEIJSI</span>
-            </h1>
-
-            <p className="text-xs sm:text-sm lg:text-base text-gray-300 leading-relaxed font-normal max-w-xl">
-              {settings.taxi_description || "Shërbim taksie i shpejtë, komod dhe profesional në Tiranë dhe në të gjithë Shqipërinë. Transferta aeroporti, udhëtime turistike dhe shërbim VIP 24 orë në 7 ditë të javës."}
-            </p>
-
-            {/* Direct Contact Buttons (Phone Call + WhatsApp Booking) */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              {/* Call Now Button with subtle taxi yellow styling */}
-              {settings.taxi_phone && (
-                <a
-                  href={`tel:${settings.taxi_phone}`}
-                  className="btn-primary !from-amber-400 !to-yellow-500 hover:!from-amber-300 hover:!to-yellow-400 !text-black text-xs sm:text-sm font-black !py-3 !px-6 shadow-[0_0_25px_rgba(245,158,11,0.45)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[44px] hover:scale-105 transition-all"
-                >
-                  <Phone className="w-3.5 h-3.5 fill-black flex-shrink-0 animate-bounce" />
-                  <span>Telefono Tani: {settings.taxi_phone}</span>
-                </a>
-              )}
-
-              {/* WhatsApp Fast Booking Button */}
-              {settings.taxi_whatsapp && (
-                <a
-                  href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent("Përshëndetje Taxi Keijsi, dëshiroj të porosis një taksi.")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary !from-green-600 !to-emerald-700 hover:!from-green-500 hover:!to-emerald-600 text-xs sm:text-sm font-extrabold !py-3 !px-6 shadow-[0_0_25px_rgba(34,197,94,0.4)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[44px]"
-                >
-                  <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
-                  <span>Porosit në WhatsApp</span>
-                </a>
-              )}
-            </div>
-
-            {/* Micro Feature Tags */}
-            <div className="pt-2 flex flex-wrap items-center gap-2 text-[10px] sm:text-[11px] text-gray-400">
-              <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-300 font-medium">
-                <Clock className="w-3 h-3 text-[#00b2fe]" />
-                Shërbim 24/7 Pa Ndërprerje
-              </span>
-              <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-300 font-medium">
-                <ShieldCheck className="w-3 h-3 text-green-400" />
-                Udhëtim i Sigurt & Korrekt
-              </span>
-              <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-300 font-medium">
-                <GoogleIcon className="w-3 h-3" />
-                {averageRating} ★ Google Reviews
-              </span>
-            </div>
+        <div className="relative z-10 space-y-3.5 sm:space-y-5 text-left max-w-2xl">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/40 text-[10px] sm:text-[11px] font-black text-amber-400 tracking-wider uppercase backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span>SHËRBIM TAKSIE 24/7</span>
+            <span className="text-amber-500/50">•</span>
+            <span className="text-gray-200">TIRANË & SHQIPËRI</span>
           </div>
 
-          {/* Right Column: Visual Feature Showcase */}
-          <div className="lg:col-span-5">
-            <div className="relative rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-amber-400/25 shadow-[0_0_40px_rgba(245,158,11,0.1)] bg-gradient-to-b from-[#0e1728]/95 via-[#070c18]/95 to-[#04060b]/95 backdrop-blur-xl space-y-3">
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-xl bg-amber-400/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                    <Car className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider font-['Outfit']">
-                    Pse të Zgjidhni Taxi Keijsi?
-                  </h3>
-                </div>
-                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-400 border border-amber-400/30 uppercase tracking-wider">
-                  24/7 VIP
-                </span>
-              </div>
+          {/* Title */}
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white font-['Outfit'] uppercase leading-tight tracking-tight">
+            TAXI{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 drop-shadow-[0_0_25px_rgba(245,158,11,0.55)]">
+              KEIJSI
+            </span>
+          </h1>
 
-              <div className="space-y-2.5">
-                {/* Feature 1: Airport */}
-                <div className="group relative p-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-amber-400/60 hover:bg-amber-400/[0.06] transition-all duration-300 shadow-md">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-amber-400/30 to-amber-400/10 border border-amber-400/40 flex items-center justify-center text-amber-400 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
-                      <Plane className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-amber-400 transition-colors">
-                          Transferta në Aeroport (TIA)
-                        </strong>
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-400/20 text-amber-400 border border-amber-400/30 uppercase whitespace-nowrap">
-                          Tarifë Fikse
-                        </span>
-                      </div>
-                      <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed mt-0.5">
-                        Nisje dhe pritje në kohë me tabelë në Aeroportin e Rinasit me çmim fiks e transparent.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+          {/* Description */}
+          <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
+            {settings.taxi_description || "Shërbim taksie i shpejtë, komod dhe profesional në Tiranë dhe në të gjithë Shqipërinë. Transferta aeroporti, udhëtime turistike dhe shërbim VIP 24 orë në 7 ditë të javës."}
+          </p>
 
-                {/* Feature 2: Intercity */}
-                <div className="group relative p-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-green-500/60 hover:bg-green-500/[0.06] transition-all duration-300 shadow-md">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-green-500/30 to-green-500/10 border border-green-500/40 flex items-center justify-center text-green-400 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
-                      <MapPin className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-green-400 transition-colors">
-                          Udhëtime Ndërqytetase
-                        </strong>
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-green-500/20 text-green-400 border border-green-500/30 uppercase whitespace-nowrap">
-                          Gjithë Shqipëria
-                        </span>
-                      </div>
-                      <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed mt-0.5">
-                        Tiranë - Durrës, Vlorë, Sarandë, Shkodër, Theth dhe çdo destinacion me komoditet.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+          {/* Compact CTA Buttons: 2-column grid on mobile, flex on desktop */}
+          <div className="pt-1 grid grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full">
+            {/* Call Now Button with taxi yellow styling (NO .btn-primary) */}
+            {settings.taxi_phone && (
+              <a
+                href={`tel:${settings.taxi_phone}`}
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-3 sm:px-6 rounded-xl font-black text-xs sm:text-sm bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-black shadow-[0_4px_16px_rgba(245,158,11,0.35)] hover:from-amber-300 hover:to-yellow-300 transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+              >
+                <Phone className="w-3.5 h-3.5 fill-black text-black flex-shrink-0" />
+                <span className="truncate">Telefono Tani</span>
+              </a>
+            )}
 
-                {/* Feature 3: Comfort & VIP */}
-                <div className="group relative p-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-[#00b2fe]/60 hover:bg-[#00b2fe]/[0.06] transition-all duration-300 shadow-md">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-[#00b2fe]/30 to-[#00b2fe]/10 border border-[#00b2fe]/40 flex items-center justify-center text-[#00b2fe] shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
-                      <Sparkles className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-[#00b2fe] transition-colors">
-                          Komoditet & Pastërti VIP
-                        </strong>
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#00b2fe]/20 text-[#00b2fe] border border-[#00b2fe]/30 uppercase whitespace-nowrap">
-                          Standard 5★
-                        </span>
-                      </div>
-                      <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed mt-0.5">
-                        Makina moderne të pastra, me kondicioner, hapësirë bagazhesh dhe shofer miqësor.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* WhatsApp Booking Button with emerald styling (NO .btn-primary) */}
+            {settings.taxi_whatsapp && (
+              <a
+                href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent("Përshëndetje Taxi Keijsi, dëshiroj të porosis një taksi.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-3 sm:px-6 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 text-white shadow-[0_4px_16px_rgba(16,185,129,0.35)] hover:from-emerald-400 hover:to-green-400 transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+              >
+                <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">WhatsApp</span>
+              </a>
+            )}
+          </div>
+
+          {/* Symmetrical 3-column micro feature tags */}
+          <div className="pt-1.5 grid grid-cols-3 gap-1.5 sm:gap-2.5 w-full">
+            <div className="flex items-center justify-center gap-1.5 bg-white/[0.04] border border-white/10 py-1.5 px-2 rounded-xl text-[10px] sm:text-[11px] text-gray-300 font-semibold text-center">
+              <Clock className="w-3 h-3 text-amber-400 flex-shrink-0" />
+              <span className="truncate">24/7 Shërbim</span>
+            </div>
+            <div className="flex items-center justify-center gap-1.5 bg-white/[0.04] border border-white/10 py-1.5 px-2 rounded-xl text-[10px] sm:text-[11px] text-gray-300 font-semibold text-center">
+              <ShieldCheck className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+              <span className="truncate">I Sigurt</span>
+            </div>
+            <div className="flex items-center justify-center gap-1.5 bg-white/[0.04] border border-white/10 py-1.5 px-2 rounded-xl text-[10px] sm:text-[11px] text-gray-300 font-semibold text-center">
+              <GoogleIcon className="w-3 h-3 flex-shrink-0" />
+              <span className="truncate">{averageRating} ★ Google</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Visual Divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-amber-400/25 to-transparent" />
+      {/* 2. WHY CHOOSE TAXI KEIJSI (SPACIOUS 3-CARD GRID) */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <div className="p-1 rounded-lg bg-amber-400/15 text-amber-400">
+              <Car className="w-3.5 h-3.5" />
+            </div>
+            <h2 className="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider font-['Outfit']">
+              Pse të Zgjidhni Taxi Keijsi?
+            </h2>
+          </div>
+          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-400 border border-amber-400/30 uppercase tracking-wider">
+            24/7 VIP
+          </span>
+        </div>
 
-      {/* 2. SECTION 01: Instagram Showcase (@taxi_keijsi) */}
-      <section className="surface-card p-5 sm:p-8 lg:p-10 border border-white/10 space-y-6 rounded-2xl sm:rounded-3xl">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="section-badge !bg-amber-500/10 !border-amber-500/30 !text-amber-400">
-                01. INSTAGRAM @TAXI_KEIJSI
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+          {/* Card 1: Airport */}
+          <div className="p-4 rounded-xl sm:rounded-2xl bg-gradient-to-b from-[#0e1626]/90 to-[#070b13]/90 border border-white/10 hover:border-amber-400/50 hover:bg-amber-400/[0.03] transition-all duration-300 shadow-md flex flex-col justify-between space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-400 flex-shrink-0">
+                  <Plane className="w-4 h-4" />
+                </div>
+                <strong className="text-white text-xs sm:text-sm font-extrabold font-['Outfit'] uppercase tracking-wide truncate">
+                  Transferta në Aeroport
+                </strong>
+              </div>
+              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-amber-400/20 text-amber-400 border border-amber-400/30 uppercase flex-shrink-0">
+                Tarifë Fikse
               </span>
             </div>
-            <h2 className="text-lg sm:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-              <InstagramIcon className="w-5 h-5 text-amber-400" />
+            <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed">
+              Nisje dhe pritje në kohë me tabelë në Aeroportin e Rinasit (TIA) me çmim fiks e transparent.
+            </p>
+          </div>
+
+          {/* Card 2: Intercity */}
+          <div className="p-4 rounded-xl sm:rounded-2xl bg-gradient-to-b from-[#0e1626]/90 to-[#070b13]/90 border border-white/10 hover:border-emerald-400/50 hover:bg-emerald-400/[0.03] transition-all duration-300 shadow-md flex flex-col justify-between space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <strong className="text-white text-xs sm:text-sm font-extrabold font-['Outfit'] uppercase tracking-wide truncate">
+                  Udhëtime Ndërqytetase
+                </strong>
+              </div>
+              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-emerald-400/20 text-emerald-400 border border-emerald-400/30 uppercase flex-shrink-0">
+                Gjithë Shqipëria
+              </span>
+            </div>
+            <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed">
+              Tiranë - Durrës, Vlorë, Sarandë, Shkodër, Theth dhe çdo destinacion tjetër me komoditet maksimal.
+            </p>
+          </div>
+
+          {/* Card 3: VIP Comfort */}
+          <div className="p-4 rounded-xl sm:rounded-2xl bg-gradient-to-b from-[#0e1626]/90 to-[#070b13]/90 border border-white/10 hover:border-cyan-400/50 hover:bg-cyan-400/[0.03] transition-all duration-300 shadow-md flex flex-col justify-between space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-cyan-400/15 border border-cyan-400/30 flex items-center justify-center text-cyan-400 flex-shrink-0">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <strong className="text-white text-xs sm:text-sm font-extrabold font-['Outfit'] uppercase tracking-wide truncate">
+                  Komoditet & Pastërti VIP
+                </strong>
+              </div>
+              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-cyan-400/20 text-cyan-400 border border-cyan-400/30 uppercase flex-shrink-0">
+                Standard 5★
+              </span>
+            </div>
+            <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed">
+              Makina moderne të pastra, me kondicioner, hapësirë bagazhesh dhe shofer miqësor e profesional.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Glowing Pill Transition Divider */}
+      <div className="flex items-center justify-center my-6 sm:my-8">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-400/30 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-[10px] sm:text-xs font-black tracking-widest text-amber-400 uppercase shadow-[0_0_15px_rgba(245,158,11,0.2)] flex items-center gap-1.5">
+          <InstagramIcon className="w-3.5 h-3.5 text-amber-400" />
+          <span>01. INSTAGRAM @TAXI_KEIJSI</span>
+        </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-amber-400/30 via-transparent to-transparent" />
+      </div>
+
+      {/* 3. SECTION 01: Instagram Showcase (@taxi_keijsi) */}
+      <section className="surface-card p-4 sm:p-7 border border-white/10 space-y-5 rounded-2xl sm:rounded-3xl">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="space-y-1">
+            <h2 className="text-base sm:text-xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
+              <InstagramIcon className="w-4 h-4 text-amber-400 flex-shrink-0" />
               <span>Postimet nga @taxi_keijsi</span>
             </h2>
             <p className="text-[11px] sm:text-xs text-gray-400">
@@ -219,45 +216,47 @@ export default async function TaxiPage() {
             href="https://instagram.com/taxi_keijsi"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-400 hover:text-amber-300 group transition-colors self-start sm:self-auto py-1"
+            className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 group transition-colors self-start sm:self-auto py-1"
           >
             <span>Ndiqni @taxi_keijsi</span>
-            <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
           </a>
         </div>
 
         {/* Grid of Dedicated Taxi Posts */}
         {taxiPosts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
             {taxiPosts.map((post) => (
               <TaxiPostCard key={post.id} post={post} />
             ))}
           </div>
         ) : (
-          <div className="p-12 text-center bg-white/[0.02] rounded-2xl border border-white/5">
-            <InstagramIcon className="w-8 h-8 text-amber-400 mx-auto mb-2 opacity-70" />
+          <div className="p-8 text-center bg-white/[0.02] rounded-2xl border border-white/5">
+            <InstagramIcon className="w-7 h-7 text-amber-400 mx-auto mb-2 opacity-70" />
             <p className="text-xs text-gray-400">Postimet nga @taxi_keijsi do të sinkronizohen së shpejti.</p>
           </div>
         )}
       </section>
 
-      {/* Visual Divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-yellow-400/25 to-transparent" />
+      {/* Glowing Pill Transition Divider */}
+      <div className="flex items-center justify-center my-6 sm:my-8">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-[10px] sm:text-xs font-black tracking-widest text-yellow-400 uppercase shadow-[0_0_15px_rgba(234,179,8,0.2)] flex items-center gap-1.5">
+          <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+          <span>02. GOOGLE BUSINESS REVIEWS</span>
+        </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-yellow-400/30 via-transparent to-transparent" />
+      </div>
 
-      {/* 3. SECTION 02: Google Business Reviews */}
-      <section className="surface-card p-5 sm:p-8 lg:p-10 border border-white/10 space-y-6 rounded-2xl sm:rounded-3xl">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
+      {/* 4. SECTION 02: Google Business Reviews */}
+      <section className="surface-card p-4 sm:p-7 border border-white/10 space-y-5 rounded-2xl sm:rounded-3xl">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-white/10 pb-3">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="section-badge !bg-yellow-500/10 !border-yellow-500/30 !text-yellow-400">
-                02. GOOGLE BUSINESS REVIEWS
-              </span>
-            </div>
-            <h2 className="text-lg sm:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-              <GoogleIcon className="w-5 h-5" />
+            <h2 className="text-base sm:text-xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
+              <GoogleIcon className="w-4 h-4 flex-shrink-0" />
               <span>Vlerësimet e Klientëve ({averageRating} ★)</span>
             </h2>
-            <p className="text-xs sm:text-sm text-gray-400">
+            <p className="text-[11px] sm:text-xs text-gray-400">
               Përvojat e verifikuara të klientëve tanë në Google Business dhe Google Maps
             </p>
           </div>
@@ -268,33 +267,33 @@ export default async function TaxiPage() {
               href={settings.taxi_google_business_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-primary !from-yellow-500 !to-amber-600 hover:!from-yellow-400 hover:!to-amber-500 !text-black font-extrabold text-xs !py-3 !px-6 shadow-lg shadow-amber-900/30 self-start sm:self-auto flex items-center gap-2"
+              className="inline-flex items-center gap-1.5 py-2 px-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-amber-400 to-yellow-500 text-black hover:from-amber-300 hover:to-yellow-400 transition-all shadow-md self-start sm:self-auto"
             >
-              <Star className="w-4 h-4 fill-black text-black" />
-              <span>Lini një Review në Google</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <Star className="w-3.5 h-3.5 fill-black text-black" />
+              <span>Lini Review në Google</span>
+              <ExternalLink className="w-3 h-3" />
             </a>
           )}
         </div>
 
         {/* Rating Summary Bar */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-[#0b1019] via-[#0d1626] to-[#0b1019] border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-white/10 text-white">
-              <GoogleIcon className="w-7 h-7" />
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#0b1019] via-[#0d1626] to-[#0b1019] border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 sm:p-2.5 rounded-xl bg-white/10 text-white flex-shrink-0">
+              <GoogleIcon className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit']">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xl sm:text-2xl font-extrabold text-white font-['Outfit']">
                   {averageRating}
                 </span>
                 <div className="flex items-center gap-0.5 text-yellow-400">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
               </div>
-              <p className="text-xs text-gray-400">
+              <p className="text-[11px] text-gray-400">
                 Bazuar në vlerësimet e vërteta të udhëtarëve në Google Maps
               </p>
             </div>
@@ -305,23 +304,23 @@ export default async function TaxiPage() {
               href={settings.taxi_google_business_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-bold text-[#00b2fe] hover:underline flex items-center gap-1.5"
+              className="text-xs font-bold text-amber-400 hover:text-amber-300 hover:underline flex items-center gap-1"
             >
               <span>Shiko profilin në Google Maps</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-3 h-3" />
             </a>
           )}
         </div>
 
         {/* Grid of Reviews */}
         {taxiReviews.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
             {taxiReviews.map((rev) => (
               <GoogleReviewCard key={rev.id} review={rev} />
             ))}
           </div>
         ) : (
-          <div className="p-12 text-center bg-white/[0.02] rounded-2xl border border-white/5">
+          <div className="p-8 text-center bg-white/[0.02] rounded-2xl border border-white/5">
             <p className="text-xs text-gray-400">Nuk ka ende vlerësime të shfaqura.</p>
           </div>
         )}
