@@ -27,20 +27,20 @@ export default async function LuxuryPage() {
   const cleanWhatsapp = whatsapp.replace(/[^0-9]/g, "");
 
   return (
-    <div className="pt-2 sm:pt-4 pb-24 sm:pb-36 w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-20 sm:space-y-32">
+    <div className="pt-2 sm:pt-4 pb-24 sm:pb-36 w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-10 sm:space-y-16">
       
       {/* 1. HERO SECTION: Luxury Gold Crown Header */}
-      <section className="relative rounded-3xl overflow-hidden border border-[#d4af37]/40 bg-gradient-to-b from-[#161d2e] via-[#0e131e] to-[#05070a] p-6 sm:p-12 lg:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.95)]">
+      <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#d4af37]/40 bg-gradient-to-b from-[#161d2e] via-[#0e131e] to-[#05070a] p-5 sm:p-10 lg:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.95)]">
         {/* Ambient Gold Glows */}
         <div className="absolute -top-28 -left-28 w-80 sm:w-[500px] h-80 sm:h-[500px] bg-[#ffd700]/15 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute top-1/2 right-0 w-72 sm:w-96 h-72 sm:h-96 bg-amber-600/10 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 items-center">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
           {/* Left Column: Headlines & Call/WhatsApp CTA */}
-          <div className="lg:col-span-7 space-y-7 text-left">
+          <div className="lg:col-span-7 space-y-5 text-left">
             
             {/* Gold Crown Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 border border-[#ffd700]/50 text-xs font-black text-[#ffd700] tracking-wider uppercase backdrop-blur-md shadow-[0_0_15px_rgba(255,215,0,0.2)]">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 border border-[#ffd700]/50 text-[11px] font-black text-[#ffd700] tracking-wider uppercase backdrop-blur-md shadow-[0_0_15px_rgba(255,215,0,0.2)]">
               <CrownIcon className="w-4 h-4 text-[#ffd700] fill-[#ffd700] animate-pulse" />
               <span>EKSKLUZIVITET & PRESTIGJ VIP</span>
               <span className="text-[#ffd700]/50">•</span>
@@ -192,20 +192,23 @@ export default async function LuxuryPage() {
         </div>
       </section>
 
+      {/* Visual Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#ffd700]/30 to-transparent" />
+
       {/* 2. FLEET SHOWCASE: Luxury Cars Grid */}
-      <section className="space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-5">
-          <div className="space-y-1.5">
+      <section className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="section-badge !bg-amber-500/10 !border-[#ffd700]/40 !text-[#ffd700]">
                 👑 FLOTA LUKSOZE
               </span>
             </div>
-            <h2 className="text-xl sm:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-              <CrownIcon className="w-6 h-6 text-[#ffd700]" />
+            <h2 className="text-lg sm:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
+              <CrownIcon className="w-5 h-5 text-[#ffd700]" />
               <span>Zgjidhni Makinën Tuaj të Preferuar</span>
             </h2>
-            <p className="text-xs sm:text-sm text-gray-400">
+            <p className="text-[11px] sm:text-xs text-gray-400">
               Të gjitha mjetet janë në gjendje perfekte, të dezinfektuara dhe të disponueshme menjëherë me shofer personal.
             </p>
           </div>
@@ -220,7 +223,7 @@ export default async function LuxuryPage() {
         </div>
 
         {/* Grid of Vehicles */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {vehicles.map((vehicle) => (
             <LuxuryCard
               key={vehicle.id}
@@ -232,17 +235,20 @@ export default async function LuxuryPage() {
         </div>
       </section>
 
+      {/* Visual Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-amber-400/25 to-transparent" />
+
       {/* 3. VIP SPECIALIZED SERVICES (REFINED & SPACIOUS) */}
-      <section className="surface-card p-6 sm:p-10 border border-[#ffd700]/25 space-y-8 bg-gradient-to-br from-[#0c111a] via-[#070a10] to-[#040609] rounded-3xl">
-        <div className="text-center max-w-2xl mx-auto space-y-2.5">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffd700]/10 border border-[#ffd700]/30 text-[11px] font-bold text-[#ffd700]">
+      <section className="surface-card p-5 sm:p-8 lg:p-10 border border-[#ffd700]/25 space-y-6 bg-gradient-to-br from-[#0c111a] via-[#070a10] to-[#040609] rounded-2xl sm:rounded-3xl">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffd700]/10 border border-[#ffd700]/30 text-[10px] sm:text-[11px] font-bold text-[#ffd700]">
             <CrownIcon className="w-3.5 h-3.5" />
             <span>SHËRBIME PREMIUM TË DEDIKUARA</span>
           </div>
-          <h2 className="text-xl sm:text-3xl font-extrabold text-white font-['Outfit']">
+          <h2 className="text-lg sm:text-2xl font-extrabold text-white font-['Outfit']">
             Përvoja VIP për Çdo Event & Rast të Veçantë
           </h2>
-          <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
+          <p className="text-[11px] sm:text-xs text-gray-400 leading-relaxed">
             Ne kujdesemi për çdo detaj të transportit tuaj me përpikmëri, finesë dhe stil të pashoq.
           </p>
         </div>

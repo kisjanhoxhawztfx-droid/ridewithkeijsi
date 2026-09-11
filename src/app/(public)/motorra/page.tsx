@@ -21,19 +21,19 @@ export default async function MotorraPage() {
   const total = forSale.length + sold.length;
 
   return (
-    <div className="pt-1 sm:pt-3 pb-20 sm:pb-28 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-12 sm:space-y-16">
+    <div className="pt-1 sm:pt-3 pb-20 sm:pb-28 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-8 sm:space-y-12">
 
       {/* 1. Header Banner Hero */}
-      <section className="relative rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-b from-[#0e1422] via-[#080d16] to-[#04060a] p-8 sm:p-14 shadow-2xl text-center space-y-6">
+      <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-b from-[#0e1422] via-[#080d16] to-[#04060a] p-6 sm:p-10 lg:p-12 shadow-2xl text-center space-y-4 sm:space-y-5">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#00b2fe]/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 max-w-3xl mx-auto space-y-5">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00b2fe]/15 border border-[#00b2fe]/30 text-xs font-black text-[#00d2ff] tracking-wider uppercase backdrop-blur-md">
-            <InstagramIcon className="w-4 h-4 text-[#00b2fe]" />
+        <div className="relative z-10 max-w-3xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#00b2fe]/15 border border-[#00b2fe]/30 text-[11px] font-black text-[#00d2ff] tracking-wider uppercase backdrop-blur-md">
+            <InstagramIcon className="w-3.5 h-3.5 text-[#00b2fe]" />
             <span>AUTO-SYNC NGA @ridewithkeijsi</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white font-[&apos;Outfit&apos;] uppercase leading-tight tracking-wide">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white font-['Outfit'] uppercase leading-tight tracking-wide">
             MOTORRA <span className="text-[#00b2fe] drop-shadow-[0_0_20px_rgba(0,178,254,0.6)]">NË SHITJE</span>
           </h1>
 
@@ -67,7 +67,7 @@ export default async function MotorraPage() {
         </div>
 
         {forSale.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {forSale.map((post) => (
               <InstagramPostCard key={post.id} post={post} variant="motorra" />
             ))}
@@ -101,7 +101,7 @@ export default async function MotorraPage() {
               Motorrat e Shitura ({sold.length})
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {sold.map((post) => (
               <InstagramPostCard key={post.id} post={post} variant="motorra" />
             ))}

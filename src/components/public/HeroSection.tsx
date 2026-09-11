@@ -60,10 +60,10 @@ export default function HeroSection({
             </p>
 
             {/* Action Buttons */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-5">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <Link
                 href={featuredEpisode ? `/episodes/${featuredEpisode.slug}` : ctaLink}
-                className="btn-primary group !py-3.5 sm:!py-4 !px-7 sm:!px-9 text-xs sm:text-sm font-bold shadow-[0_0_25px_rgba(0,178,254,0.4)] w-full sm:w-auto text-center"
+                className="btn-primary group !py-3 sm:!py-3.5 !px-6 sm:!px-8 text-xs sm:text-sm font-bold shadow-[0_0_25px_rgba(0,178,254,0.4)] w-full sm:w-auto text-center"
               >
                 <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform flex-shrink-0" />
                 <span>{ctaText}</span>
@@ -71,7 +71,7 @@ export default function HeroSection({
 
               <Link
                 href={secondaryCtaLink}
-                className="btn-secondary !py-3.5 sm:!py-4 !px-6 sm:!px-8 text-xs sm:text-sm font-bold group w-full sm:w-auto text-center justify-center"
+                className="btn-secondary !py-3 sm:!py-3.5 !px-5 sm:!px-7 text-xs sm:text-sm font-bold group w-full sm:w-auto text-center justify-center"
               >
                 <span>{secondaryCtaText}</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-[#00b2fe]" />
@@ -79,26 +79,26 @@ export default function HeroSection({
             </div>
 
             {/* Stats Row */}
-            <div className="pt-6 sm:pt-8 grid grid-cols-3 gap-4 sm:gap-6 border-t border-white/10 max-w-lg">
-              <div className="p-3 sm:p-0 rounded-xl sm:rounded-none bg-white/[0.02] sm:bg-transparent">
-                <div className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit']">
+            <div className="pt-5 sm:pt-6 grid grid-cols-3 gap-3 sm:gap-5 border-t border-white/10 max-w-lg">
+              <div className="p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-white/[0.02] sm:bg-transparent">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white font-['Outfit']">
                   {totalEpisodes}+
                 </div>
-                <div className="text-[11px] sm:text-xs text-gray-400 font-medium">Episode YouTube</div>
+                <div className="text-[10px] sm:text-xs text-gray-400 font-medium">Episode YouTube</div>
               </div>
 
-              <div className="p-3 sm:p-0 rounded-xl sm:rounded-none bg-white/[0.02] sm:bg-transparent">
-                <div className="text-2xl sm:text-3xl font-extrabold text-[#00b2fe] font-['Outfit']">
+              <div className="p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-white/[0.02] sm:bg-transparent">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#00b2fe] font-['Outfit']">
                   {totalMotorcycles}+
                 </div>
-                <div className="text-[11px] sm:text-xs text-gray-400 font-medium">Motorra në Shitje</div>
+                <div className="text-[10px] sm:text-xs text-gray-400 font-medium">Motorra në Shitje</div>
               </div>
 
-              <div className="p-3 sm:p-0 rounded-xl sm:rounded-none bg-white/[0.02] sm:bg-transparent">
-                <div className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit']">
+              <div className="p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-white/[0.02] sm:bg-transparent">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white font-['Outfit']">
                   100%
                 </div>
-                <div className="text-[11px] sm:text-xs text-gray-400 font-medium">Pasion & Motorsport</div>
+                <div className="text-[10px] sm:text-xs text-gray-400 font-medium">Pasion & Motorsport</div>
               </div>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function HeroSection({
           <div className="lg:col-span-6 relative mt-4 lg:mt-0 max-w-xl lg:max-w-none ml-auto w-full">
             <div className="relative">
               {/* Outer decorative glow frame */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#00b2fe]/30 to-purple-600/20 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#00b2fe]/30 to-[#0077b6]/20 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
 
               <div className="relative">
                 {featuredEpisode ? (

@@ -35,18 +35,18 @@ export default async function TaxiPage() {
     : "5.0";
 
   return (
-    <div className="pt-2 sm:pt-4 pb-24 sm:pb-36 w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-20 sm:space-y-32">
+    <div className="pt-2 sm:pt-4 pb-24 sm:pb-36 w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-10 sm:space-y-14">
       
       {/* 1. HERO SECTION: Taxi Keijsi Header & Direct Call/WhatsApp Booking */}
-      <section className="relative rounded-3xl overflow-hidden border border-amber-400/30 bg-gradient-to-b from-[#0e1624] via-[#090f18] to-[#04060a] p-6 sm:p-12 lg:p-14 shadow-2xl">
+      <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-amber-400/30 bg-gradient-to-b from-[#0e1624] via-[#090f18] to-[#04060a] p-5 sm:p-10 lg:p-12 shadow-2xl">
         {/* Background glow accents - subtle taxi yellow & cyan mix */}
         <div className="absolute -top-24 -left-24 w-72 sm:w-96 h-72 sm:h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 right-0 w-60 sm:w-80 h-60 sm:h-80 bg-[#00b2fe]/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 items-center">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
           {/* Left Column: Headlines & Call/WhatsApp CTA */}
-          <div className="lg:col-span-7 space-y-7 text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/15 border border-amber-400/40 text-xs font-black text-amber-400 tracking-wider uppercase backdrop-blur-md">
+          <div className="lg:col-span-7 space-y-5 text-left">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/15 border border-amber-400/40 text-[11px] font-black text-amber-400 tracking-wider uppercase backdrop-blur-md">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
               <span>SHËRBIM TAKSIE 24/7</span>
               <span className="text-amber-500/50">•</span>
@@ -67,7 +67,7 @@ export default async function TaxiPage() {
               {settings.taxi_phone && (
                 <a
                   href={`tel:${settings.taxi_phone}`}
-                  className="btn-primary !from-amber-400 !to-yellow-500 hover:!from-amber-300 hover:!to-yellow-400 !text-black text-xs sm:text-sm font-black !py-3 !px-6 shadow-[0_0_25px_rgba(245,158,11,0.45)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[46px] hover:scale-105 transition-all"
+                  className="btn-primary !from-amber-400 !to-yellow-500 hover:!from-amber-300 hover:!to-yellow-400 !text-black text-xs sm:text-sm font-black !py-3 !px-6 shadow-[0_0_25px_rgba(245,158,11,0.45)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[44px] hover:scale-105 transition-all"
                 >
                   <Phone className="w-3.5 h-3.5 fill-black flex-shrink-0 animate-bounce" />
                   <span>Telefono Tani: {settings.taxi_phone}</span>
@@ -80,7 +80,7 @@ export default async function TaxiPage() {
                   href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent("Përshëndetje Taxi Keijsi, dëshiroj të porosis një taksi.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-primary !from-green-600 !to-emerald-700 hover:!from-green-500 hover:!to-emerald-600 text-xs sm:text-sm font-extrabold !py-3 !px-6 shadow-[0_0_25px_rgba(34,197,94,0.4)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[46px]"
+                  className="btn-primary !from-green-600 !to-emerald-700 hover:!from-green-500 hover:!to-emerald-600 text-xs sm:text-sm font-extrabold !py-3 !px-6 shadow-[0_0_25px_rgba(34,197,94,0.4)] w-full sm:w-auto text-center flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
                   <span>Porosit në WhatsApp</span>
@@ -89,7 +89,7 @@ export default async function TaxiPage() {
             </div>
 
             {/* Micro Feature Tags */}
-            <div className="pt-3 flex flex-wrap items-center gap-2.5 text-[11px] text-gray-400">
+            <div className="pt-2 flex flex-wrap items-center gap-2 text-[10px] sm:text-[11px] text-gray-400">
               <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-300 font-medium">
                 <Clock className="w-3 h-3 text-[#00b2fe]" />
                 Shërbim 24/7 Pa Ndërprerje
@@ -107,38 +107,38 @@ export default async function TaxiPage() {
 
           {/* Right Column: Visual Feature Showcase */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-3xl p-5 sm:p-7 border border-[#00b2fe]/35 shadow-[0_0_40px_rgba(0,178,254,0.15)] bg-gradient-to-b from-[#0e1728]/95 via-[#070c18]/95 to-[#04060b]/95 backdrop-blur-xl space-y-4">
+            <div className="relative rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-amber-400/25 shadow-[0_0_40px_rgba(245,158,11,0.1)] bg-gradient-to-b from-[#0e1728]/95 via-[#070c18]/95 to-[#04060b]/95 backdrop-blur-xl space-y-3">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-xl bg-[#00b2fe]/20 text-[#00b2fe] shadow-[0_0_15px_rgba(0,178,254,0.3)]">
+                  <div className="p-1.5 rounded-xl bg-amber-400/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
                     <Car className="w-4 h-4" />
                   </div>
                   <h3 className="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider font-['Outfit']">
                     Pse të Zgjidhni Taxi Keijsi?
                   </h3>
                 </div>
-                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#00b2fe]/15 text-[#00d2ff] border border-[#00b2fe]/30 uppercase tracking-wider">
+                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-400 border border-amber-400/30 uppercase tracking-wider">
                   24/7 VIP
                 </span>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {/* Feature 1: Airport */}
-                <div className="group relative p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-[#00b2fe]/60 hover:bg-[#00b2fe]/[0.06] transition-all duration-300 shadow-md">
+                <div className="group relative p-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-amber-400/60 hover:bg-amber-400/[0.06] transition-all duration-300 shadow-md">
                   <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#00b2fe]/30 to-[#00b2fe]/10 border border-[#00b2fe]/40 flex items-center justify-center text-[#00d2ff] shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-amber-400/30 to-amber-400/10 border border-amber-400/40 flex items-center justify-center text-amber-400 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
                       <Plane className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-[#00d2ff] transition-colors">
+                        <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-amber-400 transition-colors">
                           Transferta në Aeroport (TIA)
                         </strong>
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#00b2fe]/20 text-[#00b2fe] border border-[#00b2fe]/30 uppercase whitespace-nowrap">
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-400/20 text-amber-400 border border-amber-400/30 uppercase whitespace-nowrap">
                           Tarifë Fikse
                         </span>
                       </div>
-                      <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed mt-1">
+                      <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed mt-0.5">
                         Nisje dhe pritje në kohë me tabelë në Aeroportin e Rinasit me çmim fiks e transparent.
                       </p>
                     </div>
@@ -146,9 +146,9 @@ export default async function TaxiPage() {
                 </div>
 
                 {/* Feature 2: Intercity */}
-                <div className="group relative p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-green-500/60 hover:bg-green-500/[0.06] transition-all duration-300 shadow-md">
+                <div className="group relative p-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-green-500/60 hover:bg-green-500/[0.06] transition-all duration-300 shadow-md">
                   <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500/30 to-green-500/10 border border-green-500/40 flex items-center justify-center text-green-400 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-green-500/30 to-green-500/10 border border-green-500/40 flex items-center justify-center text-green-400 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
                       <MapPin className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -160,7 +160,7 @@ export default async function TaxiPage() {
                           Gjithë Shqipëria
                         </span>
                       </div>
-                      <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed mt-1">
+                      <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed mt-0.5">
                         Tiranë - Durrës, Vlorë, Sarandë, Shkodër, Theth dhe çdo destinacion me komoditet.
                       </p>
                     </div>
@@ -168,21 +168,21 @@ export default async function TaxiPage() {
                 </div>
 
                 {/* Feature 3: Comfort & VIP */}
-                <div className="group relative p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-purple-500/60 hover:bg-purple-500/[0.06] transition-all duration-300 shadow-md">
+                <div className="group relative p-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-[#00b2fe]/60 hover:bg-[#00b2fe]/[0.06] transition-all duration-300 shadow-md">
                   <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500/30 to-purple-500/10 border border-purple-500/40 flex items-center justify-center text-purple-400 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-[#00b2fe]/30 to-[#00b2fe]/10 border border-[#00b2fe]/40 flex items-center justify-center text-[#00b2fe] shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform">
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-purple-400 transition-colors">
+                        <strong className="text-white block font-['Outfit'] text-xs sm:text-sm uppercase tracking-wide group-hover:text-[#00b2fe] transition-colors">
                           Komoditet & Pastërti VIP
                         </strong>
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-purple-500/20 text-purple-400 border border-purple-500/30 uppercase whitespace-nowrap">
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[#00b2fe]/20 text-[#00b2fe] border border-[#00b2fe]/30 uppercase whitespace-nowrap">
                           Standard 5★
                         </span>
                       </div>
-                      <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed mt-1">
+                      <p className="text-[11px] sm:text-xs text-gray-300 font-normal leading-relaxed mt-0.5">
                         Makina moderne të pastra, me kondicioner, hapësirë bagazhesh dhe shofer miqësor.
                       </p>
                     </div>
@@ -194,20 +194,23 @@ export default async function TaxiPage() {
         </div>
       </section>
 
+      {/* Visual Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-amber-400/25 to-transparent" />
+
       {/* 2. SECTION 01: Instagram Showcase (@taxi_keijsi) */}
-      <section className="surface-card p-6 sm:p-10 border border-white/10 space-y-8 rounded-3xl">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-5">
+      <section className="surface-card p-5 sm:p-8 lg:p-10 border border-white/10 space-y-6 rounded-2xl sm:rounded-3xl">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="section-badge !bg-amber-500/10 !border-amber-500/30 !text-amber-400">
                 01. INSTAGRAM @TAXI_KEIJSI
               </span>
             </div>
-            <h2 className="text-xl sm:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-              <InstagramIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
+            <h2 className="text-lg sm:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
+              <InstagramIcon className="w-5 h-5 text-amber-400" />
               <span>Postimet nga @taxi_keijsi</span>
             </h2>
-            <p className="text-xs sm:text-sm text-gray-400">
+            <p className="text-[11px] sm:text-xs text-gray-400">
               Momente, makina dhe njoftime zyrtare të shërbimit të taksisë nga llogaria në Instagram
             </p>
           </div>
@@ -225,7 +228,7 @@ export default async function TaxiPage() {
 
         {/* Grid of Dedicated Taxi Posts */}
         {taxiPosts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {taxiPosts.map((post) => (
               <TaxiPostCard key={post.id} post={post} />
             ))}
@@ -238,17 +241,20 @@ export default async function TaxiPage() {
         )}
       </section>
 
+      {/* Visual Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-yellow-400/25 to-transparent" />
+
       {/* 3. SECTION 02: Google Business Reviews */}
-      <section className="surface-card p-6 sm:p-10 border border-white/10 space-y-8 rounded-3xl">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-5">
+      <section className="surface-card p-5 sm:p-8 lg:p-10 border border-white/10 space-y-6 rounded-2xl sm:rounded-3xl">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="section-badge !bg-yellow-500/10 !border-yellow-500/30 !text-yellow-400">
                 02. GOOGLE BUSINESS REVIEWS
               </span>
             </div>
-            <h2 className="text-xl sm:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
-              <GoogleIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            <h2 className="text-lg sm:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
+              <GoogleIcon className="w-5 h-5" />
               <span>Vlerësimet e Klientëve ({averageRating} ★)</span>
             </h2>
             <p className="text-xs sm:text-sm text-gray-400">
@@ -309,7 +315,7 @@ export default async function TaxiPage() {
 
         {/* Grid of Reviews */}
         {taxiReviews.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {taxiReviews.map((rev) => (
               <GoogleReviewCard key={rev.id} review={rev} />
             ))}

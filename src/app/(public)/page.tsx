@@ -8,6 +8,7 @@ import MotorraCard from "@/components/public/MotorraCard";
 import TaxiPostCard from "@/components/public/TaxiPostCard";
 import LuxuryCard from "@/components/public/LuxuryCard";
 import InstagramPostCard from "@/components/public/InstagramPostCard";
+import ForYouGrid from "@/components/public/ForYouGrid";
 import { ChevronRight, Sparkles, Tv, Bike, Users, Phone, Star, Car, Shield, Heart } from "lucide-react";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, WhatsAppIcon, GoogleIcon, CrownIcon } from "@/components/ui/Icons";
 
@@ -55,7 +56,7 @@ export default async function HomePage() {
     db.instagramPost.findMany({
       where: { isVisible: true, category: "EPISOD" },
       orderBy: { postedAt: "desc" },
-      take: 3,
+      take: 9,
     }),
     db.instagramPost.findMany({
       where: { isVisible: true, category: "SHITET", status: "FOR_SALE" },
@@ -139,7 +140,7 @@ export default async function HomePage() {
                     <Heart className="w-3 h-3 text-[#00b2fe]" />
                     FOR YOU
                   </span>
-                  <span className="text-xs text-gray-500">Nga @ridewithkeijsi me #episod</span>
+                  <span className="text-[11px] sm:text-xs text-gray-400">Reels &amp; Video nga @ridewithkeijsi</span>
                 </div>
                 <Link
                   href="/episodes?tab=foryou"
@@ -148,15 +149,18 @@ export default async function HomePage() {
                   Shiko të gjitha <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl">
-                {forYouPosts.map((post) => (
-                  <InstagramPostCard key={post.id} post={post} variant="foryou" />
-                ))}
-              </div>
+
+              {/* Compact 3-col mobile / 6-col desktop grid with click-to-enlarge modal */}
+              <ForYouGrid posts={forYouPosts} />
             </div>
           )}
         </div>
       </section>
+
+      {/* Visual Divider */}
+      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-[#00b2fe]/25 to-transparent" />
+      </div>
 
       {/* 3. Section 02: Motorra (Marketplace / Instagram) */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
@@ -204,29 +208,34 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Visual Divider */}
+      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-[#ffd700]/30 to-transparent" />
+      </div>
+
       {/* 4. Section 03: 👑 LUXURY SERVICES (NEW) */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#d4af37]/40 bg-gradient-to-br from-[#141b27] via-[#0c1017] to-[#05070a] p-6 sm:p-12 lg:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.85)] space-y-10">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#d4af37]/35 bg-gradient-to-br from-[#121824] via-[#0b0e15] to-[#05070a] p-5 sm:p-10 lg:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.85)] space-y-8">
           {/* Ambient Gold Glows */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-[#ffd700]/10 rounded-full blur-3xl pointer-events-none" />
 
           {/* Section Top Header & Direct Booking */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-[#ffd700]/50 text-[11px] font-black text-[#ffd700] uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-[#ffd700]/40 text-[10px] sm:text-[11px] font-black text-[#ffd700] uppercase tracking-wider">
                   <CrownIcon className="w-3.5 h-3.5 text-[#ffd700] fill-[#ffd700]" />
                   03. SHËRBIME ME QIRA VIP
                 </span>
-                <span className="text-xs text-[#ffd700] font-bold flex items-center gap-1">
+                <span className="text-[11px] sm:text-xs text-[#ffd700] font-bold flex items-center gap-1">
                   <Sparkles className="w-3.5 h-3.5 text-[#ffd700]" />
                   24/7 me Shofer Personal
                 </span>
               </div>
 
-              <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white font-['Outfit'] flex flex-wrap items-center gap-2">
+              <h2 className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-white font-['Outfit'] flex flex-wrap items-center gap-2">
                 <span className="flex items-center gap-2 text-white">
-                  <CrownIcon className="w-6 h-6 sm:w-8 sm:h-8 text-[#ffd700] drop-shadow-[0_0_15px_rgba(255,215,0,0.8)]" />
+                  <CrownIcon className="w-5 h-5 sm:w-7 sm:h-7 text-[#ffd700] drop-shadow-[0_0_15px_rgba(255,215,0,0.8)]" />
                   <span>LUXURY</span>
                 </span>
                 <span className="bg-gradient-to-r from-[#ffd700] via-[#ffe066] to-[#d4af37] bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,215,0,0.5)]">
@@ -296,9 +305,14 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Visual Divider */}
+      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-amber-400/25 to-transparent" />
+      </div>
+
       {/* 5. Section 04: TAXI KEIJSI Showcase */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#00b2fe]/30 bg-gradient-to-br from-[#09111e] via-[#070b12] to-[#04070c] p-6 sm:p-10 lg:p-12 shadow-2xl space-y-8">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-amber-400/20 bg-gradient-to-br from-[#0c121e] via-[#070b12] to-[#04070c] p-5 sm:p-10 lg:p-12 shadow-2xl space-y-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
@@ -310,8 +324,8 @@ export default async function HomePage() {
                   5.0 Google Reviews
                 </span>
               </div>
-              <h2 className="text-xl sm:text-3xl font-extrabold text-white font-['Outfit']">
-                Taxi <span className="text-[#00b2fe]">Keijsi</span> — Udhëtoni me Siguri & Komoditet
+              <h2 className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-white font-['Outfit']">
+                Taxi <span className="text-amber-400">Keijsi</span> — Udhëtoni me Siguri & Komoditet
               </h2>
               <p className="text-[11px] sm:text-xs text-gray-300 max-w-xl">
                 Shërbim taksie 24/7 në Tiranë, transferta në Aeroportin e Rinasit (TIA) dhe udhëtime në çdo qytet të Shqipërisë me makina moderne.
@@ -374,9 +388,14 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Visual Divider */}
+      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-[#00b2fe]/20 to-transparent" />
+      </div>
+
       {/* 6. Section 05: Community & Social Channels */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-[#080d17] via-[#0d1424] to-[#080d17] p-6 sm:p-12 shadow-2xl">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-[#080d17] via-[#0d1424] to-[#080d17] p-5 sm:p-10 shadow-2xl">
           <div className="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-[#00b2fe]/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
@@ -384,7 +403,7 @@ export default async function HomePage() {
               <div className="flex items-center gap-2">
                 <span className="section-badge">05. KOMUNITETI</span>
               </div>
-              <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white font-['Outfit'] leading-tight">
+              <h2 className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-white font-['Outfit'] leading-tight">
                 Bashkohuni me Komunitetin e <span className="text-[#00b2fe]">Ride with Keijsi</span>
               </h2>
               <p className="text-xs sm:text-sm text-gray-300 max-w-xl leading-relaxed">
