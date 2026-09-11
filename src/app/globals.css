@@ -52,7 +52,9 @@ html {
   scroll-behavior: smooth;
   background-color: var(--bg-base);
   width: 100%;
+  max-width: 100%;
   min-height: 100%;
+  overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -61,6 +63,7 @@ body {
   color: var(--text-primary);
   font-family: var(--font-body);
   width: 100%;
+  max-width: 100%;
   min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.6;

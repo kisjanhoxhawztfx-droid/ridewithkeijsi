@@ -80,19 +80,19 @@ export default function Header({ socialLinks = [] }: HeaderProps) {
             </button>
 
             {/* Brand Logo & Name */}
-            <Link href="/" className="flex items-center gap-2.5 sm:gap-4.5 group">
-              <div className="relative w-11 h-11 sm:w-18 sm:h-18 lg:w-20 lg:h-20 overflow-hidden rounded-full border-[2px] sm:border-[2.5px] border-[#00b2fe] group-hover:shadow-[0_0_30px_rgba(0,178,254,0.8)] transition-all duration-300 bg-black flex-shrink-0 shadow-lg">
+            <Link href="/" className="flex items-center gap-2 sm:gap-4.5 group min-w-0">
+              <div className="relative w-9 h-9 sm:w-16 sm:h-16 lg:w-20 lg:h-20 overflow-hidden rounded-full border-[1.5px] sm:border-[2.5px] border-[#00b2fe] group-hover:shadow-[0_0_30px_rgba(0,178,254,0.8)] transition-all duration-300 bg-black flex-shrink-0 shadow-md">
                 <Image
                   src="/logo.png"
                   alt="Ride with Keijsi"
                   fill
-                  sizes="(max-width: 640px) 44px, 80px"
+                  sizes="(max-width: 640px) 36px, 80px"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                   priority
                 />
               </div>
-              <div className="flex flex-col">
-                <span className="font-extrabold text-base sm:text-2xl lg:text-[26px] tracking-wider text-white flex items-center gap-1 font-['Outfit'] leading-tight">
+              <div className="flex flex-col min-w-0">
+                <span className="font-extrabold text-sm sm:text-2xl lg:text-[26px] tracking-wide text-white flex items-center gap-1 font-['Outfit'] leading-tight truncate">
                   RIDE WITH <span className="text-[#00b2fe] drop-shadow-[0_0_15px_rgba(0,178,254,0.8)]">KEIJSI</span>
                 </span>
                 <span className="text-[9px] sm:text-xs tracking-[0.25em] uppercase text-gray-400 font-bold hidden sm:inline-block mt-0.5">
@@ -148,10 +148,22 @@ export default function Header({ socialLinks = [] }: HeaderProps) {
             })}
           </nav>
 
-          {/* RIGHT: Official Social Channels (YouTube, Instagram, TikTok, Facebook) */}
-          <div className="flex items-center gap-3">
-            {/* Desktop Socials */}
-            <div className="flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/20 rounded-full px-3 py-1.5 shadow-md transition-all">
+          {/* RIGHT: Official Social Channels */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Mobile single Instagram icon (clean, sleek, fits within 390px) */}
+            <a
+              href="https://instagram.com/ridewithkeijsi"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram @ridewithkeijsi"
+              className="sm:hidden p-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-[#00b2fe] active:scale-95 transition-all flex items-center justify-center min-w-[38px] min-h-[38px] shadow-sm"
+              title="Instagram @ridewithkeijsi"
+            >
+              <InstagramIcon className="w-4 h-4" />
+            </a>
+
+            {/* Desktop Socials Pill */}
+            <div className="hidden sm:flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/20 rounded-full px-3 py-1.5 shadow-md transition-all">
               <a
                 href="https://youtube.com/@RideWithkeijsi"
                 target="_blank"
