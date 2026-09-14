@@ -1,6 +1,6 @@
 import Link from "next/link";
 import db from "@/lib/db";
-import InstagramPostCard from "@/components/public/InstagramPostCard";
+import MotorraGrid from "@/components/public/MotorraGrid";
 import { CheckCircle2, Bike, Sparkles, ShoppingBag, Archive } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/Icons";
 import { syncInstagramFromRapidApi } from "@/lib/instagram";
@@ -82,11 +82,7 @@ export default async function MotorraPage() {
         </div>
 
         {forSale.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {forSale.map((post) => (
-              <InstagramPostCard key={post.id} post={post} variant="motorra" />
-            ))}
-          </div>
+          <MotorraGrid posts={forSale} />
         ) : (
           <div className="surface-card p-12 text-center max-w-md mx-auto space-y-4 rounded-3xl border border-white/10">
             <Sparkles className="w-10 h-10 text-[#00b2fe] mx-auto opacity-70" />
@@ -116,11 +112,7 @@ export default async function MotorraPage() {
               Motorrat e Shitura ({sold.length})
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {sold.map((post) => (
-              <InstagramPostCard key={post.id} post={post} variant="motorra" />
-            ))}
-          </div>
+          <MotorraGrid posts={sold} title="MOTORRA TË SHITURA" />
         </section>
       )}
 

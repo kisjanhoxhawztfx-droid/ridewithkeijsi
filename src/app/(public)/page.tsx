@@ -9,6 +9,7 @@ import TaxiPostCard from "@/components/public/TaxiPostCard";
 import LuxuryCard from "@/components/public/LuxuryCard";
 import InstagramPostCard from "@/components/public/InstagramPostCard";
 import ForYouGrid from "@/components/public/ForYouGrid";
+import MotorraGrid from "@/components/public/MotorraGrid";
 import { ChevronRight, Sparkles, Tv, Bike, Users, Phone, Star, Car, Shield, Heart } from "lucide-react";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, WhatsAppIcon, GoogleIcon, CrownIcon, TaxiIcon } from "@/components/ui/Icons";
 
@@ -200,12 +201,7 @@ export default async function HomePage() {
 
           {/* Grid of Motorra Cards from Instagram */}
           {motorraForSale.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-              {motorraForSale.map((post) => (
-                <InstagramPostCard key={post.id} post={post} variant="motorra" />
-
-              ))}
-            </div>
+            <MotorraGrid posts={motorraForSale} />
           ) : (
             <div className="p-8 text-center bg-white/[0.02] rounded-xl border border-white/5">
               <InstagramIcon className="w-8 h-8 text-[#00b2fe] mx-auto mb-2" />
