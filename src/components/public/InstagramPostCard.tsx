@@ -28,7 +28,10 @@ export default function InstagramPostCard({ post, variant = "motorra" }: Instagr
   const [imgError, setImgError] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const isSold = post.status === "SOLD";
-  const imageUrl = post.thumbnailUrl || post.mediaUrl;
+  const rawImageUrl = post.thumbnailUrl || post.mediaUrl;
+  const imageUrl = rawImageUrl?.startsWith("http")
+    ? `/api/instagram-image?id=${post.id}`
+    : rawImageUrl;
   const isMotorra = variant === "motorra";
   const isVideo = post.mediaType === "VIDEO";
   const videoSrc = post.mediaUrl;
