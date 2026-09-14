@@ -1,8 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { Play, X, ExternalLink, ChevronUp, ChevronDown, CheckCircle2 } from "lucide-react";
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize2,
+  Minimize2,
+  Loader2,
+  X,
+  ExternalLink,
+  ChevronUp,
+  ChevronDown,
+  CheckCircle2,
+} from "lucide-react";
 import { InstagramIcon } from "@/components/ui/Icons";
 
 export interface ForYouPostItem {
@@ -24,18 +37,52 @@ interface ForYouGridProps {
   viewAllLink?: string;
 }
 
-export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/episodes?tab=foryou" }: ForYouGridProps) {
+function formatTime(seconds: number) {
+  if (isNaN(seconds) || seconds < 0) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+}
+
+export default function ForYouGrid({
+  posts,
+  title = "FOR YOU",
+}: ForYouGridProps) {
   const [selectedPost, setSelectedPost] = useState<ForYouPostItem | null>(null);
   const [captionExpanded, setCaptionExpanded] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const [activeMediaUrl, setActiveMediaUrl] = useState<string | null>(null);
   const [isLoadingVideo, setIsLoadingVideo] = useState(false);
 
+  // Player Controls State
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [showPlayIconAnimation, setShowPlayIconAnimation] = useState(false);
+  const [showControls, setShowControls] = useState(true);
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const hideControlsTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleSelectPost = (post: ForYouPostItem) => {
     setSelectedPost(post);
     setCaptionExpanded(false);
     setVideoError(false);
     setActiveMediaUrl(post.mediaUrl);
+    setIsPlaying(true);
+    setCurrentTime(0);
+    setDuration(0);
+    setIsBuffering(false);
+  };
+
+  const handleClose = () => {
+    setSelectedPost(null);
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
   };
 
   const handleVideoError = async () => {
@@ -56,6 +103,106 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
     setVideoError(true);
     setIsLoadingVideo(false);
   };
+
+  // Attempt unmuted play, fallback to muted if browser blocks autoplay
+  useEffect(() => {
+    if (!selectedPost || selectedPost.mediaType !== "VIDEO" || !activeMediaUrl) return;
+
+    const v = videoRef.current;
+    if (!v) return;
+
+    v.currentTime = 0;
+    const playPromise = v.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(() => {
+          // Autoplay with audio restricted by browser — mute and continue
+          v.muted = true;
+          setIsMuted(true);
+          v.play()
+            .then(() => setIsPlaying(true))
+            .catch(() => setIsPlaying(false));
+        });
+    }
+  }, [selectedPost, activeMediaUrl]);
+
+  // Reset controls timer
+  const resetControlsTimer = useCallback(() => {
+    setShowControls(true);
+    if (hideControlsTimerRef.current) clearTimeout(hideControlsTimerRef.current);
+    hideControlsTimerRef.current = setTimeout(() => {
+      setShowControls(false);
+    }, 2800);
+  }, []);
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    if (v.paused) {
+      // If was muted because of autoplay restriction, unmute on user interaction
+      if (isMuted && v.muted) {
+        v.muted = false;
+        setIsMuted(false);
+      }
+      v.play();
+      setIsPlaying(true);
+      setShowPlayIconAnimation(false);
+    } else {
+      v.pause();
+      setIsPlaying(false);
+      setShowPlayIconAnimation(true);
+    }
+    resetControlsTimer();
+  };
+
+  const toggleMute = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = !v.muted;
+    setIsMuted(v.muted);
+    resetControlsTimer();
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = videoRef.current;
+    if (!v) return;
+    const target = parseFloat(e.target.value);
+    v.currentTime = target;
+    setCurrentTime(target);
+    resetControlsTimer();
+  };
+
+  const toggleFullscreen = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (!document.fullscreenElement) {
+      container.requestFullscreen?.().catch(() => {});
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+    }
+  };
+
+  // Keyboard controls
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedPost) return;
+      if (e.key === "Escape") handleClose();
+      if (e.key === " ") {
+        e.preventDefault();
+        togglePlay();
+      }
+      if (e.key === "m" || e.key === "M") toggleMute();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPost, isMuted]);
 
   if (!posts || posts.length === 0) return null;
 
@@ -94,7 +241,7 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
                 <InstagramIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               </div>
 
-              {/* Center Play Icon on Hover / Idle */}
+              {/* Center Play Icon */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/30 group-hover:bg-[#00b2fe] group-hover:border-[#00b2fe] flex items-center justify-center text-white group-hover:text-black transition-all shadow-lg group-hover:scale-110">
                   <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current ml-0.5" />
@@ -115,15 +262,15 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
       {/* Expanded Modal Viewer When Clicked */}
       {selectedPost && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md animate-in fade-in duration-200"
-          onClick={() => setSelectedPost(null)}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-6 bg-black/90 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={handleClose}
         >
           <div
-            className="relative w-full max-w-sm sm:max-w-md max-h-[92vh] bg-[#090d15] border border-white/20 rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_35px_rgba(0,178,254,0.25)] flex flex-col"
+            className="relative w-full max-w-[390px] sm:max-w-md max-h-[94vh] bg-[#090d15] border border-white/20 rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_35px_rgba(0,178,254,0.25)] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Modal Bar */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#06090e]">
+            <div className="flex items-center justify-between px-4 py-2.5 sm:py-3 border-b border-white/10 bg-[#06090e] z-30">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#00b2fe] animate-pulse" />
                 <span className="text-xs font-black text-white font-['Outfit'] uppercase tracking-wider">
@@ -132,7 +279,7 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
               </div>
               <button
                 type="button"
-                onClick={() => setSelectedPost(null)}
+                onClick={handleClose}
                 className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-colors"
                 aria-label="Mbyll"
               >
@@ -140,20 +287,120 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
               </button>
             </div>
 
-            {/* Media Player, Instagram Embed, or Large Photo */}
-            <div className="relative aspect-[9/14] sm:aspect-square w-full bg-black overflow-hidden flex-shrink-0 flex items-center justify-center">
+            {/* Media Box */}
+            <div
+              ref={containerRef}
+              onClick={togglePlay}
+              onMouseMove={resetControlsTimer}
+              onTouchStart={resetControlsTimer}
+              className="relative aspect-[9/14] sm:aspect-[9/13] w-full bg-black overflow-hidden flex-shrink-0 flex items-center justify-center cursor-pointer select-none group/video"
+            >
               {selectedPost.mediaType === "VIDEO" ? (
                 !videoError && activeMediaUrl ? (
-                  <video
-                    key={activeMediaUrl}
-                    src={activeMediaUrl}
-                    controls
-                    autoPlay
-                    playsInline
-                    onError={handleVideoError}
-                    className="w-full h-full object-contain"
-                  />
+                  <>
+                    <video
+                      ref={videoRef}
+                      key={activeMediaUrl}
+                      src={activeMediaUrl}
+                      playsInline
+                      loop
+                      className="w-full h-full object-contain pointer-events-none"
+                      onTimeUpdate={() => {
+                        if (videoRef.current) {
+                          setCurrentTime(videoRef.current.currentTime);
+                        }
+                      }}
+                      onLoadedMetadata={() => {
+                        if (videoRef.current) {
+                          setDuration(videoRef.current.duration);
+                        }
+                      }}
+                      onWaiting={() => setIsBuffering(true)}
+                      onPlaying={() => {
+                        setIsBuffering(false);
+                        setIsPlaying(true);
+                      }}
+                      onPause={() => setIsPlaying(false)}
+                      onError={handleVideoError}
+                    />
+
+                    {/* Buffering Spinner */}
+                    {isBuffering && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-none z-20">
+                        <Loader2 className="w-10 h-10 text-[#00b2fe] animate-spin drop-shadow-md" />
+                      </div>
+                    )}
+
+                    {/* Central Play/Pause Watermark / Big Icon */}
+                    {(!isPlaying || showPlayIconAnimation) && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-black/60 backdrop-blur-md border border-white/25 flex items-center justify-center text-[#00b2fe] shadow-[0_0_30px_rgba(0,178,254,0.4)] animate-in zoom-in-90 duration-150">
+                          <Play className="w-8 h-8 sm:w-10 sm:h-10 fill-current ml-1 text-white" />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Top-Right Mute & Fullscreen Controls */}
+                    <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
+                      <button
+                        type="button"
+                        onClick={toggleMute}
+                        className="p-2 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white hover:bg-black/90 active:scale-90 transition-all shadow-md"
+                        title={isMuted ? "Aktivizo zërin" : "Hiq zërin"}
+                      >
+                        {isMuted ? (
+                          <VolumeX className="w-4 h-4 text-red-400" />
+                        ) : (
+                          <Volume2 className="w-4 h-4 text-[#00b2fe]" />
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={toggleFullscreen}
+                        className="hidden sm:flex p-2 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white hover:bg-black/90 active:scale-90 transition-all shadow-md"
+                        title="Ekran i plotë"
+                      >
+                        <Maximize2 className="w-4 h-4 text-gray-200" />
+                      </button>
+                    </div>
+
+                    {/* Unmute Prompt Pill if Autoplay was muted by browser */}
+                    {isMuted && isPlaying && (
+                      <div
+                        onClick={toggleMute}
+                        className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-[#00b2fe]/40 text-[11px] font-bold text-[#00b2fe] z-20 animate-pulse cursor-pointer shadow-lg"
+                      >
+                        <VolumeX className="w-3.5 h-3.5 text-red-400" />
+                        <span>Prek për zë</span>
+                      </div>
+                    )}
+
+                    {/* Bottom Floating Scrubber & Info Overlay */}
+                    <div
+                      className={`absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/95 via-black/50 to-transparent z-20 transition-opacity duration-300 ${
+                        showControls || !isPlaying ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                      }`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {/* Scrub input slider */}
+                      <div className="flex items-center gap-2 text-[10px] sm:text-xs text-gray-300 font-mono font-bold mb-1">
+                        <span>{formatTime(currentTime)}</span>
+                        <input
+                          type="range"
+                          min={0}
+                          max={duration || 100}
+                          step={0.1}
+                          value={currentTime}
+                          onChange={handleSeek}
+                          className="flex-1 h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#00b2fe]"
+                        />
+                        <span>{formatTime(duration)}</span>
+                      </div>
+                    </div>
+                  </>
                 ) : (
+                  /* Fallback Instagram Embed if Direct stream cannot be loaded */
                   <div className="w-full h-full relative flex items-center justify-center bg-black">
                     <iframe
                       src={`${selectedPost.permalink.replace(/\/$/, "")}/embed/`}
@@ -176,7 +423,7 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
             </div>
 
             {/* Caption & Actions Drawer */}
-            <div className="p-4 space-y-3 bg-[#080d16] flex-1 overflow-y-auto">
+            <div className="p-3.5 sm:p-4 space-y-2.5 sm:space-y-3 bg-[#080d16] flex-1 overflow-y-auto">
               <div className="flex items-center justify-between text-xs text-gray-400">
                 <span className="flex items-center gap-1.5 text-green-400 font-bold text-[11px]">
                   <CheckCircle2 className="w-3.5 h-3.5" />
@@ -214,7 +461,7 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
               )}
 
               {/* Action Buttons */}
-              <div className="pt-2 flex items-center gap-2">
+              <div className="pt-1 flex items-center gap-2">
                 <a
                   href={selectedPost.permalink}
                   target="_blank"
@@ -228,7 +475,7 @@ export default function ForYouGrid({ posts, title = "FOR YOU", viewAllLink = "/e
 
                 <button
                   type="button"
-                  onClick={() => setSelectedPost(null)}
+                  onClick={handleClose}
                   className="py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs active:scale-95 transition-all"
                 >
                   Mbyll

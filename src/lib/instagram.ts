@@ -185,6 +185,9 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
       if (cdnThumbnailUrl) {
         thumbnailUrl = await downloadThumbnail(cdnThumbnailUrl, instagramId);
       }
+      if (!thumbnailUrl && cdnThumbnailUrl) {
+        thumbnailUrl = cdnThumbnailUrl;
+      }
 
       if (existing) {
         await db.instagramPost.update({

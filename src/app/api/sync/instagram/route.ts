@@ -3,8 +3,20 @@ import { syncInstagramMotorcycles, syncInstagramFromRapidApi, testInstagramConne
 import { getAdminSession } from "@/lib/auth";
 import db from "@/lib/db";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const isCron = searchParams.get("cron") === "1" || searchParams.get("auto") === "1";
+
+    if (isCron) {
+      if (process.env.RAPIDAPI_KEY) {
+        const syncRes = await syncInstagramFromRapidApi();
+        return NextResponse.json(syncRes);
+      }
+      const syncRes = await syncInstagramMotorcycles();
+      return NextResponse.json(syncRes);
+    }
+
     const isRapidApiSet = !!process.env.RAPIDAPI_KEY;
     const isTokenSet = !!process.env.INSTAGRAM_ACCESS_TOKEN;
     const accountName = process.env.INSTAGRAM_USERNAME || "ridewithkeijsi";

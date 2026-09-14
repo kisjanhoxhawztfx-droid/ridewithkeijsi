@@ -3,10 +3,25 @@ import db from "@/lib/db";
 import InstagramPostCard from "@/components/public/InstagramPostCard";
 import { CheckCircle2, Bike, Sparkles, ShoppingBag, Archive } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/Icons";
+import { syncInstagramFromRapidApi } from "@/lib/instagram";
 
 export const revalidate = 60;
 
 export default async function MotorraPage() {
+  // Check if last sync was > 25 minutes ago or if no motorra currently in DB
+  try {
+    const lastSync = await db.syncLog.findFirst({
+      where: { platform: "INSTAGRAM_RAPIDAPI", status: "SUCCESS" },
+      orderBy: { completedAt: "desc" },
+    });
+    const isStale = !lastSync || !lastSync.completedAt || (Date.now() - new Date(lastSync.completedAt).getTime() > 25 * 60 * 1000);
+    if (isStale) {
+      await syncInstagramFromRapidApi();
+    }
+  } catch (e) {
+    console.error("Auto-sync motorra check failed:", e);
+  }
+
   const [forSale, sold] = await Promise.all([
     db.instagramPost.findMany({
       where: { isVisible: true, category: "SHITET", status: "FOR_SALE" },
