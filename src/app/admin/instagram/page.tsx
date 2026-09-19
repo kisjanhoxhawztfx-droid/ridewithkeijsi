@@ -75,8 +75,8 @@ export default async function AdminInstagramPage() {
           <RefreshCw className="w-4 h-4" />
           Make.com Webhook URL
         </h3>
-        <div className="font-mono text-xs bg-black/30 px-4 py-3 rounded-xl text-green-400 border border-white/10">
-          POST https://faqjayte.com/api/instagram-webhook
+        <div className="font-mono text-xs bg-black/30 px-4 py-3 rounded-xl text-green-400 border border-white/10 select-all">
+          POST https://ridewithkeijsi.com/api/instagram-webhook
         </div>
         <p className="text-xs text-gray-400">
           Secret: <code className="text-amber-400">ridewithkeijsi_secret_2024</code>&nbsp;|&nbsp;

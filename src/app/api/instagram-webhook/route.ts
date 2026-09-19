@@ -8,20 +8,22 @@ function extractHashtags(caption: string): string[] {
   return matches.map((h) => h.toLowerCase());
 }
 
-function detectCategory(hashtags: string[]): "SHITET" | "EPISOD" | null {
-  if (hashtags.includes("#shitet")) return "SHITET";
-  if (hashtags.includes("#episod")) return "EPISOD";
-  return null;
-}
-
 function detectSold(caption: string): boolean {
   const lower = caption.toLowerCase();
   return (
-    lower.includes("shitur") ||
-    lower.includes("e shitur") ||
-    lower.includes("sold") ||
-    lower.includes("#shitur")
+    /\b(shitur|e shitur|u shit|ushit|sold|e-shitur)\b/i.test(lower) ||
+    lower.includes("#shitur") ||
+    lower.includes("#ushit") ||
+    lower.includes("❌")
   );
+}
+
+function detectCategory(caption: string, hashtags: string[]): "SHITET" | "EPISOD" | null {
+  const lower = caption.toLowerCase();
+  if (hashtags.includes("#shitet") || lower.includes("shitet")) return "SHITET";
+  if (hashtags.includes("#shitur") || detectSold(caption)) return "SHITET";
+  if (hashtags.includes("#episod") || lower.includes("episod")) return "EPISOD";
+  return null;
 }
 
 export async function POST(request: NextRequest) {
@@ -43,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     const hashtags = extractHashtags(caption);
-    const category = detectCategory(hashtags);
+    const category = detectCategory(caption, hashtags);
 
     if (!category) {
       return NextResponse.json({

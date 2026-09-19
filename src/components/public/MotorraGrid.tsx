@@ -485,7 +485,11 @@ export default function MotorraGrid({
                     {selectedSpecs.title}
                   </h3>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-bold">
+                    <span
+                      className={`inline-flex items-center gap-1 text-[10px] font-bold ${
+                        selectedPost.status === "SOLD" ? "text-red-400" : "text-emerald-400"
+                      }`}
+                    >
                       <CheckCircle2 className="w-3 h-3" />
                       {selectedPost.status === "SOLD" ? "E Shitur" : "Në Shitje"}
                     </span>

@@ -45,15 +45,19 @@ export function parseMotorcycleCaption(caption: string): ParsedMotorcycle {
   const descLines: string[] = [];
 
   // Regex patterns
-  const phoneRegex = /(\+355\s?6[7-9]\s?\d{3}\s?\d{4}|06[7-9]\s?\d{3}\s?\d{4}|\+?355\s?\d{2,3}\s?\d{3}\s?\d{3,4})/;
-  const yearRegex = /\b(19\d{2}|20[0-3]\d)\b/;
+  const phoneRegex = /(?:\+?355\s?6[7-9]\s?\d{3}\s?\d{4}|06[7-9]\s?\d{3}\s?\d{4}|\+?355\s?\d{2,3}\s?\d{3}\s?\d{3,4})/;
+  const yearPattern = /(?:viti|vit|year)?\s*[:=]?\s*\b(19\d{2}|20[0-3]\d)\b/i;
   const mileageRegex = /([\d.,]+\s?(?:km|mile|milje))/i;
-  const engineRegex = /([\d.,]+\s?cc|[\d.,]+\s?hp|\d+\s?engine|\d+\s?marshe|\d+\s?cc\s?\+\s?\d+\s?hp)/i;
-  const priceRegex = /([\d.,]+\s?(?:€|eur|euro|lek|leke|\$))/i;
+  const engineRegex = /([\d.,]+\s?cc(?:\s*[+•/—–-]\s*[\d.,]+\s?hp)?|[\d.,]+\s?hp|\d+\s?engine|\d+\s?marshe)/i;
+  const priceRegex = /((?:€|eur|euro|lek|leke|\$)\s*[\d.,]+|[\d.,]+\s*(?:€|eur|euro|lek|leke|\$))/i;
 
-  for (const line of lines) {
+  for (const rawLine of lines) {
     // Skip hashtag lines
-    if (line.startsWith("#")) continue;
+    if (rawLine.startsWith("#")) continue;
+
+    // Clean line of non-standard leading icons
+    const line = rawLine.replace(/^[📞📲🏍️🏎️🔥💥✨📍👇\s]+/, "").trim();
+    if (!line) continue;
 
     // 1. Phone detection
     if (!phone && phoneRegex.test(line)) {
@@ -64,7 +68,7 @@ export function parseMotorcycleCaption(caption: string): ParsedMotorcycle {
       }
     }
 
-    // 2. Price detection
+    // 2. Price detection (e.g. 4,000€, €4,300, 3,500 lek, Çmimi: 7,500 €)
     if (!price && priceRegex.test(line)) {
       const match = line.match(priceRegex);
       if (match) {
@@ -73,7 +77,7 @@ export function parseMotorcycleCaption(caption: string): ParsedMotorcycle {
       }
     }
 
-    // 3. Mileage detection
+    // 3. Mileage detection (e.g. 25,000 km, 18,000 milje, 6,700 miles)
     if (!mileage && mileageRegex.test(line)) {
       const match = line.match(mileageRegex);
       if (match) {
@@ -82,7 +86,7 @@ export function parseMotorcycleCaption(caption: string): ParsedMotorcycle {
       }
     }
 
-    // 4. Engine / Power detection
+    // 4. Engine / Power detection (e.g. 998cc • 150 HP, 1,254 cc • 136 HP, 350 cc — 33 HP)
     if (engineRegex.test(line)) {
       if (!engine) {
         engine = line.trim();
@@ -92,33 +96,40 @@ export function parseMotorcycleCaption(caption: string): ParsedMotorcycle {
       continue;
     }
 
-    // 5. Standalone year
-    if (!year && yearRegex.test(line) && line.replace(yearRegex, "").trim().length === 0) {
-      const match = line.match(yearRegex);
-      if (match) {
-        year = match[0].trim();
+    // 5. Year detection (e.g. 2013, Viti: 2012, Vit 2018)
+    if (!year && yearPattern.test(line)) {
+      const match = line.match(yearPattern);
+      if (match && (line.length <= 15 || line.toLowerCase().startsWith("vit") || line.toLowerCase().startsWith("year"))) {
+        year = match[1].trim();
         continue;
       }
     }
 
     // 6. Title detection
     if (!title && line.length > 2 && !priceRegex.test(line) && !phoneRegex.test(line)) {
-      title = line.trim();
-      // If year is included in title, extract it
-      const yMatch = line.match(yearRegex);
-      if (yMatch && !year) {
-        year = yMatch[0].trim();
+      // Check if title is purely a SOLD marker
+      if (/^❌?\s*(?:shitur|u shit|sold)\s*❌?$/i.test(line)) {
+        title = "Motorr i Shitur";
+      } else {
+        title = line.trim();
+        // If year is included in title (e.g. "Honda Integra 2013"), extract it if not yet found
+        const yMatch = line.match(/\b(19\d{2}|20[0-3]\d)\b/);
+        if (yMatch && !year) {
+          year = yMatch[1].trim();
+        }
       }
       continue;
     }
 
     // 7. Extra features vs general description
     if (
-      line.length < 40 &&
+      line.length < 50 &&
       (line.includes("Edition") ||
         line.includes("marshe") ||
         line.includes("ABS") ||
         line.includes("HP") ||
+        line.includes("Automat") ||
+        line.includes("Grup i ndërruar") ||
         line.includes("Koleksion") ||
         line.includes("TCS") ||
         line.includes("Quickshifter"))

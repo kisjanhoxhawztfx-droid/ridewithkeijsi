@@ -106,7 +106,8 @@ export function extractSpecsFromCaption(caption: string): {
 }
 
 export async function syncInstagramFromRapidApi(customUsername?: string): Promise<InstagramSyncResult> {
-  const apiKey = process.env.RAPIDAPI_KEY || "f445af1383msh2d0396ce64777c4p142ed6jsn83232537dd13";
+  const rawKey = process.env.RAPIDAPI_KEY || "f445af1383msh2d0396ce64777c4p142ed6jsn83232537dd13";
+  const apiKey = rawKey.replace(/[\uFEFF\s"]/g, "").trim();
   const username = customUsername || process.env.INSTAGRAM_USERNAME || "ridewithkeijsi";
 
   if (!apiKey) {
@@ -157,10 +158,10 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
       const hasShitet = lowerCap.includes("#shitet") || lowerCap.includes("shitet");
       const hasEpisod = lowerCap.includes("#episod") || lowerCap.includes("episod");
       const isSoldWord = (
-        lowerCap.includes("shitur") ||
-        lowerCap.includes("e shitur") ||
-        lowerCap.includes("sold") ||
-        lowerCap.includes("#shitur")
+        /\b(shitur|e shitur|u shit|ushit|sold|e-shitur)\b/i.test(lowerCap) ||
+        lowerCap.includes("#shitur") ||
+        lowerCap.includes("#ushit") ||
+        lowerCap.includes("❌")
       );
 
       const isMotorra = hasShitet || isSoldWord || (existing && existing.category === "SHITET");
@@ -170,7 +171,16 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
       }
 
       const category = isMotorra ? "SHITET" : "EPISOD";
-      const status = (isMotorra && isSoldWord) ? "SOLD" : (existing?.status || "FOR_SALE");
+      let status = "FOR_SALE";
+      if (category === "SHITET") {
+        if (isSoldWord) {
+          status = "SOLD";
+        } else if (hasShitet) {
+          status = "FOR_SALE";
+        } else if (existing?.status) {
+          status = existing.status;
+        }
+      }
 
       const permalink = `https://www.instagram.com/p/${node.shortcode}/`;
       const mediaUrl = node.video_url || node.display_url || null;

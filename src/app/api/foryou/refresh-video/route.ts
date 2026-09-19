@@ -18,7 +18,8 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    const apiKey = process.env.RAPIDAPI_KEY || "f445af1383msh2d0396ce64777c4p142ed6jsn83232537dd13";
+    const rawKey = process.env.RAPIDAPI_KEY || "f445af1383msh2d0396ce64777c4p142ed6jsn83232537dd13";
+    const apiKey = rawKey.replace(/[\uFEFF\s"]/g, "").trim();
 
     // Extract shortcode from permalink (e.g., https://www.instagram.com/p/DZapFOCxGMm/ -> DZapFOCxGMm)
     const shortcodeMatch = post.permalink.match(/\/(?:p|reel)\/([A-Za-z0-9_-]+)/);

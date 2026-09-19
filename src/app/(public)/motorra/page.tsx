@@ -8,15 +8,23 @@ import { syncInstagramFromRapidApi } from "@/lib/instagram";
 export const revalidate = 60;
 
 export default async function MotorraPage() {
-  // Check if last sync was > 25 minutes ago or if no motorra currently in DB
+  // Check if last sync was > 25 minutes ago across any platform
   try {
     const lastSync = await db.syncLog.findFirst({
-      where: { platform: "INSTAGRAM_RAPIDAPI", status: "SUCCESS" },
+      where: {
+        platform: { in: ["INSTAGRAM_RAPIDAPI", "INSTAGRAM_AUTO", "INSTAGRAM_WEBHOOK", "INSTAGRAM"] },
+        status: "SUCCESS",
+      },
       orderBy: { completedAt: "desc" },
     });
     const isStale = !lastSync || !lastSync.completedAt || (Date.now() - new Date(lastSync.completedAt).getTime() > 25 * 60 * 1000);
     if (isStale) {
-      await syncInstagramFromRapidApi();
+      Promise.race([
+        syncInstagramFromRapidApi(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 4000)),
+      ]).catch((err) => {
+        console.warn("Auto-sync motorra check:", err?.message || err);
+      });
     }
   } catch (e) {
     console.error("Auto-sync motorra check failed:", e);
