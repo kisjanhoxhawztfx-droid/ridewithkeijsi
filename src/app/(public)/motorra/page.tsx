@@ -5,7 +5,7 @@ import { CheckCircle2, Bike, Sparkles, ShoppingBag, Archive } from "lucide-react
 import { InstagramIcon } from "@/components/ui/Icons";
 import { syncInstagramFromRapidApi } from "@/lib/instagram";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function MotorraPage() {
   // Check if last sync was > 25 minutes ago across any platform
