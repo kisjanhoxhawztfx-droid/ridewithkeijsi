@@ -96,10 +96,11 @@ export function parseMotorcycleCaption(caption: string): ParsedMotorcycle {
       continue;
     }
 
-    // 5. Year detection (e.g. 2013, Viti: 2012, Vit 2018)
-    if (!year && yearPattern.test(line)) {
-      const match = line.match(yearPattern);
-      if (match && (line.length <= 15 || line.toLowerCase().startsWith("vit") || line.toLowerCase().startsWith("year"))) {
+    // 5. Year detection (pure year lines e.g. 2013, Viti: 2012, Vit 2018)
+    const pureYearRegex = /^(?:viti|vit|year)?\s*[:=]?\s*(19\d{2}|20[0-3]\d)$/i;
+    if (!year && pureYearRegex.test(line)) {
+      const match = line.match(pureYearRegex);
+      if (match) {
         year = match[1].trim();
         continue;
       }
