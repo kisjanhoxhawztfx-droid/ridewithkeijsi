@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import db from "@/lib/db";
 import fs from "fs";
 import path from "path";
+import { getMotorcycleYouTubeId } from "@/lib/motorcycleParser";
 
 export async function GET(req: Request) {
   try {
@@ -35,7 +36,16 @@ export async function GET(req: Request) {
     }
 
     // 2. Fetch from post.thumbnailUrl or mediaUrl
-    const targetUrl = post.thumbnailUrl || post.mediaUrl;
+    let targetUrl = post.thumbnailUrl || post.mediaUrl;
+
+    // If targetUrl is a local relative URL but missing on disk, fallback to YouTube CDN
+    if (!targetUrl || !targetUrl.startsWith("http")) {
+      const ytId = getMotorcycleYouTubeId(post);
+      if (ytId) {
+        targetUrl = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+      }
+    }
+
     if (targetUrl && targetUrl.startsWith("http")) {
       try {
         const imgRes = await fetch(targetUrl, {
@@ -67,9 +77,27 @@ export async function GET(req: Request) {
       }
     }
 
+    // 3. Last fallback: Try YouTube CDN directly
+    const ytId = getMotorcycleYouTubeId(post);
+    if (ytId) {
+      try {
+        const ytRes = await fetch(`https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`);
+        if (ytRes.ok) {
+          const buffer = Buffer.from(await ytRes.arrayBuffer());
+          return new NextResponse(buffer, {
+            headers: {
+              "Content-Type": "image/jpeg",
+              "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+            },
+          });
+        }
+      } catch {}
+    }
+
     return new NextResponse("Image not available", { status: 404 });
   } catch (err) {
     console.error("Image proxy route error:", err);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }
+
