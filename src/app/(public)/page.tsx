@@ -57,7 +57,6 @@ export default async function HomePage() {
     db.instagramPost.findMany({
       where: { isVisible: true, category: "EPISOD" },
       orderBy: { postedAt: "desc" },
-      take: 9,
     }),
     db.instagramPost.findMany({
       where: { isVisible: true, category: "SHITET", status: "FOR_SALE" },
@@ -154,7 +153,7 @@ export default async function HomePage() {
                   href="/episodes?tab=foryou"
                   className="text-xs font-bold text-[#00b2fe] hover:text-[#00d2ff] flex items-center gap-1 transition-colors"
                 >
-                  Shiko të gjitha <ChevronRight className="w-3.5 h-3.5" />
+                  Shiko të gjitha ({forYouPosts.length}) <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
 

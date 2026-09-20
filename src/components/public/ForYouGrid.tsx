@@ -44,6 +44,26 @@ function formatTime(seconds: number) {
   return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
 }
 
+function getRelatedEpisode(caption: string = ""): { title: string; url: string } | null {
+  const c = (caption || "").toLowerCase();
+  if (c.includes("flori")) {
+    return { title: "Episodi 5 • Flori Official", url: "https://www.youtube.com/watch?v=JpJ0gMdQkgs" };
+  }
+  if (c.includes("artan") || c.includes("kola")) {
+    return { title: "Episodi 4 • Artan Kola", url: "https://www.youtube.com/watch?v=ia1W5b2nZ-s" };
+  }
+  if (c.includes("ilir") || c.includes("vrenozi")) {
+    return { title: "Episodi 3 • Ilir Vrenozi", url: "https://www.youtube.com/watch?v=0Ibn4kHXpts" };
+  }
+  if (c.includes("plisat") || c.includes("zvicer") || c.includes("kashar")) {
+    return { title: "Episodi 2 • Udhëtim në Zvicër", url: "https://www.youtube.com/watch?v=rxHHbAMrj98" };
+  }
+  if (c.includes("stenaldo") || c.includes("stine")) {
+    return { title: "Episodi 1 • Stenaldo Mehilli", url: "https://www.youtube.com/watch?v=lYChSWvwSaI" };
+  }
+  return null;
+}
+
 export default function ForYouGrid({
   posts,
   title = "FOR YOU",
@@ -53,6 +73,10 @@ export default function ForYouGrid({
   const [videoError, setVideoError] = useState(false);
   const [activeMediaUrl, setActiveMediaUrl] = useState<string | null>(null);
   const [isLoadingVideo, setIsLoadingVideo] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+
+  const initialLimit = 12;
+  const displayedPosts = showAll ? posts : posts.slice(0, initialLimit);
 
   // Player Controls State
   const [isPlaying, setIsPlaying] = useState(true);
@@ -85,21 +109,8 @@ export default function ForYouGrid({
     }
   };
 
-  const handleVideoError = async () => {
-    if (!selectedPost || isLoadingVideo) return;
-    setIsLoadingVideo(true);
-    try {
-      const res = await fetch(`/api/foryou/refresh-video?id=${selectedPost.id}`);
-      const data = await res.json();
-      if (data.success && data.mediaUrl) {
-        setActiveMediaUrl(data.mediaUrl);
-        setVideoError(false);
-        setIsLoadingVideo(false);
-        return;
-      }
-    } catch {
-      // ignore
-    }
+  const handleVideoError = () => {
+    // Instant fallback to official Instagram embed if direct stream link is expired (403)
     setVideoError(true);
     setIsLoadingVideo(false);
   };
@@ -210,7 +221,7 @@ export default function ForYouGrid({
     <div className="space-y-4">
       {/* Compact Grid: 3 columns on mobile (fits 6-9 neatly), 6 on desktop */}
       <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3.5">
-        {posts.map((post) => {
+        {displayedPosts.map((post) => {
           const thumb = post.thumbnailUrl || post.mediaUrl;
           return (
             <div
@@ -258,6 +269,29 @@ export default function ForYouGrid({
           );
         })}
       </div>
+
+      {/* Show All / Show Less Toggle Button */}
+      {posts.length > initialLimit && (
+        <div className="flex justify-center pt-2 pb-1">
+          <button
+            type="button"
+            onClick={() => setShowAll(!showAll)}
+            className="px-5 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#00b2fe]/40 text-xs font-bold text-gray-300 hover:text-white transition-all flex items-center gap-2 shadow-sm active:scale-95"
+          >
+            {showAll ? (
+              <>
+                <span>Zvogëlo pamjen</span>
+                <ChevronUp className="w-3.5 h-3.5 text-[#00b2fe]" />
+              </>
+            ) : (
+              <>
+                <span>Shfaq të gjitha ({posts.length} video)</span>
+                <ChevronDown className="w-3.5 h-3.5 text-[#00b2fe]" />
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Expanded Modal Viewer When Clicked */}
       {selectedPost && (
@@ -461,26 +495,46 @@ export default function ForYouGrid({
               )}
 
               {/* Action Buttons */}
-              <div className="pt-1 flex items-center gap-2">
-                <a
-                  href={selectedPost.permalink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#00b2fe] to-[#0077b6] text-black font-extrabold text-xs flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-md"
-                >
-                  <InstagramIcon className="w-3.5 h-3.5 text-black" />
-                  <span>Hap në Instagram</span>
-                  <ExternalLink className="w-3 h-3 text-black opacity-80" />
-                </a>
+              {(() => {
+                const relatedEpisode = selectedPost ? getRelatedEpisode(selectedPost.caption) : null;
+                return (
+                  <div className="pt-1 flex flex-col gap-2">
+                    {relatedEpisode && (
+                      <a
+                        href={relatedEpisode.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-2 px-3 rounded-xl bg-red-600/90 hover:bg-red-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>Episodi i plotë në YouTube ({relatedEpisode.title})</span>
+                        <ExternalLink className="w-3 h-3 text-white/80 ml-auto" />
+                      </a>
+                    )}
 
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs active:scale-95 transition-all"
-                >
-                  Mbyll
-                </button>
-              </div>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={selectedPost.permalink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#00b2fe] to-[#0077b6] text-black font-extrabold text-xs flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-md"
+                      >
+                        <InstagramIcon className="w-3.5 h-3.5 text-black" />
+                        <span>Hap në Instagram</span>
+                        <ExternalLink className="w-3 h-3 text-black opacity-80" />
+                      </a>
+
+                      <button
+                        type="button"
+                        onClick={handleClose}
+                        className="py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs active:scale-95 transition-all"
+                      >
+                        Mbyll
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
