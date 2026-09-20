@@ -1,11 +1,11 @@
-﻿export async function register() {
+export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
-    const EIGHT_HOURS_MS = 8 * 60 * 60 * 1000;
+    const FOUR_HOURS_MS = 4 * 60 * 60 * 1000;
 
     const runAutoSync = async () => {
       try {
         const { syncInstagramFromRapidApi } = await import("@/lib/instagram");
-        console.log("[Auto-Sync] Nis sinkronizimi automatik me Instagram (cdo 8 ore)...");
+        console.log("[Auto-Sync] Nis kontrolli automatik i Instagramit (cdo 4 ore për #motorr)...");
         const res = await syncInstagramFromRapidApi();
         console.log("[Auto-Sync] Rezultati:", res.message);
       } catch (err) {
@@ -13,8 +13,12 @@
       }
     };
 
-    // Nis intervalin cdo 8 ore
-    setInterval(runAutoSync, EIGHT_HOURS_MS);
-    console.log("[Auto-Sync] Sistemi i sinkronizimit automatik cdo 8 ore eshte aktivizuar me sukses.");
+    // Nis sinkronizimin fillestar pas 5 sekondash nga ngritja e serverit
+    setTimeout(runAutoSync, 5000);
+
+    // Perserit kontrollin cdo 4 ore
+    setInterval(runAutoSync, FOUR_HOURS_MS);
+    console.log("[Auto-Sync] Sistemi i kontrollit automatik të Instagramit cdo 4 ore eshte aktivizuar me sukses.");
   }
 }
+

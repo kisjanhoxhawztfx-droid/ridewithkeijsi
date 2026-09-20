@@ -83,9 +83,9 @@ export default async function AdminInstagramPage() {
           Fields: <code className="text-gray-300">instagramId, caption, mediaUrl, thumbnailUrl, permalink, mediaType, postedAt, secret</code>
         </p>
         <div className="text-xs text-gray-500 space-y-1">
-          <p>Caption me <strong className="text-pink-400">#shitet</strong> &rarr; Motorra Ne Shitje</p>
+          <p>Caption me <strong className="text-pink-400">#motorr</strong> (ose #shitet) &rarr; Motorra Në Shitje</p>
           <p>Caption me <strong className="text-[#00b2fe]">#episod</strong> &rarr; For You</p>
-          <p>Caption ndryshon &rarr; &quot;Shitur&quot; &rarr; Motorra E Shitura (automatikisht)</p>
+          <p>Statusi &quot;E Shitur&quot; &rarr; Menaxhohet manualisht nga Paneli i Adminit (tek Motorra ose me butonin &quot;Mark Shitur&quot;)</p>
         </div>
       </div>
 

@@ -14,6 +14,8 @@ import {
   AlertCircle,
   Tag,
   Search,
+  Archive,
+  ShoppingBag,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/Icons";
 
@@ -44,6 +46,7 @@ export default function AdminMotorraPage() {
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "FOR_SALE" | "SOLD">("ALL");
 
   // New motorcycle form state
   const [permalink, setPermalink] = useState("");
@@ -214,7 +217,12 @@ export default function AdminMotorraPage() {
     }
   };
 
+  const countForSale = motorcycles.filter((m) => m.status === "FOR_SALE").length;
+  const countSold = motorcycles.filter((m) => m.status === "SOLD").length;
+
   const filteredMotorcycles = motorcycles.filter((m) => {
+    if (statusFilter === "FOR_SALE" && m.status !== "FOR_SALE") return false;
+    if (statusFilter === "SOLD" && m.status !== "SOLD") return false;
     const fullText = `${m.brand || ""} ${m.model || ""} ${m.caption}`.toLowerCase();
     return fullText.includes(searchQuery.toLowerCase());
   });
@@ -231,10 +239,10 @@ export default function AdminMotorraPage() {
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit']">
-            Motorra në Shitje (Instagram)
+            Motorra në Shitje (Instagram #motorr)
           </h1>
-          <p className="text-xs text-gray-400">
-            Sinkronizoni postimet nga Instagrami ose shtoni manualisht motorra me specifikat e tyre.
+          <p className="text-xs text-gray-400 max-w-2xl">
+            Sinkronizim automatik çdo 4 orë për postimet me hashtag <strong className="text-pink-400">#motorr</strong> nga @ridewithkeijsi. Motorrat e shitur menaxhohen manualisht me butonin &quot;Shëno E Shitur&quot;.
           </p>
         </div>
 
@@ -311,10 +319,50 @@ export default function AdminMotorraPage() {
 
       {/* Motorcycle Listing Table */}
       <div className="surface-card border border-white/10 overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h3 className="text-base font-bold text-white font-['Outfit']">
-            Motorrat në Sistem ({motorcycles.length})
-          </h3>
+        <div className="p-4 sm:p-6 border-b border-white/10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <h3 className="text-base font-bold text-white font-['Outfit']">
+              Motorrat në Sistem ({motorcycles.length})
+            </h3>
+
+            {/* Quick Status Filter Tabs */}
+            <div className="flex items-center gap-1.5 p-1 bg-black/40 border border-white/10 rounded-xl">
+              <button
+                onClick={() => setStatusFilter("ALL")}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                  statusFilter === "ALL"
+                    ? "bg-[#00b2fe] text-black shadow-[0_0_12px_rgba(0,178,254,0.3)]"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                Të Gjitha ({motorcycles.length})
+              </button>
+
+              <button
+                onClick={() => setStatusFilter("FOR_SALE")}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                  statusFilter === "FOR_SALE"
+                    ? "bg-pink-500 text-white shadow-[0_0_12px_rgba(236,72,153,0.3)]"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <ShoppingBag className="w-3 h-3" />
+                <span>Në Shitje ({countForSale})</span>
+              </button>
+
+              <button
+                onClick={() => setStatusFilter("SOLD")}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                  statusFilter === "SOLD"
+                    ? "bg-zinc-700 text-white shadow-sm"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <Archive className="w-3 h-3" />
+                <span>Të Shitura ({countSold})</span>
+              </button>
+            </div>
+          </div>
 
           <div className="relative max-w-xs w-full">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
@@ -332,7 +380,7 @@ export default function AdminMotorraPage() {
           <div className="p-12 text-center text-xs text-gray-400">Po ngarkohen motorrat...</div>
         ) : filteredMotorcycles.length === 0 ? (
           <div className="p-12 text-center text-xs text-gray-400">
-            Nuk u gjet asnjë motorr. Shtoni një motorr me butonin &quot;Shto Motorr&quot;.
+            Nuk u gjet asnjë motorr në këtë filtër.
           </div>
         ) : (
           <div className="divide-y divide-white/10">
@@ -355,6 +403,15 @@ export default function AdminMotorraPage() {
                       {moto.year && (
                         <span className="text-xs text-gray-400">({moto.year})</span>
                       )}
+                      <span
+                        className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
+                          moto.status === "SOLD"
+                            ? "bg-zinc-800 text-gray-400 border border-zinc-700"
+                            : "bg-pink-500/20 text-pink-400 border border-pink-500/40"
+                        }`}
+                      >
+                        {moto.status === "SOLD" ? "E SHITUR" : "NË SHITJE"}
+                      </span>
                       {moto.isFeatured && (
                         <span className="px-2 py-0.5 rounded bg-[#00b2fe] text-black font-extrabold text-[9px] uppercase tracking-wider">
                           I ZGJEDHUR
@@ -381,7 +438,28 @@ export default function AdminMotorraPage() {
                 </div>
 
                 {/* Status selector & Actions */}
-                <div className="flex items-center gap-2 self-end sm:self-center">
+                <div className="flex flex-wrap items-center gap-2 self-end sm:self-center">
+                  {/* Dedicated 1-Click Status Button */}
+                  {moto.status === "SOLD" ? (
+                    <button
+                      onClick={() => handleStatusChange(moto.id, "FOR_SALE")}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 flex items-center gap-1.5 transition-all shadow-sm"
+                      title="Rikthe motorrin në shitje"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Kthe Në Shitje</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleStatusChange(moto.id, "SOLD")}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-gray-200 border border-zinc-700 flex items-center gap-1.5 transition-all shadow-sm"
+                      title="Kalojeni këtë motorr tek motorrat e shitur"
+                    >
+                      <Archive className="w-3.5 h-3.5 text-red-400" />
+                      <span>Shëno E Shitur</span>
+                    </button>
+                  )}
+
                   <select
                     value={moto.status}
                     onChange={(e) => handleStatusChange(moto.id, e.target.value)}

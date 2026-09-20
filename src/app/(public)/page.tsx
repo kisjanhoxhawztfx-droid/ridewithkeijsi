@@ -186,7 +186,7 @@ export default async function HomePage() {
                 <span>Motorra në Shitje</span>
               </h2>
               <p className="text-[11px] sm:text-xs text-gray-400">
-                Auto-sync nga @ridewithkeijsi — postimet me #shitet shfaqen automatikisht
+                Auto-sync nga @ridewithkeijsi — postimet me #motorr shfaqen automatikisht
               </p>
             </div>
 

@@ -154,33 +154,29 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
       const instagramId = String(node.id);
       const existing = await db.instagramPost.findUnique({ where: { instagramId } });
 
-      // Check hashtags & keywords: #shitet, #episod, and sold keywords
-      const hasShitet = lowerCap.includes("#shitet") || lowerCap.includes("shitet");
-      const hasEpisod = lowerCap.includes("#episod") || lowerCap.includes("episod");
-      const isSoldWord = (
-        /\b(shitur|e shitur|u shit|ushit|sold|e-shitur)\b/i.test(lowerCap) ||
-        lowerCap.includes("#shitur") ||
-        lowerCap.includes("#ushit") ||
-        lowerCap.includes("❌")
+      // Check hashtags & keywords: #motorr, #motorra, #motor, #shitet, #episod
+      const hasMotorr = (
+        lowerCap.includes("#motorr") ||
+        lowerCap.includes("#motorra") ||
+        lowerCap.includes("#motor") ||
+        lowerCap.includes("#shitet") ||
+        lowerCap.includes("shitet")
       );
+      const hasEpisod = lowerCap.includes("#episod") || lowerCap.includes("episod");
 
-      const isMotorra = hasShitet || isSoldWord || (existing && existing.category === "SHITET");
+      const isMotorra = hasMotorr || (existing && existing.category === "SHITET");
 
       if (!isMotorra && !hasEpisod) {
         continue; // Skip posts without relevant hashtags or keywords
       }
 
       const category = isMotorra ? "SHITET" : "EPISOD";
-      let status = "FOR_SALE";
-      if (category === "SHITET") {
-        if (isSoldWord) {
-          status = "SOLD";
-        } else if (hasShitet) {
-          status = "FOR_SALE";
-        } else if (existing?.status) {
-          status = existing.status;
-        }
-      }
+      
+      // Manual sold management:
+      // Status is managed manually from the admin panel.
+      // If the post already exists in the database, keep existing status!
+      // New motorcycle posts start as "FOR_SALE".
+      const status = existing?.status ? existing.status : "FOR_SALE";
 
       const permalink = `https://www.instagram.com/p/${node.shortcode}/`;
       const mediaUrl = node.video_url || node.display_url || null;
@@ -206,7 +202,7 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
             caption,
             mediaUrl: mediaUrl || existing.mediaUrl,
             thumbnailUrl: thumbnailUrl || existing.thumbnailUrl,
-            status: category === "SHITET" ? status : existing.status,
+            status: existing.status, // Preserve admin's manual status setting
             category,
             permalink,
           },
@@ -222,7 +218,7 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
             permalink,
             mediaType,
             category,
-            status,
+            status: "FOR_SALE",
             isVisible: true,
             postedAt,
           },
@@ -341,13 +337,25 @@ export async function syncInstagramMotorcycles(): Promise<InstagramSyncResult> {
       const thumbnailUrl = item.thumbnail_url || item.media_url || "https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=1000";
       const mediaUrl = item.media_url || null;
       const caption = item.caption || "";
-      const publishedAt = item.timestamp ? new Date(item.timestamp) : new Date();
-
-      const specs = extractSpecsFromCaption(caption);
+      const lowerCap = caption.toLowerCase();
+      const hasMotorr = (
+        lowerCap.includes("#motorr") ||
+        lowerCap.includes("#motorra") ||
+        lowerCap.includes("#motor") ||
+        lowerCap.includes("#shitet") ||
+        lowerCap.includes("shitet")
+      );
 
       const existing = await db.motorcycle.findUnique({
         where: { instagramMediaId: mediaId },
       });
+
+      if (!hasMotorr && !existing) {
+        continue;
+      }
+
+      const publishedAt = item.timestamp ? new Date(item.timestamp) : new Date();
+      const specs = extractSpecsFromCaption(caption);
 
       if (existing) {
         await db.motorcycle.update({

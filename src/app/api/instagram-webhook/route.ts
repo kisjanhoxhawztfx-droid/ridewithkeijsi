@@ -20,7 +20,19 @@ function detectSold(caption: string): boolean {
 
 function detectCategory(caption: string, hashtags: string[]): "SHITET" | "EPISOD" | null {
   const lower = caption.toLowerCase();
-  if (hashtags.includes("#shitet") || lower.includes("shitet")) return "SHITET";
+  if (
+    hashtags.includes("#motorr") ||
+    hashtags.includes("#motorra") ||
+    hashtags.includes("#motor") ||
+    hashtags.includes("#shitet") ||
+    lower.includes("#motorr") ||
+    lower.includes("#motorra") ||
+    lower.includes("#motor") ||
+    lower.includes("#shitet") ||
+    lower.includes("shitet")
+  ) {
+    return "SHITET";
+  }
   if (hashtags.includes("#shitur") || detectSold(caption)) return "SHITET";
   if (hashtags.includes("#episod") || lower.includes("episod")) return "EPISOD";
   return null;
@@ -51,15 +63,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         action: "ignored",
-        reason: "No #shitet or #episod hashtag found",
+        reason: "No #motorr or #episod hashtag found",
         hashtags,
       });
     }
 
-    const isSold = category === "SHITET" && detectSold(caption);
-    const status = isSold ? "SOLD" : "FOR_SALE";
-
     const existing = await db.instagramPost.findUnique({ where: { instagramId } });
+    // If post exists, keep status set by admin; if new, start as FOR_SALE
+    const status = existing ? existing.status : "FOR_SALE";
 
     const post = await db.instagramPost.upsert({
       where: { instagramId },
@@ -78,7 +89,7 @@ export async function POST(request: NextRequest) {
         caption,
         mediaUrl: mediaUrl || undefined,
         thumbnailUrl: thumbnailUrl || undefined,
-        status: category === "SHITET" ? status : undefined,
+        // Preserve admin's manual status setting
       },
     });
 

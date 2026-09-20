@@ -96,7 +96,7 @@ export default async function MotorraPage() {
             <Sparkles className="w-10 h-10 text-[#00b2fe] mx-auto opacity-70" />
             <h3 className="text-base font-bold text-white font-[&apos;Outfit&apos;]">Nuk ka motorra aktualisht</h3>
             <p className="text-gray-400 text-xs leading-relaxed">
-              Kur @ridewithkeijsi poston në Instagram me <strong>#shitet</strong>, motorri shfaqet automatikisht këtu.
+              Kur @ridewithkeijsi poston në Instagram me <strong>#motorr</strong>, motorri shfaqet automatikisht këtu.
             </p>
             <a
               href="https://instagram.com/ridewithkeijsi"
