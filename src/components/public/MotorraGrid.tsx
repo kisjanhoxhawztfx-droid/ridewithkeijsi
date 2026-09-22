@@ -19,11 +19,10 @@ import {
   FileText,
   Bike,
 } from "lucide-react";
-import { InstagramIcon, WhatsAppIcon, YouTubeIcon } from "@/components/ui/Icons";
+import { InstagramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import {
   parseMotorcycleCaption,
   ParsedMotorcycle,
-  getMotorcycleYouTubeId,
 } from "@/lib/motorcycleParser";
 
 export interface MotorraPostItem {
@@ -52,8 +51,8 @@ function formatTime(seconds: number) {
 }
 
 /**
- * Individual motorcycle card with automatic image fallback to YouTube thumbnail.
- * Guarantees that no card will ever appear black!
+ * Individual motorcycle card displaying the true Instagram cover photo.
+ * Never falls back to YouTube - motorcycles come strictly from Instagram.
  */
 function MotorraCardItem({
   post,
@@ -64,20 +63,20 @@ function MotorraCardItem({
 }) {
   const parsed = parseMotorcycleCaption(post.caption);
   const isSold = post.status === "SOLD";
-  const youtubeId = getMotorcycleYouTubeId(post);
 
-  // Preferred initial thumbnail: post.thumbnailUrl or YouTube high-res CDN
+  // Real Instagram cover photo (from post.thumbnailUrl or local /instagram/{id}.jpg)
   const defaultThumb =
-    post.thumbnailUrl ||
-    (youtubeId ? `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg` : null);
+    post.thumbnailUrl && !post.thumbnailUrl.includes("ytimg.com")
+      ? post.thumbnailUrl
+      : `/instagram/${post.instagramId}.jpg`;
 
   const [thumbSrc, setThumbSrc] = useState<string | null>(defaultThumb);
   const [imgFailed, setImgFailed] = useState(false);
 
-  // Fallback to YouTube CDN if initial image returns 404 or fails to load
+  // Fallback to proxy route if direct image fails
   const handleImageError = () => {
-    if (youtubeId && thumbSrc !== `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`) {
-      setThumbSrc(`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`);
+    if (thumbSrc !== `/api/instagram-image?id=${post.instagramId}`) {
+      setThumbSrc(`/api/instagram-image?id=${post.instagramId}`);
     } else {
       setImgFailed(true);
     }
@@ -169,7 +168,6 @@ export default function MotorraGrid({
   const [selectedPost, setSelectedPost] = useState<MotorraPostItem | null>(null);
   const [videoError, setVideoError] = useState(false);
   const [activeMediaUrl, setActiveMediaUrl] = useState<string | null>(null);
-  const [playerMode, setPlayerMode] = useState<"HTML5" | "YOUTUBE">("HTML5");
 
   // Player State for HTML5
   const [isPlaying, setIsPlaying] = useState(true);
@@ -199,9 +197,7 @@ export default function MotorraGrid({
         hasStructuredSpecs: false,
       };
 
-  const selectedYouTubeId = selectedPost ? getMotorcycleYouTubeId(selectedPost) : null;
-
-  // Open modal and determine player mode
+  // Open modal - always use HTML5 player (Instagram source only, no YouTube)
   const handleSelectPost = (post: MotorraPostItem) => {
     setSelectedPost(post);
     setVideoError(false);
@@ -211,17 +207,7 @@ export default function MotorraGrid({
     setIsPlaying(true);
     setIsMuted(false);
     setShowDescription(false);
-
-    const ytId = getMotorcycleYouTubeId(post);
-
-    // If no direct MP4 or if mediaUrl is missing, start directly in YouTube mode
-    if (!post.mediaUrl && ytId) {
-      setPlayerMode("YOUTUBE");
-      setActiveMediaUrl(null);
-    } else {
-      setPlayerMode("HTML5");
-      setActiveMediaUrl(post.mediaUrl);
-    }
+    setActiveMediaUrl(post.mediaUrl);
   };
 
   const handleClose = () => {
@@ -236,7 +222,7 @@ export default function MotorraGrid({
 
   // Attempt unmuted play whenever HTML5 video is ready
   useEffect(() => {
-    if (selectedPost && playerMode === "HTML5" && activeMediaUrl && videoRef.current) {
+    if (selectedPost && activeMediaUrl && videoRef.current) {
       videoRef.current.currentTime = 0;
       videoRef.current.muted = false;
       setIsMuted(false);
@@ -253,12 +239,11 @@ export default function MotorraGrid({
           }
         });
     }
-  }, [selectedPost, playerMode, activeMediaUrl]);
+  }, [selectedPost, activeMediaUrl]);
 
   // Toggle Play / Pause for HTML5
   const togglePlay = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (playerMode === "YOUTUBE") return; // YouTube iframe manages its own controls
     if (!videoRef.current) return;
 
     if (videoRef.current.paused) {
@@ -307,13 +292,9 @@ export default function MotorraGrid({
     }
   };
 
-  // When HTML5 video fails (e.g. 403 Forbidden Instagram URL), immediately switch to YouTube!
+  // When HTML5 video fails (e.g. 403 Forbidden Instagram URL), show error state.
+  // No YouTube fallback for motorcycle section – all content is from Instagram.
   const handleVideoError = () => {
-    if (selectedYouTubeId) {
-      setPlayerMode("YOUTUBE");
-      setVideoError(false);
-      return;
-    }
     setVideoError(true);
   };
 
@@ -322,15 +303,15 @@ export default function MotorraGrid({
     if (!selectedPost) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
-      if (playerMode === "HTML5" && (e.key === " " || e.key === "k")) {
+      if (e.key === " " || e.key === "k") {
         e.preventDefault();
         togglePlay();
       }
-      if (playerMode === "HTML5" && (e.key === "m" || e.key === "M")) toggleMute();
+      if (e.key === "m" || e.key === "M") toggleMute();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedPost, playerMode]);
+  }, [selectedPost]);
 
   if (!posts || posts.length === 0) return null;
 
@@ -363,28 +344,6 @@ export default function MotorraGrid({
               </div>
 
               <div className="flex items-center gap-1.5">
-                {/* Mode Switcher Button if both YouTube & Direct Video are available */}
-                {selectedYouTubeId && selectedPost.mediaUrl && !videoError && (
-                  <button
-                    type="button"
-                    onClick={() => setPlayerMode(playerMode === "YOUTUBE" ? "HTML5" : "YOUTUBE")}
-                    className="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-bold text-gray-300 hover:text-white transition-all flex items-center gap-1"
-                    title="Ndrysho formatin e videos"
-                  >
-                    {playerMode === "YOUTUBE" ? (
-                      <>
-                        <InstagramIcon className="w-3 h-3 text-pink-400" />
-                        <span>Instagram</span>
-                      </>
-                    ) : (
-                      <>
-                        <YouTubeIcon className="w-3 h-3 text-red-500" />
-                        <span>YouTube HD</span>
-                      </>
-                    )}
-                  </button>
-                )}
-
                 <button
                   type="button"
                   onClick={handleClose}
@@ -402,30 +361,14 @@ export default function MotorraGrid({
               onClick={togglePlay}
               className="relative aspect-[9/13.5] w-full bg-black overflow-hidden flex-shrink-0 flex items-center justify-center cursor-pointer select-none group/video"
             >
-              {/* YouTube Embed Player Mode */}
-              {playerMode === "YOUTUBE" && selectedYouTubeId ? (
-                <div className="relative w-full h-full bg-black">
-                  <iframe
-                    src={`https://www.youtube-nocookie.com/embed/${selectedYouTubeId}?autoplay=1&playsinline=1&rel=0&modestbranding=1&loop=1&playlist=${selectedYouTubeId}`}
-                    title={selectedSpecs.title}
-                    className="w-full h-full object-cover border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  />
-                </div>
-              ) : selectedPost.mediaType === "VIDEO" && activeMediaUrl && !videoError ? (
-                /* Native HTML5 Video Player */
+              {/* Native HTML5 Video Player (Instagram source) */}
+              {selectedPost.mediaType === "VIDEO" && activeMediaUrl && !videoError ? (
                 <>
                   <video
                     ref={videoRef}
                     key={activeMediaUrl}
                     src={activeMediaUrl}
-                    poster={
-                      selectedPost.thumbnailUrl ||
-                      (selectedYouTubeId
-                        ? `https://i.ytimg.com/vi/${selectedYouTubeId}/hqdefault.jpg`
-                        : undefined)
-                    }
+                    poster={selectedPost.thumbnailUrl || undefined}
                     playsInline
                     loop
                     muted={isMuted}
@@ -521,27 +464,11 @@ export default function MotorraGrid({
                     </div>
                   </div>
                 </>
-              ) : selectedYouTubeId ? (
-                /* Instant Fallback to YouTube Player */
-                <div className="relative w-full h-full bg-black">
-                  <iframe
-                    src={`https://www.youtube-nocookie.com/embed/${selectedYouTubeId}?autoplay=1&playsinline=1&rel=0&modestbranding=1&loop=1&playlist=${selectedYouTubeId}`}
-                    title={selectedSpecs.title}
-                    className="w-full h-full object-cover border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  />
-                </div>
               ) : (
-                /* Static Image Modal Fallback */
+                /* Static Image Fallback – Instagram thumbnail only */
                 <div className="relative w-full h-full">
                   <Image
-                    src={
-                      selectedPost.thumbnailUrl ||
-                      (selectedYouTubeId
-                        ? `https://i.ytimg.com/vi/${selectedYouTubeId}/hqdefault.jpg`
-                        : "")
-                    }
+                    src={selectedPost.thumbnailUrl || ""}
                     alt={selectedSpecs.title}
                     fill
                     className="object-contain"
@@ -662,28 +589,15 @@ export default function MotorraGrid({
                 )}
 
                 <div className="flex gap-2">
-                  {selectedYouTubeId && (
-                    <a
-                      href={`https://www.youtube.com/watch?v=${selectedYouTubeId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-red-600/20 hover:bg-red-600/30 text-red-300 hover:text-white font-semibold text-xs border border-red-500/30 transition-colors"
-                    >
-                      <YouTubeIcon className="w-3.5 h-3.5 text-red-500" />
-                      <span>YouTube</span>
-                      <ExternalLink className="w-3 h-3 opacity-60 ml-0.5" />
-                    </a>
-                  )}
-
                   <a
                     href={selectedPost.permalink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 hover:text-white font-semibold text-xs border border-white/10 transition-colors"
+                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#00b2fe] to-[#0077b6] hover:from-[#00c8ff] hover:to-[#0099e6] text-black font-extrabold text-xs shadow-lg shadow-[#00b2fe]/20 transition-all min-h-[40px] group/btn"
                   >
-                    <InstagramIcon className="w-3.5 h-3.5 text-pink-400" />
-                    <span>Instagram</span>
-                    <ExternalLink className="w-3 h-3 opacity-60 ml-0.5" />
+                    <InstagramIcon className="w-3.5 h-3.5 text-black" />
+                    <span>Shiko në Instagram</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-black opacity-80 group-hover/btn:translate-x-0.5 transition-transform" />
                   </a>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import db from "./db";
 import fs from "fs";
 import path from "path";
+import { deduplicateMotorcycles } from "../../scripts/deduplicateMotorcycles";
 
 /**
  * Download a thumbnail image from Instagram CDN and save it locally
@@ -173,11 +174,20 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
       // Motorcycles go to SHITET; every other post (videos, photos, graphics) goes to EPISOD (FOR YOU)
       const category = isMotorra ? "SHITET" : "EPISOD";
       
-      // Manual sold management:
-      // Status is managed manually from the admin panel.
-      // If the post already exists in the database, keep existing status!
-      // New motorcycle posts start as "FOR_SALE".
-      const status = existing?.status ? existing.status : "FOR_SALE";
+      // Auto-detect SOLD status from caption:
+      // If caption contains SHITUR keywords → automatically mark as SOLD.
+      // Otherwise: if post already exists keep its status, new posts start as FOR_SALE.
+      const isSoldCaption = (
+        lowerCap.includes("❌shitur❌") ||
+        lowerCap.includes("shitur") ||
+        lowerCap.includes("u shit") ||
+        lowerCap.includes("e shitur") ||
+        lowerCap.includes("ushit") ||
+        lowerCap.includes("sold")
+      );
+      const postStatus = isSoldCaption
+        ? "SOLD"
+        : existing?.status ?? "FOR_SALE";
 
       const permalink = `https://www.instagram.com/p/${node.shortcode}/`;
       const mediaUrl = node.video_url || node.display_url || null;
@@ -202,8 +212,8 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
           data: {
             caption,
             mediaUrl: mediaUrl || existing.mediaUrl,
-            thumbnailUrl: thumbnailUrl || existing.thumbnailUrl,
-            status: existing.status, // Preserve admin's manual status setting
+            thumbnailUrl: thumbnailUrl || (existing.thumbnailUrl?.includes("ytimg.com") ? `/instagram/${instagramId}.jpg` : existing.thumbnailUrl),
+            status: postStatus,
             category,
             permalink,
           },
@@ -215,11 +225,11 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
             instagramId,
             caption,
             mediaUrl,
-            thumbnailUrl,
+            thumbnailUrl: thumbnailUrl || `/instagram/${instagramId}.jpg`,
             permalink,
             mediaType,
             category,
-            status: "FOR_SALE",
+            status: postStatus,
             isVisible: true,
             postedAt,
           },
@@ -238,6 +248,8 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
         completedAt: new Date(),
       },
     });
+    // Remove duplicate motorcycle posts automatically
+    await deduplicateMotorcycles();
 
     return {
       success: true,
