@@ -252,10 +252,14 @@ export default function ForYouGrid({
                 <InstagramIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               </div>
 
-              {/* Center Play Icon */}
+              {/* Center Play / Photo Icon */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/30 group-hover:bg-[#00b2fe] group-hover:border-[#00b2fe] flex items-center justify-center text-white group-hover:text-black transition-all shadow-lg group-hover:scale-110">
-                  <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current ml-0.5" />
+                  {post.mediaType === "VIDEO" ? (
+                    <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current ml-0.5" />
+                  ) : (
+                    <Maximize2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  )}
                 </div>
               </div>
 

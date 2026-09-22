@@ -155,22 +155,22 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
       const instagramId = String(node.id);
       const existing = await db.instagramPost.findUnique({ where: { instagramId } });
 
-      // Check hashtags & keywords: #motorr, #motorra, #motor, #shitet, #episod
+      // Check hashtags & keywords: #motorr, #motorra, #motor, #shitet, etc.
       const hasMotorr = (
         lowerCap.includes("#motorr") ||
         lowerCap.includes("#motorra") ||
         lowerCap.includes("#motor") ||
         lowerCap.includes("#shitet") ||
-        lowerCap.includes("shitet")
+        lowerCap.includes("shitet") ||
+        lowerCap.includes("shitur") ||
+        lowerCap.includes("u shit") ||
+        /\b(06[789]\d{7}|\+355\s*6[789]\d{7})\b/.test(caption) ||
+        /(\d+[\.,]?\d*)\s*(?:cc|hp|km|€|eur)/i.test(caption)
       );
-      const hasEpisod = lowerCap.includes("#episod") || lowerCap.includes("episod");
 
       const isMotorra = hasMotorr || (existing && existing.category === "SHITET");
 
-      if (!isMotorra && !hasEpisod) {
-        continue; // Skip posts without relevant hashtags or keywords
-      }
-
+      // Motorcycles go to SHITET; every other post (videos, photos, graphics) goes to EPISOD (FOR YOU)
       const category = isMotorra ? "SHITET" : "EPISOD";
       
       // Manual sold management:
