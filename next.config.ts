@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/instagram/:id.jpg",
+        destination: "/api/instagram-image?id=:id",
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
