@@ -18,7 +18,8 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    const rawKey = process.env.RAPIDAPI_KEY || "f445af1383msh2d0396ce64777c4p142ed6jsn83232537dd13";
+    const dbSetting = await db.siteSetting.findUnique({ where: { key: "rapidapi_key" } }).catch(() => null);
+    const rawKey = process.env.RAPIDAPI_KEY || dbSetting?.value || "7b910a7ee5mshabcc5df6919c3a0p11cae0jsn4875c9201a43";
     const apiKey = rawKey.replace(/[\uFEFF\s"]/g, "").trim();
 
     // Extract shortcode from permalink (e.g., https://www.instagram.com/p/DZapFOCxGMm/ -> DZapFOCxGMm)
