@@ -8,7 +8,7 @@ import { syncInstagramFromRapidApi } from "@/lib/instagram";
 export const dynamic = "force-dynamic";
 
 export default async function MotorraPage() {
-  // Check if last sync was > 25 minutes ago across any platform
+  // Check if last sync was > 6 hours ago (to avoid draining monthly RapidAPI quota)
   try {
     const lastSync = await db.syncLog.findFirst({
       where: {
@@ -17,7 +17,8 @@ export default async function MotorraPage() {
       },
       orderBy: { completedAt: "desc" },
     });
-    const isStale = !lastSync || !lastSync.completedAt || (Date.now() - new Date(lastSync.completedAt).getTime() > 25 * 60 * 1000);
+    const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+    const isStale = !lastSync || !lastSync.completedAt || (Date.now() - new Date(lastSync.completedAt).getTime() > SIX_HOURS_MS);
     if (isStale) {
       Promise.race([
         syncInstagramFromRapidApi(),
