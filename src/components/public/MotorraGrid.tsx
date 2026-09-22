@@ -64,19 +64,17 @@ function MotorraCardItem({
   const parsed = parseMotorcycleCaption(post.caption);
   const isSold = post.status === "SOLD";
 
-  // Real Instagram cover photo (from post.thumbnailUrl or local /instagram/{id}.jpg)
-  const defaultThumb =
-    post.thumbnailUrl && !post.thumbnailUrl.includes("ytimg.com")
-      ? post.thumbnailUrl
-      : `/instagram/${post.instagramId}.jpg`;
+  // Real Instagram cover photo served through high-performance proxy
+  const defaultThumb = `/api/instagram-image?id=${post.instagramId}`;
 
-  const [thumbSrc, setThumbSrc] = useState<string | null>(defaultThumb);
+  const [thumbSrc, setThumbSrc] = useState<string>(defaultThumb);
   const [imgFailed, setImgFailed] = useState(false);
 
-  // Fallback to proxy route if direct image fails
+  // Fallback to permanent GitHub raw storage if needed
   const handleImageError = () => {
-    if (thumbSrc !== `/api/instagram-image?id=${post.instagramId}`) {
-      setThumbSrc(`/api/instagram-image?id=${post.instagramId}`);
+    const rawGithub = `https://raw.githubusercontent.com/kisjanhoxhawztfx-droid/ridewithkeijsi/master/public/instagram/${post.instagramId}.jpg`;
+    if (thumbSrc !== rawGithub) {
+      setThumbSrc(rawGithub);
     } else {
       setImgFailed(true);
     }
@@ -368,7 +366,7 @@ export default function MotorraGrid({
                     ref={videoRef}
                     key={activeMediaUrl}
                     src={activeMediaUrl}
-                    poster={selectedPost.thumbnailUrl || undefined}
+                    poster={`/api/instagram-image?id=${selectedPost.instagramId}`}
                     playsInline
                     loop
                     muted={isMuted}
@@ -468,7 +466,7 @@ export default function MotorraGrid({
                 /* Static Image Fallback – Instagram thumbnail only */
                 <div className="relative w-full h-full">
                   <Image
-                    src={selectedPost.thumbnailUrl || ""}
+                    src={`/api/instagram-image?id=${selectedPost.instagramId}`}
                     alt={selectedSpecs.title}
                     fill
                     className="object-contain"
