@@ -64,7 +64,41 @@ export async function GET(req: Request) {
       }
     } catch {}
 
-    // 4. Try mediaUrl if it's an image (not a video)
+    // 4. Try post.thumbnailUrl (real Instagram cover photo from DB)
+    const thumbCandidate = post?.thumbnailUrl;
+    if (
+      thumbCandidate &&
+      thumbCandidate.startsWith("http") &&
+      !thumbCandidate.includes("ytimg.com") &&
+      !thumbCandidate.includes("/api/instagram-image")
+    ) {
+      try {
+        const imgRes = await fetch(thumbCandidate, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          },
+        });
+        if (imgRes.ok) {
+          const ct = imgRes.headers.get("content-type") || "";
+          if (ct.startsWith("image/")) {
+            const buffer = Buffer.from(await imgRes.arrayBuffer());
+            try {
+              const dir = path.join(process.cwd(), "public", "instagram");
+              if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+              fs.writeFileSync(localPath, buffer);
+            } catch {}
+            return new NextResponse(buffer, {
+              headers: {
+                "Content-Type": ct,
+                "Cache-Control": "public, max-age=604800, stale-while-revalidate=2592000",
+              },
+            });
+          }
+        }
+      } catch {}
+    }
+
+    // 5. Try mediaUrl if it's an image (not a video)
     const mediaUrl = post?.mediaUrl;
     if (
       mediaUrl &&
@@ -83,10 +117,15 @@ export async function GET(req: Request) {
           const ct = imgRes.headers.get("content-type") || "";
           if (ct.startsWith("image/")) {
             const buffer = Buffer.from(await imgRes.arrayBuffer());
+            try {
+              const dir = path.join(process.cwd(), "public", "instagram");
+              if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+              fs.writeFileSync(localPath, buffer);
+            } catch {}
             return new NextResponse(buffer, {
               headers: {
                 "Content-Type": ct,
-                "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+                "Cache-Control": "public, max-age=604800, stale-while-revalidate=2592000",
               },
             });
           }

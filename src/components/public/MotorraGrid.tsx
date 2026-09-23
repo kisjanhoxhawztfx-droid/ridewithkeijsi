@@ -463,6 +463,17 @@ export default function MotorraGrid({
                     </div>
                   </div>
                 </>
+              ) : selectedPost.mediaType === "VIDEO" && selectedPost.permalink ? (
+                /* Fallback Instagram Embed if Direct stream cannot be loaded */
+                <div className="w-full h-full relative flex items-center justify-center bg-black">
+                  <iframe
+                    src={`${selectedPost.permalink.replace(/\/$/, "")}/embed/`}
+                    className="w-full h-full border-0"
+                    scrolling="no"
+                    allowTransparency
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  />
+                </div>
               ) : (
                 /* Static Image Fallback – Instagram thumbnail only */
                 <div className="relative w-full h-full">
