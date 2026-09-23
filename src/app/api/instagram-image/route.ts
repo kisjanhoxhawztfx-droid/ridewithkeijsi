@@ -64,28 +64,50 @@ export async function GET(req: Request) {
       }
     } catch {}
 
-    // 4. Fetch from post.thumbnailUrl or mediaUrl (if valid HTTP and not YouTube)
-    const targetUrl = post?.thumbnailUrl || post?.mediaUrl;
-    if (targetUrl && targetUrl.startsWith("http") && !targetUrl.includes("ytimg.com")) {
+    // 4. Try mediaUrl if it's an image (not a video)
+    const mediaUrl = post?.mediaUrl;
+    if (
+      mediaUrl &&
+      mediaUrl.startsWith("http") &&
+      !mediaUrl.includes("ytimg.com") &&
+      !mediaUrl.includes(".mp4") &&
+      !mediaUrl.includes("video")
+    ) {
       try {
-        const imgRes = await fetch(targetUrl, {
+        const imgRes = await fetch(mediaUrl, {
           headers: {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
           },
         });
         if (imgRes.ok) {
-          const buffer = Buffer.from(await imgRes.arrayBuffer());
-          return new NextResponse(buffer, {
-            headers: {
-              "Content-Type": "image/jpeg",
-              "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
-            },
-          });
+          const ct = imgRes.headers.get("content-type") || "";
+          if (ct.startsWith("image/")) {
+            const buffer = Buffer.from(await imgRes.arrayBuffer());
+            return new NextResponse(buffer, {
+              headers: {
+                "Content-Type": ct,
+                "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+              },
+            });
+          }
         }
       } catch {}
     }
 
-    return new NextResponse("Image not available", { status: 404 });
+    // 5. Return SVG placeholder (never 404 - show a motorcycle icon instead)
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="540" viewBox="0 0 400 540">
+  <rect width="400" height="540" fill="#0c121d"/>
+  <rect x="1" y="1" width="398" height="538" fill="none" stroke="#ffffff15" stroke-width="1" rx="12"/>
+  <text x="200" y="240" text-anchor="middle" font-size="80" fill="#1a2a3a">🏍️</text>
+  <text x="200" y="310" text-anchor="middle" font-family="system-ui" font-size="13" fill="#334155">Foto nuk disponohet</text>
+  <text x="200" y="335" text-anchor="middle" font-family="system-ui" font-size="11" fill="#1e3a5f">ridewithkeijsi</text>
+</svg>`;
+    return new NextResponse(svg, {
+      headers: {
+        "Content-Type": "image/svg+xml",
+        "Cache-Control": "public, max-age=300",
+      },
+    });
   } catch (err) {
     console.error("Image proxy route error:", err);
     return new NextResponse("Internal server error", { status: 500 });
