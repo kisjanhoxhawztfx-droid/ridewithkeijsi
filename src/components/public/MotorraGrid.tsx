@@ -53,6 +53,7 @@ function formatTime(seconds: number) {
 /**
  * Individual motorcycle card displaying the true Instagram cover photo.
  * Never falls back to YouTube - motorcycles come strictly from Instagram.
+ * Uses /api/instagram-image proxy for reliable cover delivery.
  */
 function MotorraCardItem({
   post,
