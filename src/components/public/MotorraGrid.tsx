@@ -291,10 +291,8 @@ export default function MotorraGrid({
     }
   };
 
-  // When HTML5 video fails (e.g. 403 Forbidden Instagram URL), show error state.
-  // No YouTube fallback for motorcycle section – all content is from Instagram.
   const handleVideoError = () => {
-    setVideoError(true);
+    setIsBuffering(false);
   };
 
   // Keyboard navigation
@@ -360,14 +358,13 @@ export default function MotorraGrid({
               onClick={togglePlay}
               className="relative aspect-[9/13.5] w-full bg-black overflow-hidden flex-shrink-0 flex items-center justify-center cursor-pointer select-none group/video"
             >
-              {/* Native HTML5 Video Player (Instagram source) */}
-              {selectedPost.mediaType === "VIDEO" && activeMediaUrl && !videoError ? (
+              {/* Native HTML5 Video Player (Instagram source) - ALWAYS used for every motorcycle video */}
+              {selectedPost.mediaType === "VIDEO" && activeMediaUrl ? (
                 <>
                   <video
                     ref={videoRef}
                     key={activeMediaUrl}
                     src={activeMediaUrl}
-                    poster={`/api/instagram-image?id=${selectedPost.instagramId}`}
                     playsInline
                     loop
                     muted={isMuted}
@@ -450,7 +447,7 @@ export default function MotorraGrid({
                   >
                     <input
                       type="range"
-                      min="0"
+                      min={0}
                       max={duration || 100}
                       step="0.1"
                       value={currentTime}
@@ -463,19 +460,8 @@ export default function MotorraGrid({
                     </div>
                   </div>
                 </>
-              ) : selectedPost.mediaType === "VIDEO" && selectedPost.permalink ? (
-                /* Fallback Instagram Embed if Direct stream cannot be loaded */
-                <div className="w-full h-full relative flex items-center justify-center bg-black">
-                  <iframe
-                    src={`${selectedPost.permalink.replace(/\/$/, "")}/embed/`}
-                    className="w-full h-full border-0"
-                    scrolling="no"
-                    allowTransparency
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  />
-                </div>
               ) : (
-                /* Static Image Fallback – Instagram thumbnail only */
+                /* Static Image Fallback – for photo posts without video */
                 <div className="relative w-full h-full">
                   <Image
                     src={`/api/instagram-image?id=${selectedPost.instagramId}`}
