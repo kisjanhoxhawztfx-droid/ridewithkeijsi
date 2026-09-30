@@ -82,13 +82,16 @@ function MotorraCardItem({
 
   const displayTitle = post.title || post.model || parsed.title || "Motorr";
   const displayYear = post.year || parsed.year;
-  const fullHeading = displayYear ? `${displayYear} ${displayTitle}` : displayTitle;
+  const fullHeading = displayYear && !displayTitle.includes(String(displayYear))
+    ? `${displayYear} ${displayTitle}`
+    : displayTitle;
 
   const displayPrice = post.price
     ? `€${post.price.toLocaleString()}`
     : (parsed.price || "Me Rezervim");
 
   const specsLine = [
+    (post.year || parsed.year) ? `Viti ${post.year || parsed.year}` : null,
     post.engine || parsed.engine,
     post.mileageKm ? `${post.mileageKm.toLocaleString()} km` : parsed.mileage,
     post.mileageMi ? `${post.mileageMi.toLocaleString()} mi` : null,
@@ -188,10 +191,34 @@ function MotorraCardItem({
             {fullHeading}
           </h3>
 
-          {/* Specs Subline: 560 cc • 15,000 km (9,320 mi) */}
-          <p className="text-[11px] text-gray-400 font-medium line-clamp-1">
-            {specsLine || "Gjendje shumë e mirë"}
-          </p>
+          {/* Specs Subline: Viti & Cilindrata highlighted */}
+          <div className="flex items-center gap-1.5 text-[11px] font-medium line-clamp-1 flex-wrap">
+            {(post.year || parsed.year) && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/10 text-white font-bold text-[10px] tracking-wide">
+                <Calendar className="w-2.5 h-2.5 text-[#00b2fe]" />
+                Viti {post.year || parsed.year}
+              </span>
+            )}
+            {(post.engine || parsed.engine) && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#00b2fe]/15 text-[#00d2ff] font-bold text-[10px] tracking-wide">
+                <Zap className="w-2.5 h-2.5 text-[#00b2fe]" />
+                {post.engine || parsed.engine}
+              </span>
+            )}
+            {(post.mileageKm || parsed.mileage) && (
+              <span className="text-gray-300 text-[11px]">
+                • {post.mileageKm ? `${post.mileageKm.toLocaleString()} km` : parsed.mileage}
+              </span>
+            )}
+            {post.mileageMi && (
+              <span className="text-gray-500 text-[11px]">
+                ({post.mileageMi.toLocaleString()} mi)
+              </span>
+            )}
+            <span className="text-gray-400 text-[11px]">
+              • {isSold ? "E Shitur" : "Gjendje Perfekte"}
+            </span>
+          </div>
 
           {/* Price & Deal Rating */}
           <div className="flex items-center gap-2 pt-1">

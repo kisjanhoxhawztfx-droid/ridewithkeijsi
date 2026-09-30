@@ -74,12 +74,22 @@ export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Distinct Brands with count
+  // Distinct Brands with count (only real motorcycle brands, no SHITUR or phone numbers)
   const brandCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     posts.forEach((p) => {
-      const b = p.brand || p.title?.split(" ")[0] || "Tjetër";
-      counts[b] = (counts[b] || 0) + 1;
+      const rawBrand = (p.brand || p.title?.split(" ")[0] || "").trim();
+      if (!rawBrand) return;
+      // Strictly exclude any non-brand labels like "SHITUR", "+355", pure numbers or "Tjetër"
+      if (
+        /shitur/i.test(rawBrand) ||
+        rawBrand.startsWith("+") ||
+        /^\d+$/.test(rawBrand) ||
+        rawBrand.toLowerCase() === "tjetër"
+      ) {
+        return;
+      }
+      counts[rawBrand] = (counts[rawBrand] || 0) + 1;
     });
     return Object.entries(counts).sort((a, b) => b[1] - a[1]);
   }, [posts]);
@@ -460,14 +470,17 @@ export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
 
                 const displayTitle = post.title || post.model || "Motorr";
                 const displayYear = post.year ? `${post.year}` : "";
-                const fullHeading = displayYear ? `${displayYear} ${displayTitle}` : displayTitle;
+                const fullHeading = displayYear && !displayTitle.includes(displayYear)
+                  ? `${displayYear} ${displayTitle}`
+                  : displayTitle;
 
                 const displayPrice = post.price
                   ? `€${post.price.toLocaleString()}`
                   : "Me Rezervim";
 
                 const specsLine = [
-                  post.engine,
+                  post.year ? `Viti ${post.year}` : null,
+                  post.engine ? `${post.engine}` : null,
                   post.mileageKm ? `${post.mileageKm.toLocaleString()} km` : null,
                   post.mileageMi ? `${post.mileageMi.toLocaleString()} mi` : null,
                   isSold ? "E Shitur" : "Gjendje Perfekte",
@@ -547,10 +560,34 @@ export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
                           {fullHeading}
                         </h3>
 
-                        {/* Specs Subline: 560 cc • 15,000 km (9,320 mi) */}
-                        <p className="text-[11px] text-gray-400 font-medium line-clamp-1">
-                          {specsLine || "Gjendje shumë e mirë"}
-                        </p>
+                        {/* Specs Subline: Viti & Cilindrata highlighted */}
+                        <div className="flex items-center gap-1.5 text-[11px] font-medium line-clamp-1 flex-wrap">
+                          {post.year && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/10 text-white font-bold text-[10px] tracking-wide">
+                              <Calendar className="w-2.5 h-2.5 text-[#00b2fe]" />
+                              Viti {post.year}
+                            </span>
+                          )}
+                          {post.engine && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#00b2fe]/15 text-[#00d2ff] font-bold text-[10px] tracking-wide">
+                              <Zap className="w-2.5 h-2.5 text-[#00b2fe]" />
+                              {post.engine}
+                            </span>
+                          )}
+                          {post.mileageKm && (
+                            <span className="text-gray-300 text-[11px]">
+                              • {post.mileageKm.toLocaleString()} km
+                            </span>
+                          )}
+                          {post.mileageMi && (
+                            <span className="text-gray-500 text-[11px]">
+                              ({post.mileageMi.toLocaleString()} mi)
+                            </span>
+                          )}
+                          <span className="text-gray-400 text-[11px]">
+                            • {isSold ? "E Shitur" : "Gjendje Perfekte"}
+                          </span>
+                        </div>
 
                         {/* Price & Deal Rating Pill (Like '$1,000 Good deal' in screenshot) */}
                         <div className="flex items-center gap-2 pt-1">
