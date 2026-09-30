@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
   Bike,
-  RefreshCw,
   Plus,
   Eye,
   EyeOff,
@@ -16,49 +15,86 @@ import {
   Search,
   Archive,
   ShoppingBag,
+  Upload,
+  X,
+  ImageIcon,
+  Phone,
+  Gauge,
+  Calendar,
+  ExternalLink,
 } from "lucide-react";
-import { InstagramIcon } from "@/components/ui/Icons";
+import { WhatsAppIcon } from "@/components/ui/Icons";
 
-interface Motorcycle {
+interface MotorcycleItem {
   id: string;
-  instagramMediaId?: string | null;
-  permalink: string;
-  thumbnailUrl: string;
-  caption: string;
+  title?: string | null;
   brand?: string | null;
   model?: string | null;
   year?: number | null;
   price?: number | null;
   currency?: string | null;
+  mileageKm?: number | null;
+  mileageMi?: number | null;
   engine?: string | null;
+  description?: string | null;
+  phone?: string | null;
+  whatsapp?: string | null;
+  imageUrl?: string | null;
+  images?: string[];
   status: string;
   isFeatured: boolean;
   isVisible: boolean;
   publishedAt: string;
 }
 
+const COMMON_BRANDS = [
+  "Yamaha",
+  "Honda",
+  "BMW",
+  "Kawasaki",
+  "KTM",
+  "Ducati",
+  "Suzuki",
+  "Vespa",
+  "Piaggio",
+  "CFMOTO",
+  "Harley-Davidson",
+  "Aprilia",
+  "Triumph",
+  "Voge",
+  "Benelli",
+  "Tjetër",
+];
+
 export default function AdminMotorraPage() {
-  const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
-  const [accountName, setAccountName] = useState("ridewithkeijsi");
+  const [motorcycles, setMotorcycles] = useState<MotorcycleItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
-  const [testing, setTesting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "FOR_SALE" | "SOLD">("ALL");
 
-  // New motorcycle form state
-  const [permalink, setPermalink] = useState("");
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
-  const [caption, setCaption] = useState("");
+  // Form state
+  const [title, setTitle] = useState("");
   const [brand, setBrand] = useState("Yamaha");
   const [model, setModel] = useState("");
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [price, setPrice] = useState("");
+  const [mileageKm, setMileageKm] = useState("");
+  const [mileageMi, setMileageMi] = useState("");
   const [engine, setEngine] = useState("");
+  const [phone, setPhone] = useState("+355697738559");
+  const [whatsapp, setWhatsapp] = useState("+355697738559");
+  const [description, setDescription] = useState("");
   const [status, setStatus] = useState("FOR_SALE");
   const [isFeatured, setIsFeatured] = useState(false);
+
+  // Multiple files state
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchMotorcycles = async () => {
     try {
@@ -76,54 +112,127 @@ export default function AdminMotorraPage() {
     fetchMotorcycles();
   }, []);
 
-  const handleTestConnection = async () => {
-    setTesting(true);
-    setStatusMessage(null);
-    try {
-      const res = await fetch("/api/sync/instagram", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "test" }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setStatusMessage({
-          type: "success",
-          text: `U lidh me profilin Instagram @${data.username} (${data.mediaCount || 0} postime).`,
-        });
-      } else {
-        setStatusMessage({
-          type: "error",
-          text: data.message || "Lidhja me Instagram Graph API kërkon access token.",
-        });
-      }
-    } catch {
-      setStatusMessage({ type: "error", text: "Testimi i lidhjes dështoi." });
-    } finally {
-      setTesting(false);
+  // Auto-calculate miles when km is entered
+  const handleKmChange = (val: string) => {
+    setMileageKm(val);
+    const num = parseInt(val, 10);
+    if (!isNaN(num) && num > 0) {
+      setMileageMi(Math.round(num * 0.621371).toString());
+    } else {
+      setMileageMi("");
     }
   };
 
-  const handleManualSync = async () => {
-    setSyncing(true);
+  const handleFilesSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const newFiles = Array.from(files);
+    setSelectedFiles((prev) => [...prev, ...newFiles]);
+
+    const newPreviews = newFiles.map((f) => URL.createObjectURL(f));
+    setPreviews((prev) => [...prev, ...newPreviews]);
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setBrand("Yamaha");
+    setModel("");
+    setYear(new Date().getFullYear().toString());
+    setPrice("");
+    setMileageKm("");
+    setMileageMi("");
+    setEngine("");
+    setPhone("+355697738559");
+    setWhatsapp("+355697738559");
+    setDescription("");
+    setStatus("FOR_SALE");
+    setIsFeatured(false);
+    setSelectedFiles([]);
+    setPreviews([]);
+    setUploadProgress("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleCreateMotorcycle = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedFiles.length === 0) {
+      alert("Ju lutem ngarkoni të paktën 1 foto për motorrin.");
+      return;
+    }
+
+    setUploading(true);
     setStatusMessage(null);
+
     try {
-      const res = await fetch("/api/sync/instagram", {
+      const uploadedUrls: string[] = [];
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        setUploadProgress(`Po ngarkohet fotoja ${i + 1} nga ${selectedFiles.length}...`);
+        const file = selectedFiles[i];
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("folder", "motorra");
+
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          const err = await uploadRes.json();
+          throw new Error(err.error || `Dështoi ngarkimi i fotos ${i + 1}`);
+        }
+
+        const { url } = await uploadRes.json();
+        uploadedUrls.push(url);
+      }
+
+      setUploadProgress("Po ruhet motorri në bazën e të dhënave...");
+
+      const res = await fetch("/api/motorra", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({
+          title,
+          brand,
+          model,
+          year: year ? parseInt(year, 10) : null,
+          price: price ? parseFloat(price) : null,
+          mileageKm: mileageKm ? parseInt(mileageKm, 10) : null,
+          mileageMi: mileageMi ? parseInt(mileageMi, 10) : null,
+          engine,
+          phone,
+          whatsapp,
+          description,
+          status,
+          isFeatured,
+          imageUrl: uploadedUrls[0],
+          images: uploadedUrls,
+        }),
       });
-      const data = await res.json();
-      if (data.success) {
-        setStatusMessage({ type: "success", text: data.message });
-        await fetchMotorcycles();
-      } else {
-        setStatusMessage({ type: "error", text: data.message });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Dështoi ruajtja e motorrit.");
       }
-    } catch {
-      setStatusMessage({ type: "error", text: "Sinkronizimi dështoi." });
+
+      setShowAddModal(false);
+      resetForm();
+      setStatusMessage({ type: "success", text: `Motorri "${title}" u shtua me sukses me ${uploadedUrls.length} foto!` });
+      await fetchMotorcycles();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Ndodhi një gabim gjatë shtimit";
+      alert(msg);
+      setStatusMessage({ type: "error", text: msg });
     } finally {
-      setSyncing(false);
+      setUploading(false);
+      setUploadProgress("");
     }
   };
 
@@ -140,6 +249,24 @@ export default function AdminMotorraPage() {
     }
   };
 
+  const handleToggleStatus = async (id: string, current: string) => {
+    const nextStatus = current === "FOR_SALE" ? "SOLD" : "FOR_SALE";
+    try {
+      await fetch("/api/motorra", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: nextStatus }),
+      });
+      setMotorcycles(motorcycles.map((m) => (m.id === id ? { ...m, status: nextStatus } : m)));
+      setStatusMessage({
+        type: "success",
+        text: `Statusi u ndryshua në: ${nextStatus === "SOLD" ? "E Shitur ❌" : "Në Shitje ✅"}`,
+      });
+    } catch {
+      alert("Nuk mund të ndryshohej statusi.");
+    }
+  };
+
   const handleToggleFeatured = async (id: string, current: boolean) => {
     try {
       await fetch("/api/motorra", {
@@ -149,124 +276,114 @@ export default function AdminMotorraPage() {
       });
       setMotorcycles(motorcycles.map((m) => (m.id === id ? { ...m, isFeatured: !current } : m)));
     } catch {
-      alert("Nuk mund të ndryshohej statusi.");
-    }
-  };
-
-  const handleStatusChange = async (id: string, newStatus: string) => {
-    try {
-      await fetch("/api/motorra", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: newStatus }),
-      });
-      setMotorcycles(motorcycles.map((m) => (m.id === id ? { ...m, status: newStatus } : m)));
-    } catch {
-      alert("Nuk mund të përditësohej statusi.");
+      alert("Nuk mund të ndryshohej statusi VIP.");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("A jeni i sigurt që dëshironi ta fshini këtë motorr nga faqja?")) {
-      return;
-    }
+    if (!confirm("A jeni i sigurt që dëshironi ta fshini këtë motorr?")) return;
     try {
       await fetch(`/api/motorra?id=${id}`, { method: "DELETE" });
       setMotorcycles(motorcycles.filter((m) => m.id !== id));
-      setStatusMessage({ type: "success", text: "Motorri u fshi nga sistemi." });
+      setStatusMessage({ type: "success", text: "Motorri u fshi me sukses." });
     } catch {
-      alert("Nuk mund të fshihej motorri.");
+      alert("Dështoi fshirja e motorrit.");
     }
   };
 
-  const handleCreateMotorcycle = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("/api/motorra", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          permalink,
-          thumbnailUrl,
-          caption,
-          brand,
-          model,
-          year,
-          price,
-          engine,
-          status,
-          isFeatured,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setShowAddModal(false);
-        setPermalink("");
-        setThumbnailUrl("");
-        setCaption("");
-        setModel("");
-        setPrice("");
-        setEngine("");
-        setStatusMessage({ type: "success", text: "Motorri u shtua me sukses!" });
-        await fetchMotorcycles();
-      } else {
-        alert(data.error || "Dështoi shtimi i motorrit.");
-      }
-    } catch {
-      alert("Ndodhi një gabim gjatë shtimit.");
-    }
-  };
+  const filteredMotorcycles = motorcycles
+    .filter((m) => {
+      if (statusFilter === "FOR_SALE") return m.status === "FOR_SALE";
+      if (statusFilter === "SOLD") return m.status === "SOLD";
+      return true;
+    })
+    .filter((m) => {
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      const t = (m.title || "").toLowerCase();
+      const b = (m.brand || "").toLowerCase();
+      const d = (m.description || "").toLowerCase();
+      return t.includes(q) || b.includes(q) || d.includes(q);
+    });
 
-  const countForSale = motorcycles.filter((m) => m.status === "FOR_SALE").length;
-  const countSold = motorcycles.filter((m) => m.status === "SOLD").length;
-
-  const filteredMotorcycles = motorcycles.filter((m) => {
-    if (statusFilter === "FOR_SALE" && m.status !== "FOR_SALE") return false;
-    if (statusFilter === "SOLD" && m.status !== "SOLD") return false;
-    const fullText = `${m.brand || ""} ${m.model || ""} ${m.caption}`.toLowerCase();
-    return fullText.includes(searchQuery.toLowerCase());
-  });
+  const forSaleCount = motorcycles.filter((m) => m.status === "FOR_SALE").length;
+  const soldCount = motorcycles.filter((m) => m.status === "SOLD").length;
 
   return (
     <div className="space-y-8 max-w-7xl">
-      {/* Header */}
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-pink-500" />
-            <span className="text-xs font-bold text-pink-400 uppercase tracking-wider font-['Outfit']">
-              MARKETPLACE & MOTORRA
+            <span className="w-2 h-2 rounded-full bg-[#00b2fe]" />
+            <span className="text-xs font-bold text-[#00b2fe] uppercase tracking-wider font-['Outfit']">
+              MENAXHIMI I MOTORRAVE
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit']">
-            Motorra në Shitje (Instagram #motorr)
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2.5">
+            <Bike className="w-7 h-7 text-[#00b2fe]" />
+            <span>Motorra në Shitje</span>
           </h1>
-          <p className="text-xs text-gray-400 max-w-2xl">
-            Sinkronizim automatik çdo 4 orë për postimet me hashtag <strong className="text-pink-400">#motorr</strong> nga @ridewithkeijsi. Motorrat e shitur menaxhohen manualisht me butonin &quot;Shëno E Shitur&quot;.
+          <p className="text-xs text-gray-400 mt-1">
+            Postoni motorra direkt me foto nga telefoni me të gjitha të dhënat (çmimi, viti, kilometrat në km &amp; milje, kontakti).
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={handleManualSync}
-            disabled={syncing}
-            className="btn-primary !py-2 !px-4 text-xs font-bold shadow-[0_0_15px_rgba(0,178,254,0.3)] disabled:opacity-50"
+        <div className="flex items-center gap-2">
+          <a
+            href="/motorra"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary !py-2 !px-3.5 text-xs font-bold flex items-center gap-1.5"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin" : ""}`} />
-            <span>{syncing ? "Po sinkronizohet..." : "Sinkronizo Instagram"}</span>
-          </button>
+            <span>Shiko Faqen Live</span>
+            <ExternalLink className="w-3.5 h-3.5 text-[#00b2fe]" />
+          </a>
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="btn-secondary !py-2 !px-4 text-xs font-bold"
+            className="btn-primary !py-2.5 !px-5 text-xs font-extrabold flex items-center gap-2 shadow-[0_0_20px_rgba(0,178,254,0.35)]"
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Shto Motorr</span>
+            <Plus className="w-4 h-4" />
+            <span>Shto Motorr të Ri</span>
           </button>
         </div>
       </div>
 
-      {/* Status Alerts */}
+      {/* Stats Counter Bar */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
+        <div className="surface-card p-4 rounded-xl border border-white/10 flex items-center justify-between">
+          <div>
+            <span className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-wider">Gjithsej Motorra</span>
+            <p className="text-xl sm:text-2xl font-black text-white font-['Outfit'] mt-0.5">{motorcycles.length}</p>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+            <Bike className="w-5 h-5 text-gray-300" />
+          </div>
+        </div>
+
+        <div className="surface-card p-4 rounded-xl border border-green-500/20 bg-green-500/[0.02] flex items-center justify-between">
+          <div>
+            <span className="text-[10px] sm:text-xs text-green-400 font-bold uppercase tracking-wider">Në Shitje</span>
+            <p className="text-xl sm:text-2xl font-black text-green-400 font-['Outfit'] mt-0.5">{forSaleCount}</p>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-green-500/10 border border-green-500/30 flex items-center justify-center">
+            <ShoppingBag className="w-5 h-5 text-green-400" />
+          </div>
+        </div>
+
+        <div className="surface-card p-4 rounded-xl border border-zinc-700/40 flex items-center justify-between">
+          <div>
+            <span className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-wider">Të Shitura</span>
+            <p className="text-xl sm:text-2xl font-black text-gray-400 font-['Outfit'] mt-0.5">{soldCount}</p>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center">
+            <Archive className="w-5 h-5 text-gray-400" />
+          </div>
+        </div>
+      </div>
+
+      {/* Status Alert */}
       {statusMessage && (
         <div
           className={`p-4 rounded-xl border flex items-center gap-3 text-xs ${
@@ -284,384 +401,536 @@ export default function AdminMotorraPage() {
         </div>
       )}
 
-      {/* Instagram Config Card */}
-      <div className="surface-card p-6 border border-white/10 space-y-4">
-        <h2 className="text-sm font-bold text-white uppercase tracking-wider font-['Outfit'] flex items-center gap-2">
-          <InstagramIcon className="w-4 h-4 text-pink-500" />
-          <span>Konfigurimi i Instagramit</span>
-        </h2>
+      {/* Filters and Search Bar */}
+      <div className="surface-card p-4 rounded-xl border border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Kërko sipas titullit, markës..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg pl-9 pr-3.5 py-2 text-xs text-white placeholder-gray-600 focus:outline-none"
+          />
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-          <div className="md:col-span-8">
-            <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase">
-              Emri i Përdoruesit në Instagram (@username)
-            </label>
-            <input
-              type="text"
-              value={accountName}
-              onChange={(e) => setAccountName(e.target.value)}
-              placeholder="ridewithkeijsi"
-              className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-gray-600 focus:outline-none"
-            />
-          </div>
-
-          <div className="md:col-span-4 flex gap-2">
-            <button
-              onClick={handleTestConnection}
-              disabled={testing}
-              className="w-full btn-secondary text-xs font-bold !py-2.5"
-            >
-              {testing ? "Po testohet..." : "Testo Lidhjen"}
-            </button>
-          </div>
+        <div className="flex items-center gap-1.5 self-start sm:self-auto">
+          <button
+            onClick={() => setStatusFilter("ALL")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              statusFilter === "ALL" ? "bg-[#00b2fe] text-black" : "bg-white/5 text-gray-300 hover:text-white"
+            }`}
+          >
+            Të Gjithë ({motorcycles.length})
+          </button>
+          <button
+            onClick={() => setStatusFilter("FOR_SALE")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              statusFilter === "FOR_SALE" ? "bg-green-500 text-black font-extrabold" : "bg-white/5 text-gray-300 hover:text-white"
+            }`}
+          >
+            Në Shitje ({forSaleCount})
+          </button>
+          <button
+            onClick={() => setStatusFilter("SOLD")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              statusFilter === "SOLD" ? "bg-zinc-700 text-white" : "bg-white/5 text-gray-300 hover:text-white"
+            }`}
+          >
+            Të Shitura ({soldCount})
+          </button>
         </div>
       </div>
 
-      {/* Motorcycle Listing Table */}
-      <div className="surface-card border border-white/10 overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-white/10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <h3 className="text-base font-bold text-white font-['Outfit']">
-              Motorrat në Sistem ({motorcycles.length})
-            </h3>
-
-            {/* Quick Status Filter Tabs */}
-            <div className="flex items-center gap-1.5 p-1 bg-black/40 border border-white/10 rounded-xl">
-              <button
-                onClick={() => setStatusFilter("ALL")}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                  statusFilter === "ALL"
-                    ? "bg-[#00b2fe] text-black shadow-[0_0_12px_rgba(0,178,254,0.3)]"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
-                }`}
+      {/* Motorcycle Cards Grid */}
+      {loading ? (
+        <div className="p-12 text-center text-xs text-gray-400">Po ngarkohen motorrat...</div>
+      ) : filteredMotorcycles.length === 0 ? (
+        <div className="surface-card p-12 text-center rounded-2xl border border-white/10 space-y-3">
+          <Bike className="w-10 h-10 text-gray-500 mx-auto" />
+          <h3 className="text-sm font-bold text-white font-['Outfit']">Nuk u gjet asnjë motorr</h3>
+          <p className="text-xs text-gray-400">Shtoni motorrin tuaj të parë duke klikuar butonin &quot;Shto Motorr të Ri&quot; lart.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredMotorcycles.map((m) => {
+            const photoCount = m.images && m.images.length > 0 ? m.images.length : (m.imageUrl ? 1 : 0);
+            return (
+              <div
+                key={m.id}
+                className="surface-card border border-white/10 rounded-2xl overflow-hidden hover:border-[#00b2fe]/60 transition-all flex flex-col justify-between"
               >
-                Të Gjitha ({motorcycles.length})
-              </button>
+                <div>
+                  {/* Photo area with badges */}
+                  <div className="relative aspect-[16/10] bg-black overflow-hidden">
+                    {m.imageUrl ? (
+                      <Image
+                        src={m.imageUrl}
+                        alt={m.title || "Motorr"}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-zinc-900">
+                        <Bike className="w-10 h-10 text-gray-600" />
+                      </div>
+                    )}
 
-              <button
-                onClick={() => setStatusFilter("FOR_SALE")}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
-                  statusFilter === "FOR_SALE"
-                    ? "bg-pink-500 text-white shadow-[0_0_12px_rgba(236,72,153,0.3)]"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                <ShoppingBag className="w-3 h-3" />
-                <span>Në Shitje ({countForSale})</span>
-              </button>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
 
+                    {/* Top Status & Photos Count Badges */}
+                    <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-10">
+                      <button
+                        onClick={() => handleToggleStatus(m.id, m.status)}
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-md transition-transform active:scale-95 ${
+                          m.status === "SOLD"
+                            ? "bg-red-500/90 text-white border border-red-400/50"
+                            : "bg-green-500 text-black font-extrabold"
+                        }`}
+                        title="Kliko për të ndryshuar statusin"
+                      >
+                        {m.status === "SOLD" ? "❌ E Shitur" : "✅ Në Shitje"}
+                      </button>
+
+                      <div className="flex items-center gap-1.5">
+                        {m.isFeatured && (
+                          <span className="px-2 py-0.5 rounded-full bg-yellow-400 text-black text-[9px] font-black flex items-center gap-0.5">
+                            <Star className="w-2.5 h-2.5 fill-black text-black" />
+                            VIP
+                          </span>
+                        )}
+                        <span className="px-2 py-1 rounded-lg bg-black/70 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold flex items-center gap-1">
+                          <ImageIcon className="w-3 h-3 text-[#00b2fe]" />
+                          <span>{photoCount} {photoCount === 1 ? "foto" : "foto"}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Price Tag */}
+                    <div className="absolute bottom-2.5 right-2.5 z-10">
+                      <span className="px-2.5 py-1 rounded-lg bg-black/85 backdrop-blur-md border border-[#00b2fe]/50 text-xs font-black text-[#00d2ff]">
+                        {m.price ? `€${m.price.toLocaleString()}` : "Me Rezervim"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Body Content */}
+                  <div className="p-4 space-y-3">
+                    <div>
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#00b2fe] uppercase">
+                        <span>{m.brand || "Motorr"}</span>
+                        {m.model && <span>• {m.model}</span>}
+                      </div>
+                      <h3 className="text-sm font-extrabold text-white font-['Outfit'] mt-0.5 line-clamp-1">
+                        {m.title || "Motorr pa titull"}
+                      </h3>
+                    </div>
+
+                    {/* Specs chips */}
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-300">
+                      {m.year && (
+                        <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white/5">
+                          <Calendar className="w-3.5 h-3.5 text-[#00b2fe]" />
+                          <span>Viti: <strong>{m.year}</strong></span>
+                        </div>
+                      )}
+
+                      {m.engine && (
+                        <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white/5">
+                          <Tag className="w-3.5 h-3.5 text-[#00b2fe]" />
+                          <span>Motori: <strong>{m.engine}</strong></span>
+                        </div>
+                      )}
+
+                      {(m.mileageKm !== null && m.mileageKm !== undefined) && (
+                        <div className="col-span-2 flex items-center justify-between p-1.5 rounded-lg bg-white/5">
+                          <div className="flex items-center gap-1.5">
+                            <Gauge className="w-3.5 h-3.5 text-[#00b2fe]" />
+                            <span>Kilometra:</span>
+                          </div>
+                          <span className="font-bold text-white">
+                            {m.mileageKm.toLocaleString()} km
+                            {m.mileageMi && <span className="text-gray-400 font-normal"> ({m.mileageMi.toLocaleString()} mi)</span>}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {m.description && (
+                      <p className="text-[11px] text-gray-400 line-clamp-2 leading-relaxed">
+                        {m.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Footer Actions */}
+                <div className="p-3 border-t border-white/10 bg-white/[0.01] flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleToggleFeatured(m.id, m.isFeatured)}
+                      className={`p-2 rounded-lg border transition-all ${
+                        m.isFeatured
+                          ? "bg-yellow-400/15 border-yellow-400/40 text-yellow-400"
+                          : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                      }`}
+                      title={m.isFeatured ? "Hiq nga VIP" : "Bëje VIP"}
+                    >
+                      <Star className={`w-3.5 h-3.5 ${m.isFeatured ? "fill-yellow-400" : ""}`} />
+                    </button>
+
+                    <button
+                      onClick={() => handleToggleVisibility(m.id, m.isVisible)}
+                      className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-all"
+                      title={m.isVisible ? "Fshih nga faqja" : "Bëje të dukshëm"}
+                    >
+                      {m.isVisible ? <Eye className="w-3.5 h-3.5 text-[#00b2fe]" /> : <EyeOff className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => handleDelete(m.id)}
+                    className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 transition-all"
+                    title="Fshij motorrin"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Modal: Add New Motorcycle with Multiple Photos */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="surface-card max-w-2xl w-full p-5 sm:p-7 border border-white/15 rounded-3xl space-y-5 my-auto max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#00b2fe]/20 border border-[#00b2fe]/40 flex items-center justify-center">
+                  <Bike className="w-4 h-4 text-[#00b2fe]" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-white font-['Outfit']">
+                    Shto Motorr të Ri
+                  </h3>
+                  <p className="text-[11px] text-gray-400">
+                    Ngarkoni disa foto nga galeria dhe plotësoni specifikat
+                  </p>
+                </div>
+              </div>
               <button
-                onClick={() => setStatusFilter("SOLD")}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
-                  statusFilter === "SOLD"
-                    ? "bg-zinc-700 text-white shadow-sm"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
-                }`}
+                type="button"
+                onClick={() => { setShowAddModal(false); resetForm(); }}
+                className="p-1.5 rounded-full bg-white/10 text-gray-400 hover:text-white"
               >
-                <Archive className="w-3 h-3" />
-                <span>Të Shitura ({countSold})</span>
+                <X className="w-4 h-4" />
               </button>
             </div>
-          </div>
-
-          <div className="relative max-w-xs w-full">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Kërko motorra..."
-              className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-gray-600 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="p-12 text-center text-xs text-gray-400">Po ngarkohen motorrat...</div>
-        ) : filteredMotorcycles.length === 0 ? (
-          <div className="p-12 text-center text-xs text-gray-400">
-            Nuk u gjet asnjë motorr në këtë filtër.
-          </div>
-        ) : (
-          <div className="divide-y divide-white/10">
-            {filteredMotorcycles.map((moto) => (
-              <div
-                key={moto.id}
-                className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors"
-              >
-                {/* Thumbnail & Specs */}
-                <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className="relative w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden bg-black flex-shrink-0 border border-white/10">
-                    <Image src={moto.thumbnailUrl} alt={moto.brand || "Motorr"} fill sizes="96px" className="object-cover" />
-                  </div>
-
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-extrabold text-sm text-white font-['Outfit']">
-                        {moto.brand} {moto.model}
-                      </span>
-                      {moto.year && (
-                        <span className="text-xs text-gray-400">({moto.year})</span>
-                      )}
-                      <span
-                        className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
-                          moto.status === "SOLD"
-                            ? "bg-zinc-800 text-gray-400 border border-zinc-700"
-                            : "bg-pink-500/20 text-pink-400 border border-pink-500/40"
-                        }`}
-                      >
-                        {moto.status === "SOLD" ? "E SHITUR" : "NË SHITJE"}
-                      </span>
-                      {moto.isFeatured && (
-                        <span className="px-2 py-0.5 rounded bg-[#00b2fe] text-black font-extrabold text-[9px] uppercase tracking-wider">
-                          I ZGJEDHUR
-                        </span>
-                      )}
-                      {!moto.isVisible && (
-                        <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-extrabold text-[9px] uppercase tracking-wider">
-                          I FSHEHUR
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
-                      <span className="text-[#00b2fe] font-bold">
-                        {moto.price ? `${moto.price.toLocaleString()} €` : "Me Marrëveshje"}
-                      </span>
-                      {moto.engine && <span>• {moto.engine}</span>}
-                    </div>
-
-                    <p className="text-xs text-gray-400 line-clamp-1 max-w-lg">
-                      {moto.caption}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Status selector & Actions */}
-                <div className="flex flex-wrap items-center gap-2 self-end sm:self-center">
-                  {/* Dedicated 1-Click Status Button */}
-                  {moto.status === "SOLD" ? (
-                    <button
-                      onClick={() => handleStatusChange(moto.id, "FOR_SALE")}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 flex items-center gap-1.5 transition-all shadow-sm"
-                      title="Rikthe motorrin në shitje"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Kthe Në Shitje</span>
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleStatusChange(moto.id, "SOLD")}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-gray-200 border border-zinc-700 flex items-center gap-1.5 transition-all shadow-sm"
-                      title="Kalojeni këtë motorr tek motorrat e shitur"
-                    >
-                      <Archive className="w-3.5 h-3.5 text-red-400" />
-                      <span>Shëno E Shitur</span>
-                    </button>
-                  )}
-
-                  <select
-                    value={moto.status}
-                    onChange={(e) => handleStatusChange(moto.id, e.target.value)}
-                    className="bg-[#06080d] border border-white/15 text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none"
-                  >
-                    <option value="FOR_SALE">Në Shitje</option>
-                    <option value="RESERVED">E Rezervuar</option>
-                    <option value="SOLD">E Shitur</option>
-                  </select>
-
-                  <button
-                    onClick={() => handleToggleFeatured(moto.id, moto.isFeatured)}
-                    title={moto.isFeatured ? "Hiq nga të zgjedhurit" : "Bëje të zgjedhur"}
-                    className={`p-2 rounded-lg border transition-colors ${
-                      moto.isFeatured
-                        ? "bg-yellow-500/20 border-yellow-500/40 text-yellow-400"
-                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
-                    }`}
-                  >
-                    <Star className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    onClick={() => handleToggleVisibility(moto.id, moto.isVisible)}
-                    title={moto.isVisible ? "Fshih nga faqja" : "Bëje të dukshëm"}
-                    className={`p-2 rounded-lg border transition-colors ${
-                      moto.isVisible
-                        ? "bg-[#00b2fe]/15 border-[#00b2fe]/30 text-[#00b2fe]"
-                        : "bg-white/5 border-white/10 text-gray-500"
-                    }`}
-                  >
-                    {moto.isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                  </button>
-
-                  <a
-                    href={moto.permalink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="Shiko në Instagram"
-                    className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-pink-400 transition-colors"
-                  >
-                    <InstagramIcon className="w-4 h-4" />
-                  </a>
-
-                  <button
-                    onClick={() => handleDelete(moto.id)}
-                    title="Fshij motorrin"
-                    className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Add Motorcycle Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="surface-card max-w-lg w-full p-6 border border-white/15 space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-base font-bold text-white font-['Outfit']">
-              Shto Motorr të Ri në Shitje
-            </h3>
 
             <form onSubmit={handleCreateMotorcycle} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
-                  Linku i Postimit në Instagram *
+              {/* Photo Upload Area - Multi-select */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider font-['Outfit'] flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-[#00b2fe]" />
+                    Fotot e Motorrit (Mund të zgjidhni sa të doni) *
+                  </span>
+                  {selectedFiles.length > 0 && (
+                    <span className="text-[11px] text-[#00b2fe] font-bold">
+                      {selectedFiles.length} foto të zgjedhura
+                    </span>
+                  )}
                 </label>
+
+                {/* Previews Grid */}
+                {previews.length > 0 && (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/10">
+                    {previews.map((src, idx) => (
+                      <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/20 group">
+                        <Image src={src} alt={`Preview ${idx + 1}`} fill className="object-cover" />
+                        {idx === 0 && (
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-[#00b2fe] text-black text-[9px] font-black uppercase">
+                            Ballinë
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePhoto(idx)}
+                          className="absolute top-1 right-1 bg-black/80 hover:bg-red-500 rounded-full p-1 text-white transition-colors"
+                          title="Hiq këtë foto"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* Add More Button inside grid */}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="aspect-square rounded-lg border-2 border-dashed border-white/20 hover:border-[#00b2fe]/60 flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-[#00b2fe] transition-colors"
+                    >
+                      <Plus className="w-5 h-5" />
+                      <span className="text-[10px] font-bold">+ Shto Foto</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Empty State Upload Button */}
+                {previews.length === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full border-2 border-dashed border-white/20 hover:border-[#00b2fe]/60 rounded-xl p-6 sm:p-8 flex flex-col items-center gap-2.5 text-gray-400 hover:text-[#00b2fe] transition-all bg-white/[0.01]"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-[#00b2fe]/10 border border-[#00b2fe]/30 flex items-center justify-center">
+                      <Upload className="w-6 h-6 text-[#00b2fe]" />
+                    </div>
+                    <span className="text-xs sm:text-sm font-bold text-white">
+                      Zgjidh Foto nga Galeria e Telefonit / Kompjuterit
+                    </span>
+                    <span className="text-[11px] text-gray-400">
+                      Mund të zgjidhni disa foto njëherësh (JPG, PNG, WebP)
+                    </span>
+                  </button>
+                )}
+
                 <input
-                  type="url"
-                  required
-                  value={permalink}
-                  onChange={(e) => setPermalink(e.target.value)}
-                  placeholder="https://www.instagram.com/p/..."
-                  className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleFilesSelect}
+                  className="hidden"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
-                  Fotoja / Thumbnail URL *
-                </label>
-                <input
-                  type="url"
-                  required
-                  value={thumbnailUrl}
-                  onChange={(e) => setThumbnailUrl(e.target.value)}
-                  placeholder="https://images.unsplash.com/... ose linku i fotos"
-                  className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-                />
-              </div>
+              {/* Title & Brand */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Titulli i Plotë i Motorrit *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="p.sh. Yamaha TMAX 560 Tech Max"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-gray-600 focus:outline-none"
+                  />
+                </div>
 
-              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
                     Marka *
                   </label>
-                  <input
-                    type="text"
-                    required
+                  <select
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
-                    placeholder="Yamaha, BMW, Ducati..."
-                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
-                    Modeli *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                    placeholder="YZF-R6, GS 1250..."
-                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-                  />
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none"
+                  >
+                    {COMMON_BRANDS.map((b) => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
+              {/* Year, Price, Engine */}
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
                     Viti
                   </label>
                   <input
                     type="number"
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
-                    placeholder="2022"
-                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                    placeholder="2024"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
-                    Çmimi (€)
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Çmimi (€) *
                   </label>
                   <input
                     type="number"
+                    step="0.01"
+                    required
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    placeholder="12000"
-                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                    placeholder="12500"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
                     Kubikazhi
                   </label>
                   <input
                     type="text"
                     value={engine}
                     onChange={(e) => setEngine(e.target.value)}
-                    placeholder="600cc"
+                    placeholder="560 cc"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Mileage in KM and Miles */}
+              <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/10">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit'] flex items-center gap-1.5">
+                    <Gauge className="w-3.5 h-3.5 text-[#00b2fe]" />
+                    Kilometrat (KM)
+                  </label>
+                  <input
+                    type="number"
+                    value={mileageKm}
+                    onChange={(e) => handleKmChange(e.target.value)}
+                    placeholder="p.sh. 15000"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Në Milje (Miles)
+                  </label>
+                  <input
+                    type="number"
+                    value={mileageMi}
+                    onChange={(e) => setMileageMi(e.target.value)}
+                    placeholder="p.sh. 9320"
                     className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
                   />
                 </div>
               </div>
 
+              {/* Contact Phone & WhatsApp */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit'] flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-[#00b2fe]" />
+                    Numri i Telefonit
+                  </label>
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+355697738559"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit'] flex items-center gap-1.5">
+                    <WhatsAppIcon className="w-3.5 h-3.5 text-green-400" />
+                    Numri i WhatsApp
+                  </label>
+                  <input
+                    type="text"
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                    placeholder="+355697738559"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
               <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
-                  Përshkrimi / Caption nga Instagrami
+                <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                  Përshkrimi i Motorrit
                 </label>
                 <textarea
                   rows={3}
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  placeholder="Detaje të motorrit, km, gjendja, aksesorët..."
-                  className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg p-3 text-xs text-white focus:outline-none resize-none"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Gjendje perfekte, me doganë të paguar, shërbimet e kryera me librezë..."
+                  className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg p-3 text-xs text-white placeholder-gray-600 focus:outline-none resize-none"
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="isFeaturedMoto"
-                  checked={isFeatured}
-                  onChange={(e) => setIsFeatured(e.target.checked)}
-                  className="rounded border-white/20 bg-black text-[#00b2fe]"
-                />
-                <label htmlFor="isFeaturedMoto" className="text-xs text-gray-300">
-                  Vendose si Motorr të Zgjedhur në Ballinë
+              {/* Status & Featured */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 border-t border-white/10">
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-300">
+                    <input
+                      type="radio"
+                      name="postStatus"
+                      checked={status === "FOR_SALE"}
+                      onChange={() => setStatus("FOR_SALE")}
+                      className="text-[#00b2fe]"
+                    />
+                    <span>Në Shitje ✅</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-300">
+                    <input
+                      type="radio"
+                      name="postStatus"
+                      checked={status === "SOLD"}
+                      onChange={() => setStatus("SOLD")}
+                      className="text-red-400"
+                    />
+                    <span>E Shitur ❌</span>
+                  </label>
+                </div>
+
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-yellow-400 font-bold">
+                  <input
+                    type="checkbox"
+                    checked={isFeatured}
+                    onChange={(e) => setIsFeatured(e.target.checked)}
+                    className="rounded border-white/20 bg-black text-yellow-400"
+                  />
+                  <span>Vendose si Motorr VIP</span>
                 </label>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              {/* Upload Progress Info */}
+              {uploading && (
+                <div className="p-3 rounded-xl bg-[#00b2fe]/10 border border-[#00b2fe]/30 flex items-center gap-3 text-xs text-[#00d2ff]">
+                  <div className="w-4 h-4 border-2 border-[#00b2fe] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <span>{uploadProgress || "Po ngarkohen fotot..."}</span>
+                </div>
+              )}
+
+              {/* Form Actions */}
+              <div className="flex justify-end gap-2.5 pt-2 border-t border-white/10">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="btn-secondary !py-2 text-xs"
+                  disabled={uploading}
+                  onClick={() => { setShowAddModal(false); resetForm(); }}
+                  className="btn-secondary !py-2.5 !px-4 text-xs font-bold"
                 >
                   Anulo
                 </button>
-                <button type="submit" className="btn-primary !py-2 text-xs font-bold">
-                  Ruaj Motorrin
+                <button
+                  type="submit"
+                  disabled={uploading || selectedFiles.length === 0}
+                  className="btn-primary !py-2.5 !px-6 text-xs font-extrabold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploading ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      <span>Po ngarkohet...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" />
+                      <span>Ngarko &amp; Publiko Motorrin</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

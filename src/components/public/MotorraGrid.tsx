@@ -3,23 +3,20 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize2,
-  Loader2,
-  X,
-  ExternalLink,
+  Bike,
+  CheckCircle2,
   Calendar,
   Gauge,
   Zap,
   Phone,
-  CheckCircle2,
   FileText,
-  Bike,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ImageIcon,
+  Maximize2,
 } from "lucide-react";
-import { InstagramIcon, WhatsAppIcon } from "@/components/ui/Icons";
+import { WhatsAppIcon } from "@/components/ui/Icons";
 import {
   parseMotorcycleCaption,
   ParsedMotorcycle,
@@ -27,15 +24,31 @@ import {
 
 export interface MotorraPostItem {
   id: string;
-  instagramId: string;
-  mediaUrl: string | null;
-  thumbnailUrl: string | null;
-  caption: string;
-  permalink: string;
-  mediaType: string;
-  category: string;
+  title?: string | null;
+  brand?: string | null;
+  model?: string | null;
+  year?: number | null;
+  price?: number | null;
+  currency?: string | null;
+  mileageKm?: number | null;
+  mileageMi?: number | null;
+  engine?: string | null;
+  description?: string | null;
+  phone?: string | null;
+  whatsapp?: string | null;
+  imageUrl?: string | null;
+  images?: string[];
+  thumbnailUrl?: string | null;
+  mediaUrl?: string | null;
+  mediaType?: string;
+  category?: string;
+  caption?: string | null;
+  permalink?: string | null;
+  instagramId?: string | null;
   status: string;
-  postedAt: Date | string;
+  isFeatured?: boolean;
+  postedAt?: Date | string;
+  publishedAt?: Date | string;
 }
 
 interface MotorraGridProps {
@@ -43,17 +56,18 @@ interface MotorraGridProps {
   title?: string;
 }
 
-function formatTime(seconds: number) {
-  if (isNaN(seconds) || seconds < 0) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+function getPhotoList(post: MotorraPostItem): string[] {
+  if (post.images && Array.isArray(post.images) && post.images.length > 0) {
+    return post.images.filter(Boolean);
+  }
+  if (post.imageUrl) return [post.imageUrl];
+  if (post.thumbnailUrl) return [post.thumbnailUrl];
+  if (post.instagramId) return [`/api/instagram-image?id=${post.instagramId}`];
+  return [];
 }
 
 /**
- * Individual motorcycle card displaying the true Instagram cover photo.
- * Never falls back to YouTube - motorcycles come strictly from Instagram.
- * Uses /api/instagram-image proxy for reliable cover delivery.
+ * Individual motorcycle card displaying photo gallery with cover, specs, and badges.
  */
 function MotorraCardItem({
   post,
@@ -62,23 +76,35 @@ function MotorraCardItem({
   post: MotorraPostItem;
   onSelect: (post: MotorraPostItem) => void;
 }) {
-  const parsed = parseMotorcycleCaption(post.caption);
+  const parsed = parseMotorcycleCaption(post.caption || "");
   const isSold = post.status === "SOLD";
 
-  // Real Instagram cover photo served through high-performance proxy
-  const defaultThumb = `/api/instagram-image?id=${post.instagramId}`;
+  const photos = getPhotoList(post);
+  const primaryThumb = photos[0] || (post.instagramId ? `/api/instagram-image?id=${post.instagramId}` : "");
 
-  const [thumbSrc, setThumbSrc] = useState<string>(defaultThumb);
+  const displayTitle = post.title || post.model || parsed.title || "Motorr";
+  const displayBrand = post.brand || displayTitle.split(" ")[0] || "Motorr";
+  const displayYear = post.year || parsed.year;
+  const displayPrice = post.price
+    ? `€${post.price.toLocaleString()}`
+    : (parsed.price || "Me Rezervim");
+
+  const displayMileage = post.mileageKm
+    ? `${post.mileageKm.toLocaleString()} km`
+    : (parsed.mileage || null);
+
+  const [imgSrc, setImgSrc] = useState<string>(primaryThumb);
   const [imgFailed, setImgFailed] = useState(false);
 
-  // Fallback to permanent GitHub raw storage if needed
   const handleImageError = () => {
-    const rawGithub = `https://raw.githubusercontent.com/kisjanhoxhawztfx-droid/ridewithkeijsi/master/public/instagram/${post.instagramId}.jpg`;
-    if (thumbSrc !== rawGithub) {
-      setThumbSrc(rawGithub);
-    } else {
-      setImgFailed(true);
+    if (post.instagramId) {
+      const rawGithub = `https://raw.githubusercontent.com/kisjanhoxhawztfx-droid/ridewithkeijsi/master/public/instagram/${post.instagramId}.jpg`;
+      if (imgSrc !== rawGithub) {
+        setImgSrc(rawGithub);
+        return;
+      }
     }
+    setImgFailed(true);
   };
 
   return (
@@ -86,11 +112,11 @@ function MotorraCardItem({
       onClick={() => onSelect(post)}
       className="group relative aspect-[9/13.5] rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-b from-[#131d2e] via-[#0c121d] to-[#06090f] border border-white/10 hover:border-[#00b2fe] cursor-pointer shadow-md hover:shadow-[0_0_22px_rgba(0,178,254,0.35)] transition-all duration-300 active:scale-95 flex flex-col justify-between"
     >
-      {/* Thumbnail Image: ALWAYS visible on load, NEVER black! */}
-      {thumbSrc && !imgFailed ? (
+      {/* Thumbnail Image */}
+      {imgSrc && !imgFailed ? (
         <Image
-          src={thumbSrc}
-          alt={parsed.title}
+          src={imgSrc}
+          alt={displayTitle}
           fill
           sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 16vw"
           className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
@@ -100,17 +126,16 @@ function MotorraCardItem({
           unoptimized
         />
       ) : (
-        /* Rich branded fallback if image fails - NEVER an empty black box */
         <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center bg-gradient-to-b from-[#162338] via-[#0e1624] to-[#070b13]">
           <div className="w-10 h-10 rounded-full bg-[#00b2fe]/20 border border-[#00b2fe]/40 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,178,254,0.3)]">
             <Bike className="w-5 h-5 text-[#00b2fe]" />
           </div>
           <p className="text-[10px] font-black text-white uppercase font-['Outfit'] line-clamp-2 px-1 leading-tight">
-            {parsed.title}
+            {displayTitle}
           </p>
-          {parsed.price && (
+          {displayPrice && (
             <span className="mt-1 text-[9px] font-black text-[#00d2ff] bg-black/60 px-2 py-0.5 rounded border border-[#00b2fe]/30 font-['Outfit']">
-              {parsed.price}
+              {displayPrice}
             </span>
           )}
         </div>
@@ -119,7 +144,7 @@ function MotorraCardItem({
       {/* Gradient overlays for high contrast */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40 pointer-events-none" />
 
-      {/* Top Row Badges: Status & Price */}
+      {/* Top Row Badges: Status & Photos count */}
       <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between gap-1 pointer-events-none z-10">
         <span
           className={`px-1.5 py-0.5 rounded-md text-[8px] sm:text-[9px] font-black uppercase tracking-wider ${
@@ -131,168 +156,71 @@ function MotorraCardItem({
           {isSold ? "E Shitur" : "Në Shitje"}
         </span>
 
-        {parsed.price && (
-          <span className="px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-[#00b2fe]/40 text-[#00d2ff] text-[8px] sm:text-[9px] font-black font-['Outfit'] shadow-sm">
-            {parsed.price}
-          </span>
-        )}
+        <div className="flex items-center gap-1">
+          {photos.length > 1 && (
+            <span className="px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-white/20 text-white text-[8px] sm:text-[9px] font-bold flex items-center gap-1">
+              <ImageIcon className="w-2.5 h-2.5 text-[#00b2fe]" />
+              <span>{photos.length}</span>
+            </span>
+          )}
+          {displayPrice && (
+            <span className="px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-[#00b2fe]/40 text-[#00d2ff] text-[8px] sm:text-[9px] font-black font-['Outfit'] shadow-sm">
+              {displayPrice}
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Center Play Icon */}
+      {/* Center Image Indicator */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/30 group-hover:bg-[#00b2fe] group-hover:border-[#00b2fe] flex items-center justify-center text-white group-hover:text-black transition-all shadow-lg group-hover:scale-110">
-          <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current ml-0.5" />
+          <ImageIcon className="w-3.5 h-3.5" />
         </div>
       </div>
 
       {/* Bottom Info: Title & Specs */}
       <div className="absolute bottom-1.5 left-1.5 right-1.5 pointer-events-none z-10 space-y-0.5">
         <p className="text-[9px] sm:text-[11px] text-white font-black font-['Outfit'] uppercase line-clamp-1 leading-tight drop-shadow-md">
-          {parsed.title}
+          {displayTitle}
         </p>
-        {parsed.year && (
-          <div className="flex items-center gap-1 text-[8px] sm:text-[9px] text-gray-300 font-semibold drop-shadow-sm">
-            <span>{parsed.year}</span>
-            {parsed.mileage && <span>• {parsed.mileage}</span>}
-          </div>
-        )}
+        <div className="flex items-center gap-1 text-[8px] sm:text-[9px] text-gray-300 font-semibold drop-shadow-sm truncate">
+          {displayYear && <span>{displayYear}</span>}
+          {displayYear && displayMileage && <span>•</span>}
+          {displayMileage && <span>{displayMileage}</span>}
+        </div>
       </div>
     </div>
   );
 }
 
-export default function MotorraGrid({
-  posts,
-}: MotorraGridProps) {
+export default function MotorraGrid({ posts }: MotorraGridProps) {
   const [selectedPost, setSelectedPost] = useState<MotorraPostItem | null>(null);
-  const [videoError, setVideoError] = useState(false);
-  const [activeMediaUrl, setActiveMediaUrl] = useState<string | null>(null);
-
-  // Player State for HTML5
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isBuffering, setIsBuffering] = useState(false);
-  const [showPlayIconAnimation, setShowPlayIconAnimation] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [showDescription, setShowDescription] = useState(false);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Parse specs for selected post
-  const selectedSpecs: ParsedMotorcycle = selectedPost
-    ? parseMotorcycleCaption(selectedPost.caption)
-    : {
-        phone: null,
-        rawPhone: null,
-        title: "Motorr",
-        year: null,
-        mileage: null,
-        engine: null,
-        price: null,
-        extraSpecs: [],
-        cleanDescription: "",
-        hasStructuredSpecs: false,
-      };
-
-  // Open modal - always use HTML5 player (Instagram source only, no YouTube)
   const handleSelectPost = (post: MotorraPostItem) => {
     setSelectedPost(post);
-    setVideoError(false);
-    setIsBuffering(false);
-    setCurrentTime(0);
-    setDuration(0);
-    setIsPlaying(true);
-    setIsMuted(false);
+    setActivePhotoIndex(0);
     setShowDescription(false);
-    setActiveMediaUrl(post.mediaUrl);
   };
 
   const handleClose = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-    }
     setSelectedPost(null);
-    setActiveMediaUrl(null);
-    setIsPlaying(false);
-    setVideoError(false);
+    setActivePhotoIndex(0);
   };
 
-  // Attempt unmuted play whenever HTML5 video is ready
-  useEffect(() => {
-    if (selectedPost && activeMediaUrl && videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.muted = false;
-      setIsMuted(false);
+  const selectedPhotos = selectedPost ? getPhotoList(selectedPost) : [];
 
-      videoRef.current
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch((err) => {
-          console.warn("Unmuted autoplay restricted by browser, playing muted:", err);
-          if (videoRef.current) {
-            videoRef.current.muted = true;
-            setIsMuted(true);
-            videoRef.current.play().then(() => setIsPlaying(true));
-          }
-        });
-    }
-  }, [selectedPost, activeMediaUrl]);
-
-  // Toggle Play / Pause for HTML5
-  const togglePlay = (e?: React.MouseEvent) => {
+  const handleNextPhoto = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (!videoRef.current) return;
-
-    if (videoRef.current.paused) {
-      videoRef.current
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-          setShowPlayIconAnimation(true);
-          setTimeout(() => setShowPlayIconAnimation(false), 500);
-        })
-        .catch((err) => console.warn("Play error:", err));
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-      setShowPlayIconAnimation(true);
-      setTimeout(() => setShowPlayIconAnimation(false), 500);
-    }
+    if (selectedPhotos.length <= 1) return;
+    setActivePhotoIndex((prev) => (prev + 1) % selectedPhotos.length);
   };
 
-  // Toggle Mute for HTML5
-  const toggleMute = (e?: React.MouseEvent) => {
+  const handlePrevPhoto = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (!videoRef.current) return;
-    const nextMuted = !videoRef.current.muted;
-    videoRef.current.muted = nextMuted;
-    setIsMuted(nextMuted);
-  };
-
-  // Seek for HTML5
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(e.target.value);
-    if (videoRef.current) {
-      videoRef.current.currentTime = val;
-      setCurrentTime(val);
-    }
-  };
-
-  // Fullscreen
-  const toggleFullscreen = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    if (!containerRef.current) return;
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen?.().catch(console.error);
-    } else {
-      document.exitFullscreen?.().catch(console.error);
-    }
-  };
-
-  const handleVideoError = () => {
-    setIsBuffering(false);
+    if (selectedPhotos.length <= 1) return;
+    setActivePhotoIndex((prev) => (prev - 1 + selectedPhotos.length) % selectedPhotos.length);
   };
 
   // Keyboard navigation
@@ -300,17 +228,28 @@ export default function MotorraGrid({
     if (!selectedPost) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
-      if (e.key === " " || e.key === "k") {
-        e.preventDefault();
-        togglePlay();
-      }
-      if (e.key === "m" || e.key === "M") toggleMute();
+      if (e.key === "ArrowRight") handleNextPhoto();
+      if (e.key === "ArrowLeft") handlePrevPhoto();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedPost]);
+  }, [selectedPost, selectedPhotos.length]);
 
   if (!posts || posts.length === 0) return null;
+
+  // Selected specs derivation
+  const parsed = selectedPost ? parseMotorcycleCaption(selectedPost.caption || "") : null;
+  const title = selectedPost?.title || selectedPost?.model || parsed?.title || "Motorr";
+  const brand = selectedPost?.brand || title.split(" ")[0] || "Motorr";
+  const year = selectedPost?.year || parsed?.year;
+  const price = selectedPost?.price ? `€${selectedPost.price.toLocaleString()}` : (parsed?.price || "Me Rezervim");
+  const mileageKm = selectedPost?.mileageKm;
+  const mileageMi = selectedPost?.mileageMi || (mileageKm ? Math.round(mileageKm * 0.621371) : null);
+  const engine = selectedPost?.engine || parsed?.engine;
+  const phone = selectedPost?.phone || parsed?.phone || "+355697738559";
+  const rawPhone = phone.replace(/[^0-9+]/g, "");
+  const cleanWhatsapp = (selectedPost?.whatsapp || phone).replace(/[^0-9]/g, "");
+  const description = selectedPost?.description || selectedPost?.caption || "";
 
   return (
     <div className="space-y-4">
@@ -321,281 +260,213 @@ export default function MotorraGrid({
         ))}
       </div>
 
-      {/* 2. EXPANDED REELS MARKETPLACE MODAL PLAYER */}
+      {/* 2. EXPANDED MODAL WITH MULTI-PHOTO GALLERY CAROUSEL */}
       {selectedPost && (
         <div
           className="fixed inset-0 z-[120] flex items-center justify-center p-2 sm:p-6 bg-black/90 backdrop-blur-md animate-in fade-in duration-200"
           onClick={handleClose}
         >
           <div
-            className="relative w-full max-w-[410px] sm:max-w-md max-h-[95vh] bg-[#090d15] border border-white/20 rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_35px_rgba(0,178,254,0.3)] flex flex-col"
+            className="relative w-full max-w-[420px] sm:max-w-lg max-h-[95vh] bg-[#090d15] border border-white/20 rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_35px_rgba(0,178,254,0.3)] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Top Bar with Title, Player Switcher & Close */}
-            <div className="flex items-center justify-between px-4 py-2.5 sm:py-3 border-b border-white/10 bg-[#06090e] z-30">
-              <div className="flex items-center gap-2 max-w-[70%]">
+            {/* Top Bar with Title & Close */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#06090e] z-30">
+              <div className="flex items-center gap-2 max-w-[75%]">
                 <span className="w-2 h-2 rounded-full bg-[#00b2fe] animate-pulse flex-shrink-0" />
-                <span className="text-xs font-black text-white font-['Outfit'] uppercase tracking-wider truncate">
-                  {selectedSpecs.title}
+                <span className="text-xs sm:text-sm font-black text-white font-['Outfit'] uppercase tracking-wider truncate">
+                  {title}
                 </span>
               </div>
 
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-colors"
-                  aria-label="Mbyll"
-                >
-                  <X className="w-4 h-4 text-white" />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleClose}
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-colors"
+                aria-label="Mbyll"
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
             </div>
 
-            {/* Media Box: 9:13.5 Reels aspect */}
-            <div
-              ref={containerRef}
-              onClick={togglePlay}
-              className="relative aspect-[9/13.5] w-full bg-black overflow-hidden flex-shrink-0 flex items-center justify-center cursor-pointer select-none group/video"
-            >
-              {/* Native HTML5 Video Player (Instagram source) - ALWAYS used for every motorcycle video */}
-              {selectedPost.mediaType === "VIDEO" && activeMediaUrl ? (
-                <>
-                  <video
-                    ref={videoRef}
-                    key={activeMediaUrl}
-                    src={activeMediaUrl}
-                    playsInline
-                    loop
-                    muted={isMuted}
-                    className="w-full h-full object-cover pointer-events-none"
-                    onTimeUpdate={() => {
-                      if (videoRef.current) setCurrentTime(videoRef.current.currentTime);
-                    }}
-                    onLoadedMetadata={() => {
-                      if (videoRef.current) setDuration(videoRef.current.duration);
-                    }}
-                    onWaiting={() => setIsBuffering(true)}
-                    onPlaying={() => {
-                      setIsBuffering(false);
-                      setIsPlaying(true);
-                    }}
-                    onPause={() => setIsPlaying(false)}
-                    onError={handleVideoError}
-                  />
-
-                  {/* Buffering Spinner */}
-                  {isBuffering && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-none z-20">
-                      <Loader2 className="w-10 h-10 text-[#00b2fe] animate-spin drop-shadow-md" />
-                    </div>
-                  )}
-
-                  {/* Central Play/Pause Watermark */}
-                  {(!isPlaying || showPlayIconAnimation) && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/60 backdrop-blur-md border border-white/25 flex items-center justify-center text-[#00b2fe] shadow-[0_0_30px_rgba(0,178,254,0.4)] animate-in zoom-in-90 duration-150">
-                        {isPlaying ? (
-                          <Pause className="w-7 h-7 sm:w-8 sm:h-8 fill-current text-white" />
-                        ) : (
-                          <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1 text-white" />
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Top Right Controls: Mute & Fullscreen */}
-                  <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
-                    <button
-                      type="button"
-                      onClick={toggleMute}
-                      className="p-2 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white hover:bg-black/90 active:scale-90 transition-all shadow-md"
-                      title={isMuted ? "Aktivizo zërin" : "Hiq zërin"}
-                    >
-                      {isMuted ? (
-                        <VolumeX className="w-4 h-4 text-red-400" />
-                      ) : (
-                        <Volume2 className="w-4 h-4 text-[#00b2fe]" />
-                      )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={toggleFullscreen}
-                      className="hidden sm:flex p-2 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white hover:bg-black/90 active:scale-90 transition-all shadow-md"
-                      title="Ekran i plotë"
-                    >
-                      <Maximize2 className="w-4 h-4 text-gray-200" />
-                    </button>
-                  </div>
-
-                  {/* Unmute Prompt Pill if Autoplay was restricted */}
-                  {isMuted && isPlaying && (
-                    <div
-                      onClick={toggleMute}
-                      className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-[#00b2fe]/40 text-[11px] font-bold text-[#00b2fe] z-20 animate-pulse cursor-pointer shadow-lg"
-                    >
-                      <VolumeX className="w-3.5 h-3.5 text-red-400" />
-                      <span>Prek për zë</span>
-                    </div>
-                  )}
-
-                  {/* Bottom Floating Scrubber */}
-                  <div
-                    onClick={(e) => e.stopPropagation()}
-                    className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-20 flex flex-col gap-1.5"
-                  >
-                    <input
-                      type="range"
-                      min={0}
-                      max={duration || 100}
-                      step="0.1"
-                      value={currentTime}
-                      onChange={handleSeek}
-                      className="w-full h-1 bg-white/30 rounded-lg appearance-none cursor-pointer accent-[#00b2fe]"
-                    />
-                    <div className="flex items-center justify-between text-[10px] text-gray-300 font-mono font-bold px-0.5">
-                      <span>{formatTime(currentTime)}</span>
-                      <span>{formatTime(duration)}</span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                /* Static Image Fallback – for photo posts without video */
+            {/* Media Box: Multi-photo Slider */}
+            <div className="relative aspect-[4/3] sm:aspect-[16/11] w-full bg-black overflow-hidden flex-shrink-0 flex items-center justify-center select-none group/slider">
+              {selectedPhotos.length > 0 ? (
                 <div className="relative w-full h-full">
                   <Image
-                    src={`/api/instagram-image?id=${selectedPost.instagramId}`}
-                    alt={selectedSpecs.title}
+                    src={selectedPhotos[activePhotoIndex]}
+                    alt={`${title} - Foto ${activePhotoIndex + 1}`}
                     fill
+                    sizes="(max-width: 640px) 100vw, 500px"
                     className="object-contain"
                     unoptimized
+                    priority
                   />
                 </div>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-zinc-900">
+                  <Bike className="w-12 h-12 text-gray-600" />
+                </div>
+              )}
+
+              {/* Prev / Next Navigation Arrows */}
+              {selectedPhotos.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handlePrevPhoto}
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/70 hover:bg-[#00b2fe] hover:text-black text-white border border-white/20 flex items-center justify-center transition-all shadow-lg active:scale-90 z-20"
+                    aria-label="Foto e mëparshme"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleNextPhoto}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/70 hover:bg-[#00b2fe] hover:text-black text-white border border-white/20 flex items-center justify-center transition-all shadow-lg active:scale-90 z-20"
+                    aria-label="Foto tjetër"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+
+                  {/* Photo Counter Pill (e.g. 1 / 4) */}
+                  <div className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold">
+                    📸 {activePhotoIndex + 1} / {selectedPhotos.length}
+                  </div>
+
+                  {/* Bottom Thumbnails Strip */}
+                  <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-center gap-1.5 z-20 px-3 overflow-x-auto">
+                    {selectedPhotos.map((photoUrl, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setActivePhotoIndex(idx); }}
+                        className={`relative w-8 h-8 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
+                          activePhotoIndex === idx
+                            ? "border-[#00b2fe] scale-110 shadow-[0_0_10px_rgba(0,178,254,0.6)]"
+                            : "border-white/30 opacity-60 hover:opacity-100"
+                        }`}
+                      >
+                        <Image src={photoUrl} alt="" fill className="object-cover" unoptimized />
+                      </button>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
 
             {/* Bottom Marketplace Info Drawer */}
-            <div className="p-4 bg-[#080d17] border-t border-white/10 space-y-3 overflow-y-auto max-h-[36vh]">
+            <div className="p-4 sm:p-5 bg-[#080d17] border-t border-white/10 space-y-3.5 overflow-y-auto max-h-[44vh]">
               {/* Title & Price Header */}
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <h3 className="text-sm sm:text-base font-extrabold text-white font-['Outfit'] uppercase leading-snug">
-                    {selectedSpecs.title}
-                  </h3>
                   <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-extrabold text-[#00b2fe] uppercase tracking-wider">
+                      {brand}
+                    </span>
                     <span
-                      className={`inline-flex items-center gap-1 text-[10px] font-bold ${
-                        selectedPost.status === "SOLD" ? "text-red-400" : "text-emerald-400"
+                      className={`inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full ${
+                        selectedPost.status === "SOLD"
+                          ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                          : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                       }`}
                     >
                       <CheckCircle2 className="w-3 h-3" />
-                      {selectedPost.status === "SOLD" ? "E Shitur" : "Në Shitje"}
+                      {selectedPost.status === "SOLD" ? "E Shitur ❌" : "Në Shitje ✅"}
                     </span>
-                    <span className="text-[10px] text-gray-500">• @ridewithkeijsi</span>
                   </div>
+                  <h3 className="text-base sm:text-lg font-extrabold text-white font-['Outfit'] uppercase leading-snug">
+                    {title}
+                  </h3>
                 </div>
 
-                {selectedSpecs.price && (
-                  <div className="px-2.5 py-1 rounded-lg bg-[#00b2fe]/15 border border-[#00b2fe]/40 whitespace-nowrap">
-                    <span className="text-xs sm:text-sm font-black text-[#00d2ff] font-['Outfit']">
-                      {selectedSpecs.price}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Specs Pills */}
-              <div className="grid grid-cols-2 gap-1.5 text-[11px] font-semibold text-gray-200">
-                {selectedSpecs.year && (
-                  <div className="flex items-center gap-1.5 p-2 rounded-xl bg-white/[0.04] border border-white/10">
-                    <Calendar className="w-3.5 h-3.5 text-[#00b2fe]" />
-                    <span>Viti: {selectedSpecs.year}</span>
-                  </div>
-                )}
-
-                {selectedSpecs.mileage && (
-                  <div className="flex items-center gap-1.5 p-2 rounded-xl bg-white/[0.04] border border-white/10">
-                    <Gauge className="w-3.5 h-3.5 text-[#00b2fe]" />
-                    <span>{selectedSpecs.mileage}</span>
-                  </div>
-                )}
-
-                {selectedSpecs.engine && (
-                  <div className="col-span-2 flex items-center gap-1.5 p-2 rounded-xl bg-white/[0.04] border border-white/10">
-                    <Zap className="w-3.5 h-3.5 text-[#00b2fe]" />
-                    <span>{selectedSpecs.engine}</span>
-                  </div>
-                )}
-
-                {selectedSpecs.extraSpecs.map((extra, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-[10px] text-gray-300"
-                  >
-                    <CheckCircle2 className="w-3 h-3 text-[#00b2fe]" />
-                    <span>{extra}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Collapsible Full Description */}
-              <div className="space-y-1">
-                <button
-                  type="button"
-                  onClick={() => setShowDescription(!showDescription)}
-                  className="flex items-center justify-between w-full py-1 text-[11px] font-bold text-gray-400 hover:text-white transition-colors"
-                >
-                  <span className="flex items-center gap-1">
-                    <FileText className="w-3 h-3 text-[#00b2fe]" />
-                    {showDescription ? "Fshih përshkrimin" : "Shiko përshkrimin e plotë"}
+                <div className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#00b2fe]/20 to-[#00d2ff]/20 border border-[#00b2fe]/50 whitespace-nowrap shadow-md">
+                  <span className="text-sm sm:text-base font-black text-[#00d2ff] font-['Outfit']">
+                    {price}
                   </span>
-                  <span>{showDescription ? "▲" : "▼"}</span>
-                </button>
-
-                {showDescription && (
-                  <div className="p-3 rounded-xl bg-black/50 border border-white/5 text-[11px] text-gray-300 leading-relaxed whitespace-pre-line select-text max-h-36 overflow-y-auto">
-                    {selectedPost.caption}
-                  </div>
-                )}
+                </div>
               </div>
 
-              {/* Direct Actions: Call, WhatsApp, YouTube, Instagram */}
-              <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
-                {selectedSpecs.phone && (
-                  <div className="flex gap-2">
-                    <a
-                      href={`tel:${selectedSpecs.rawPhone}`}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#00b2fe] hover:bg-[#00d2ff] text-black font-extrabold text-xs transition-all shadow-[0_0_15px_rgba(0,178,254,0.3)]"
-                    >
-                      <Phone className="w-3.5 h-3.5" />
-                      <span>Telefono: {selectedSpecs.phone}</span>
-                    </a>
-                    <a
-                      href={`https://wa.me/${selectedSpecs.rawPhone?.replace("+", "")}?text=${encodeURIComponent(
-                        `Përshëndetje, po ju shkruaj nga ridewithkeijsi.com lidhur me motorrin: ${selectedSpecs.title} (${selectedSpecs.price || "Në Shitje"})`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-                    >
-                      <WhatsAppIcon className="w-3.5 h-3.5" />
-                      <span>WhatsApp</span>
-                    </a>
+              {/* Specs Grid */}
+              <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-gray-200">
+                {year && (
+                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.04] border border-white/10">
+                    <Calendar className="w-4 h-4 text-[#00b2fe]" />
+                    <span>Viti: <strong className="text-white font-bold">{year}</strong></span>
                   </div>
                 )}
 
-                <div className="flex gap-2">
-                  <a
-                    href={selectedPost.permalink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#00b2fe] to-[#0077b6] hover:from-[#00c8ff] hover:to-[#0099e6] text-black font-extrabold text-xs shadow-lg shadow-[#00b2fe]/20 transition-all min-h-[40px] group/btn"
+                {engine && (
+                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.04] border border-white/10">
+                    <Zap className="w-4 h-4 text-[#00b2fe]" />
+                    <span>Motori: <strong className="text-white font-bold">{engine}</strong></span>
+                  </div>
+                )}
+
+                {mileageKm ? (
+                  <div className="col-span-2 flex items-center justify-between p-2.5 rounded-xl bg-white/[0.04] border border-white/10">
+                    <div className="flex items-center gap-2">
+                      <Gauge className="w-4 h-4 text-[#00b2fe]" />
+                      <span>Kilometra:</span>
+                    </div>
+                    <span className="font-bold text-white">
+                      {mileageKm.toLocaleString()} km
+                      {mileageMi && <span className="text-gray-400 font-normal"> ({mileageMi.toLocaleString()} milje)</span>}
+                    </span>
+                  </div>
+                ) : parsed?.mileage ? (
+                  <div className="col-span-2 flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.04] border border-white/10">
+                    <Gauge className="w-4 h-4 text-[#00b2fe]" />
+                    <span>Kilometra: <strong className="text-white font-bold">{parsed.mileage}</strong></span>
+                  </div>
+                ) : null}
+              </div>
+
+              {/* Description */}
+              {description && (
+                <div className="space-y-1.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowDescription(!showDescription)}
+                    className="flex items-center justify-between w-full py-1 text-xs font-bold text-gray-400 hover:text-white transition-colors"
                   >
-                    <InstagramIcon className="w-3.5 h-3.5 text-black" />
-                    <span>Shiko në Instagram</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-black opacity-80 group-hover/btn:translate-x-0.5 transition-transform" />
-                  </a>
+                    <span className="flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-[#00b2fe]" />
+                      {showDescription ? "Fshih përshkrimin" : "Shiko përshkrimin e plotë"}
+                    </span>
+                    <span className="text-[10px]">{showDescription ? "▲" : "▼"}</span>
+                  </button>
+
+                  {showDescription && (
+                    <div className="p-3 rounded-xl bg-black/60 border border-white/10 text-xs text-gray-300 leading-relaxed whitespace-pre-line select-text max-h-40 overflow-y-auto">
+                      {description}
+                    </div>
+                  )}
                 </div>
+              )}
+
+              {/* Action Buttons: Call & WhatsApp */}
+              <div className="pt-2 border-t border-white/10 grid grid-cols-2 gap-2.5">
+                <a
+                  href={`tel:${rawPhone}`}
+                  className="inline-flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#00b2fe] hover:bg-[#00d2ff] text-black font-extrabold text-xs transition-all shadow-[0_0_15px_rgba(0,178,254,0.3)] min-h-[42px]"
+                >
+                  <Phone className="w-4 h-4 fill-black" />
+                  <span>Telefono</span>
+                </a>
+
+                <a
+                  href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent(
+                    `Përshëndetje, po ju shkruaj nga ridewithkeijsi.com lidhur me motorrin: ${title} (${price})`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-extrabold text-xs transition-all shadow-md min-h-[42px]"
+                >
+                  <WhatsAppIcon className="w-4 h-4" />
+                  <span>WhatsApp</span>
+                </a>
               </div>
             </div>
           </div>

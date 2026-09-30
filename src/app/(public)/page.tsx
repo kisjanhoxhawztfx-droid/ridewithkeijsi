@@ -58,12 +58,49 @@ export default async function HomePage() {
       where: { isVisible: true, category: "EPISOD" },
       orderBy: { postedAt: "desc" },
     }),
-    db.instagramPost.findMany({
-      where: { isVisible: true, category: "SHITET", status: "FOR_SALE" },
-      orderBy: { postedAt: "desc" },
-      take: 4,
+    db.motorcycle.findMany({
+      where: { isVisible: true, status: "FOR_SALE" },
+      orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+      take: 6,
     }),
   ]);
+
+  const mappedMotorraForSale = motorraForSale.map((m: any) => {
+    let imagesList: string[] = [];
+    if (m.images) {
+      try {
+        imagesList = JSON.parse(m.images);
+      } catch {
+        imagesList = typeof m.images === "string" ? m.images.split(",").map((s: string) => s.trim()).filter(Boolean) : [];
+      }
+    }
+    if (imagesList.length === 0 && m.imageUrl) imagesList = [m.imageUrl];
+    if (imagesList.length === 0 && m.thumbnailUrl) imagesList = [m.thumbnailUrl];
+
+    return {
+      id: m.id,
+      title: m.title || m.model || "Motorr",
+      brand: m.brand || "Motorr",
+      model: m.model,
+      year: m.year,
+      price: m.price,
+      currency: m.currency || "EUR",
+      mileageKm: m.mileageKm,
+      mileageMi: m.mileageMi,
+      engine: m.engine,
+      description: m.description || m.caption,
+      phone: m.phone || "+355697738559",
+      whatsapp: m.whatsapp || m.phone || "+355697738559",
+      imageUrl: m.imageUrl || imagesList[0] || m.thumbnailUrl || "",
+      images: imagesList,
+      thumbnailUrl: m.thumbnailUrl || imagesList[0] || "",
+      mediaUrl: m.mediaUrl,
+      mediaType: m.mediaType || "IMAGE",
+      status: m.status || "FOR_SALE",
+      isFeatured: Boolean(m.isFeatured),
+      publishedAt: m.createdAt || m.publishedAt || new Date(),
+    };
+  });
 
 
 
@@ -185,7 +222,7 @@ export default async function HomePage() {
                 <span>Motorra në Shitje</span>
               </h2>
               <p className="text-[11px] sm:text-xs text-gray-400">
-                Auto-sync nga @ridewithkeijsi — postimet me #motorr shfaqen automatikisht
+                Motorrat më të fundit në shitje me të gjitha të dhënat dhe çmime konkurruese
               </p>
             </div>
 
@@ -193,17 +230,17 @@ export default async function HomePage() {
               href="/motorra"
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#00b2fe] hover:text-[#00d2ff] group transition-colors self-start sm:self-auto py-1"
             >
-              <span>Eksploro të gjithë ({motorraForSale.length})</span>
+              <span>Eksploro të gjithë ({mappedMotorraForSale.length})</span>
               <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
-          {/* Grid of Motorra Cards from Instagram */}
-          {motorraForSale.length > 0 ? (
-            <MotorraGrid posts={motorraForSale} />
+          {/* Grid of Motorra Cards */}
+          {mappedMotorraForSale.length > 0 ? (
+            <MotorraGrid posts={mappedMotorraForSale} />
           ) : (
             <div className="p-8 text-center bg-white/[0.02] rounded-xl border border-white/5">
-              <InstagramIcon className="w-8 h-8 text-[#00b2fe] mx-auto mb-2" />
+              <Bike className="w-8 h-8 text-[#00b2fe] mx-auto mb-2" />
               <p className="text-xs text-gray-400">Nuk ka motorra për momentin.</p>
             </div>
           )}

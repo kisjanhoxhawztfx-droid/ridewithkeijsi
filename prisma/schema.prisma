@@ -39,18 +39,26 @@ model Episode {
 
 model Motorcycle {
   id               String   @id @default(uuid())
-  instagramMediaId String?  @unique
-  permalink        String
-  mediaType        String   @default("IMAGE")
-  mediaUrl         String?
-  thumbnailUrl     String
-  caption          String
+  title            String?
   brand            String?
   model            String?
   year             Int?
   price            Float?
   currency         String   @default("EUR")
+  mileageKm        Int?
+  mileageMi        Int?
   engine           String?
+  description      String?
+  phone            String?
+  whatsapp         String?
+  imageUrl         String?
+  images           String?
+  instagramMediaId String?  @unique
+  permalink        String?
+  mediaType        String   @default("IMAGE")
+  mediaUrl         String?
+  thumbnailUrl     String?
+  caption          String?
   status           String   @default("FOR_SALE")
   isFeatured       Boolean  @default(false)
   isVisible        Boolean  @default(true)
