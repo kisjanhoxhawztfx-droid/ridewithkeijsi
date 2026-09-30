@@ -38,6 +38,7 @@ function mapMotorcycle(m: any): MotorraPostItem {
     mediaType: m.mediaType || "IMAGE",
     status: m.status || "FOR_SALE",
     isFeatured: Boolean(m.isFeatured),
+    instagramId: m.instagramMediaId,
     publishedAt: m.createdAt || m.publishedAt || new Date(),
   };
 }
