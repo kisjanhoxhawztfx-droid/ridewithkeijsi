@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
   Car,
@@ -15,6 +15,9 @@ import {
   Save,
   ExternalLink,
   RefreshCw,
+  Upload,
+  X,
+  ImageIcon,
 } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon, GoogleIcon } from "@/components/ui/Icons";
 
@@ -64,11 +67,13 @@ export default function AdminTaxiPage() {
   const [showAddPostModal, setShowAddPostModal] = useState(false);
   const [showAddReviewModal, setShowAddReviewModal] = useState(false);
 
-  // New post state
-  const [newPostPermalink, setNewPostPermalink] = useState("");
-  const [newPostThumbnail, setNewPostThumbnail] = useState("");
+  // New post state (file upload)
   const [newPostCaption, setNewPostCaption] = useState("");
   const [newPostFeatured, setNewPostFeatured] = useState(false);
+  const [postImageFile, setPostImageFile] = useState<File | null>(null);
+  const [postImagePreview, setPostImagePreview] = useState<string | null>(null);
+  const [uploadingPost, setUploadingPost] = useState(false);
+  const postImageInputRef = useRef<HTMLInputElement>(null);
 
   // New review state
   const [newReviewAuthor, setNewReviewAuthor] = useState("");
@@ -143,15 +148,46 @@ export default function AdminTaxiPage() {
     }
   };
 
+  const handlePostImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPostImageFile(file);
+    setPostImagePreview(URL.createObjectURL(file));
+  };
+
+  const resetPostForm = () => {
+    setNewPostCaption("");
+    setNewPostFeatured(false);
+    setPostImageFile(null);
+    setPostImagePreview(null);
+    if (postImageInputRef.current) postImageInputRef.current.value = "";
+  };
+
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!postImageFile) {
+      alert("Ju lutem zgjidhni një foto për postimin.");
+      return;
+    }
+    setUploadingPost(true);
     try {
+      // Upload image to Vercel Blob
+      const formData = new FormData();
+      formData.append("file", postImageFile);
+      formData.append("folder", "taxi");
+      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!uploadRes.ok) {
+        const err = await uploadRes.json();
+        throw new Error(err.error || "Upload dështoi");
+      }
+      const { url: thumbnailUrl } = await uploadRes.json();
+
       const res = await fetch("/api/taxi/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          permalink: newPostPermalink,
-          thumbnailUrl: newPostThumbnail,
+          permalink: "#",
+          thumbnailUrl,
           caption: newPostCaption,
           isFeatured: newPostFeatured,
         }),
@@ -159,16 +195,16 @@ export default function AdminTaxiPage() {
 
       if (res.ok) {
         setShowAddPostModal(false);
-        setNewPostPermalink("");
-        setNewPostThumbnail("");
-        setNewPostCaption("");
-        setStatusMessage({ type: "success", text: "Postimi i @taxi_keijsi u shtua me sukses!" });
+        resetPostForm();
+        setStatusMessage({ type: "success", text: "Fotoja e taksisë u ngarkua dhe u shtua me sukses!" });
         await fetchData();
       } else {
         alert("Dështoi shtimi i postimit.");
       }
-    } catch {
-      alert("Ndodhi një gabim gjatë shtimit.");
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Ndodhi një gabim");
+    } finally {
+      setUploadingPost(false);
     }
   };
 
@@ -593,43 +629,62 @@ export default function AdminTaxiPage() {
       {/* Modal: Add Taxi Post */}
       {showAddPostModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="surface-card max-w-lg w-full p-6 border border-white/15 space-y-4">
-            <h3 className="text-base font-bold text-white font-['Outfit']">
-              Shto Postim të Ri nga @taxi_keijsi
-            </h3>
+          <div className="surface-card max-w-lg w-full p-6 border border-white/15 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <h3 className="text-base font-bold text-white font-['Outfit']">
+                Shto Foto të Re të Taksisë
+              </h3>
+              <button
+                type="button"
+                onClick={() => { setShowAddPostModal(false); resetPostForm(); }}
+                className="p-1 rounded text-gray-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
             <form onSubmit={handleCreatePost} className="space-y-4">
+              {/* Image Upload */}
               <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
-                  Linku i Postimit në Instagram *
+                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase flex items-center gap-1.5">
+                  <ImageIcon className="w-3.5 h-3.5 text-[#00b2fe]" />
+                  Foto e Taksisë *
                 </label>
+                {postImagePreview ? (
+                  <div className="relative rounded-lg overflow-hidden border border-[#00b2fe]/30 aspect-video">
+                    <Image src={postImagePreview} alt="Preview" fill className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => { setPostImageFile(null); setPostImagePreview(null); if (postImageInputRef.current) postImageInputRef.current.value = ""; }}
+                      className="absolute top-2 right-2 bg-black/70 rounded-full p-1 text-white hover:bg-red-500/80"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => postImageInputRef.current?.click()}
+                    className="w-full border-2 border-dashed border-white/20 hover:border-[#00b2fe]/50 rounded-lg p-6 flex flex-col items-center gap-2 text-gray-400 hover:text-[#00b2fe] transition-colors"
+                  >
+                    <Upload className="w-6 h-6" />
+                    <span className="text-xs font-bold">Zgjidh Foto nga Galeria</span>
+                    <span className="text-[10px] text-gray-500">JPG, PNG, WebP • Maks 100MB</span>
+                  </button>
+                )}
                 <input
-                  type="url"
-                  required
-                  value={newPostPermalink}
-                  onChange={(e) => setNewPostPermalink(e.target.value)}
-                  placeholder="https://www.instagram.com/p/..."
-                  className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  ref={postImageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handlePostImageChange}
+                  className="hidden"
                 />
               </div>
 
+              {/* Caption */}
               <div>
                 <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
-                  Fotoja / Thumbnail URL *
-                </label>
-                <input
-                  type="url"
-                  required
-                  value={newPostThumbnail}
-                  onChange={(e) => setNewPostThumbnail(e.target.value)}
-                  placeholder="https://images.unsplash.com/... ose linku i fotos"
-                  className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
-                  Përshkrimi / Caption nga Instagrami
+                  Përshkrimi / Caption (Opsionale)
                 </label>
                 <textarea
                   rows={3}
@@ -640,6 +695,7 @@ export default function AdminTaxiPage() {
                 />
               </div>
 
+              {/* Featured */}
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -653,22 +709,46 @@ export default function AdminTaxiPage() {
                 </label>
               </div>
 
+              {/* Upload progress */}
+              {uploadingPost && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-[#00b2fe]/10 border border-[#00b2fe]/20 text-xs text-[#00b2fe]">
+                  <div className="w-3 h-3 border-2 border-[#00b2fe] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <span>Po ngarkohet fotoja... ju lutem prisni.</span>
+                </div>
+              )}
+
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowAddPostModal(false)}
+                  onClick={() => { setShowAddPostModal(false); resetPostForm(); }}
                   className="btn-secondary !py-2 text-xs"
+                  disabled={uploadingPost}
                 >
                   Anulo
                 </button>
-                <button type="submit" className="btn-primary !py-2 text-xs font-bold">
-                  Ruaj Postimin
+                <button
+                  type="submit"
+                  disabled={uploadingPost || !postImageFile}
+                  className="btn-primary !py-2 text-xs font-bold flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploadingPost ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Po ngarkon...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-3 h-3" />
+                      <span>Ngarko &amp; Ruaj</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
 
       {/* Modal: Add Google Review */}
       {showAddReviewModal && (
