@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
   Phone,
@@ -13,7 +13,10 @@ import {
   Save,
   ExternalLink,
   Star,
-  Sparkles,
+  Upload,
+  X,
+  Film,
+  ImageIcon,
 } from "lucide-react";
 import { WhatsAppIcon, CrownIcon } from "@/components/ui/Icons";
 
@@ -24,6 +27,7 @@ interface LuxuryVehicle {
   title: string;
   description: string;
   imageUrl: string;
+  videoUrl?: string | null;
   pricePerDay?: number | null;
   priceText?: string | null;
   features?: string | null;
@@ -53,11 +57,19 @@ export default function AdminLuxuryPage() {
   const [newCategory, setNewCategory] = useState("ROLLS_ROYCE");
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [newImageUrl, setNewImageUrl] = useState("");
   const [newPriceText, setNewPriceText] = useState("Me Rezervim / Ditë");
   const [newPricePerDay, setNewPricePerDay] = useState("");
   const [newFeatures, setNewFeatures] = useState("Shofer VIP me Kostum, Interior Lëkure, Minibar, Wi-Fi 5G");
   const [newFeatured, setNewFeatured] = useState(false);
+
+  // File upload state
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const fetchData = async () => {
     try {
@@ -89,6 +101,49 @@ export default function AdminLuxuryPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setVideoFile(file);
+    setVideoPreview(URL.createObjectURL(file));
+  };
+
+  const uploadFile = async (file: File, folder: string): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", folder);
+    const res = await fetch("/api/upload", { method: "POST", body: formData });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Upload dështoi");
+    }
+    const data = await res.json();
+    return data.url as string;
+  };
+
+  const resetForm = () => {
+    setNewName("");
+    setNewTitle("");
+    setNewDescription("");
+    setNewPriceText("Me Rezervim / Ditë");
+    setNewPricePerDay("");
+    setNewFeatures("Shofer VIP me Kostum, Interior Lëkure, Minibar, Wi-Fi 5G");
+    setNewFeatured(false);
+    setImageFile(null);
+    setImagePreview(null);
+    setVideoFile(null);
+    setVideoPreview(null);
+    if (imageInputRef.current) imageInputRef.current.value = "";
+    if (videoInputRef.current) videoInputRef.current.value = "";
+  };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,7 +178,23 @@ export default function AdminLuxuryPage() {
 
   const handleCreateVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!imageFile) {
+      alert("Ju lutem zgjidhni një foto për makinën.");
+      return;
+    }
+
+    setUploading(true);
     try {
+      // Upload image (required)
+      const imageUrl = await uploadFile(imageFile, "luxury");
+
+      // Upload video (optional)
+      let videoUrl: string | null = null;
+      if (videoFile) {
+        videoUrl = await uploadFile(videoFile, "luxury");
+      }
+
       const res = await fetch("/api/luxury", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -132,7 +203,8 @@ export default function AdminLuxuryPage() {
           category: newCategory,
           title: newTitle,
           description: newDescription,
-          imageUrl: newImageUrl,
+          imageUrl,
+          videoUrl,
           priceText: newPriceText,
           pricePerDay: newPricePerDay ? parseFloat(newPricePerDay) : null,
           features: newFeatures,
@@ -142,17 +214,18 @@ export default function AdminLuxuryPage() {
 
       if (res.ok) {
         setShowAddVehicleModal(false);
-        setNewName("");
-        setNewTitle("");
-        setNewDescription("");
-        setNewImageUrl("");
+        resetForm();
         setStatusMessage({ type: "success", text: "Makina luksoze u shtua me sukses!" });
         await fetchData();
       } else {
-        alert("Dështoi shtimi i makinës.");
+        const err = await res.json();
+        alert(err.error || "Dështoi shtimi i makinës.");
       }
-    } catch {
-      alert("Ndodhi një gabim gjatë shtimit.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Ndodhi një gabim";
+      alert(msg);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -201,7 +274,7 @@ export default function AdminLuxuryPage() {
           <div className="flex items-center gap-2 mb-1">
             <CrownIcon className="w-4 h-4 text-[#ffd700]" />
             <span className="text-xs font-bold text-[#ffd700] uppercase tracking-wider font-['Outfit']">
-              MENAXHIMI I MAKINA LUKSOZE & LIMUZINA
+              MENAXHIMI I MAKINA LUKSOZE &amp; LIMUZINA
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
@@ -266,7 +339,7 @@ export default function AdminLuxuryPage() {
               : "bg-white/5 text-gray-300 hover:text-white"
           }`}
         >
-          ⚙️ Cilësimet & Numrat e Kontaktit
+          ⚙️ Cilësimet &amp; Numrat e Kontaktit
         </button>
       </div>
 
@@ -293,7 +366,9 @@ export default function AdminLuxuryPage() {
             </button>
           </div>
 
-          {vehicles.length === 0 ? (
+          {loading ? (
+            <div className="p-12 text-center text-xs text-gray-400">Duke ngarkuar...</div>
+          ) : vehicles.length === 0 ? (
             <div className="p-12 text-center text-xs text-gray-400">
               Nuk ka mjete në flotë. Shtoni një mjet me butonin lart.
             </div>
@@ -309,11 +384,16 @@ export default function AdminLuxuryPage() {
                       <Image src={v.imageUrl} alt={v.title} fill sizes="96px" className="object-cover" />
                     </div>
                     <div className="min-w-0 flex-1 space-y-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-bold text-white font-['Outfit']">{v.title}</span>
                         <span className="px-2 py-0.5 rounded bg-[#ffd700]/15 border border-[#ffd700]/30 text-[#ffd700] text-[9px] font-black uppercase">
                           {v.category}
                         </span>
+                        {v.videoUrl && (
+                          <span className="px-2 py-0.5 rounded bg-blue-500/20 border border-blue-500/30 text-blue-400 text-[9px] font-bold flex items-center gap-0.5">
+                            <Film className="w-2.5 h-2.5" /> VIDEO
+                          </span>
+                        )}
                         {v.isFeatured && (
                           <span className="px-2 py-0.5 rounded bg-amber-500 text-black text-[9px] font-black">
                             VIP FEATURED
@@ -431,14 +511,24 @@ export default function AdminLuxuryPage() {
       {showAddVehicleModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="surface-card max-w-lg w-full p-6 border border-[#ffd700]/30 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-              <CrownIcon className="w-5 h-5 text-[#ffd700]" />
-              <h3 className="text-base font-bold text-white font-['Outfit']">
-                Shto Makinë Luksoze në Flotë
-              </h3>
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <CrownIcon className="w-5 h-5 text-[#ffd700]" />
+                <h3 className="text-base font-bold text-white font-['Outfit']">
+                  Shto Makinë Luksoze në Flotë
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setShowAddVehicleModal(false); resetForm(); }}
+                className="p-1 rounded text-gray-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
             <form onSubmit={handleCreateVehicle} className="space-y-4">
+              {/* Category */}
               <div>
                 <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
                   Kategoria e Mjetit *
@@ -457,6 +547,7 @@ export default function AdminLuxuryPage() {
                 </select>
               </div>
 
+              {/* Title */}
               <div>
                 <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
                   Titulli / Modeli i Plotë *
@@ -471,20 +562,81 @@ export default function AdminLuxuryPage() {
                 />
               </div>
 
+              {/* Image Upload */}
               <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
-                  Fotoja / Image URL *
+                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase flex items-center gap-1.5">
+                  <ImageIcon className="w-3.5 h-3.5 text-[#ffd700]" />
+                  Foto e Makinës *
                 </label>
+                {imagePreview ? (
+                  <div className="relative rounded-lg overflow-hidden border border-[#ffd700]/30 aspect-video">
+                    <Image src={imagePreview} alt="Preview" fill className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => { setImageFile(null); setImagePreview(null); if (imageInputRef.current) imageInputRef.current.value = ""; }}
+                      className="absolute top-2 right-2 bg-black/70 rounded-full p-1 text-white hover:bg-red-500/80"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => imageInputRef.current?.click()}
+                    className="w-full border-2 border-dashed border-white/20 hover:border-[#ffd700]/50 rounded-lg p-6 flex flex-col items-center gap-2 text-gray-400 hover:text-[#ffd700] transition-colors"
+                  >
+                    <Upload className="w-6 h-6" />
+                    <span className="text-xs font-bold">Zgjidh Foto nga Galeria</span>
+                    <span className="text-[10px] text-gray-500">JPG, PNG, WebP • Maks 100MB</span>
+                  </button>
+                )}
                 <input
-                  type="url"
-                  required
-                  value={newImageUrl}
-                  onChange={(e) => setNewImageUrl(e.target.value)}
-                  placeholder="https://images.unsplash.com/... ose linku i fotos"
-                  className="w-full bg-[#06080d] border border-white/15 focus:border-[#ffd700] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleImageChange}
+                  className="hidden"
                 />
               </div>
 
+              {/* Video Upload */}
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase flex items-center gap-1.5">
+                  <Film className="w-3.5 h-3.5 text-blue-400" />
+                  Video e Makinës (opsionale)
+                </label>
+                {videoPreview ? (
+                  <div className="relative rounded-lg overflow-hidden border border-blue-500/30">
+                    <video src={videoPreview} controls className="w-full rounded-lg max-h-40 object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => { setVideoFile(null); setVideoPreview(null); if (videoInputRef.current) videoInputRef.current.value = ""; }}
+                      className="absolute top-2 right-2 bg-black/70 rounded-full p-1 text-white hover:bg-red-500/80"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => videoInputRef.current?.click()}
+                    className="w-full border-2 border-dashed border-white/20 hover:border-blue-500/50 rounded-lg p-5 flex flex-col items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors"
+                  >
+                    <Film className="w-6 h-6" />
+                    <span className="text-xs font-bold">Zgjidh Video nga Galeria</span>
+                    <span className="text-[10px] text-gray-500">MP4, WebM, MOV • Maks 100MB</span>
+                  </button>
+                )}
+                <input
+                  ref={videoInputRef}
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime"
+                  onChange={handleVideoChange}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Price */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
@@ -513,6 +665,7 @@ export default function AdminLuxuryPage() {
                 </div>
               </div>
 
+              {/* Features */}
               <div>
                 <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
                   Veçoritë VIP (të ndara me presje)
@@ -526,6 +679,7 @@ export default function AdminLuxuryPage() {
                 />
               </div>
 
+              {/* Description */}
               <div>
                 <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
                   Përshkrimi i Detajuar
@@ -539,6 +693,7 @@ export default function AdminLuxuryPage() {
                 />
               </div>
 
+              {/* Featured */}
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -552,19 +707,39 @@ export default function AdminLuxuryPage() {
                 </label>
               </div>
 
+              {/* Upload progress indicator */}
+              {uploading && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-[#ffd700]/10 border border-[#ffd700]/20 text-xs text-[#ffd700]">
+                  <div className="w-3 h-3 border-2 border-[#ffd700] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <span>Po ngarkohen skedarët... ju lutem prisni.</span>
+                </div>
+              )}
+
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowAddVehicleModal(false)}
+                  onClick={() => { setShowAddVehicleModal(false); resetForm(); }}
                   className="btn-secondary !py-2 text-xs"
+                  disabled={uploading}
                 >
                   Anulo
                 </button>
                 <button
                   type="submit"
-                  className="btn-primary !from-[#ffd700] !to-[#b8860b] !text-black font-extrabold !py-2 text-xs"
+                  disabled={uploading || !imageFile}
+                  className="btn-primary !from-[#ffd700] !to-[#b8860b] !text-black font-extrabold !py-2 text-xs flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Ruaj Mjetin
+                  {uploading ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      <span>Po ngarkon...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-3 h-3" />
+                      <span>Ngarko &amp; Ruaj</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

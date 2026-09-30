@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
       title,
       description,
       imageUrl,
+      videoUrl,
       pricePerDay,
       priceText,
       features,
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest) {
         title,
         description: description || "",
         imageUrl,
+        videoUrl: videoUrl || null,
         pricePerDay: pricePerDay ? parseFloat(pricePerDay) : null,
         priceText: priceText || "Me Rezervim / Ditë",
         features: features || "Shofer VIP, Interior Lëkure, Minibar, Wi-Fi",
@@ -72,6 +74,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+
 export async function PATCH(req: NextRequest) {
   const session = await getAdminSession();
   if (!session) {
@@ -80,7 +83,7 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { id, isVisible, isFeatured, title, description, priceText, pricePerDay, features, category, imageUrl } = body;
+    const { id, isVisible, isFeatured, title, description, priceText, pricePerDay, features, category, imageUrl, videoUrl } = body;
 
     if (!id) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
@@ -98,6 +101,7 @@ export async function PATCH(req: NextRequest) {
         ...(typeof features === "string" ? { features } : {}),
         ...(typeof category === "string" ? { category } : {}),
         ...(typeof imageUrl === "string" ? { imageUrl } : {}),
+        ...(typeof videoUrl === "string" ? { videoUrl } : {}),
       },
     });
 

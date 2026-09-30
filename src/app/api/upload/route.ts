@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import crypto from "crypto";
+import { put } from "@vercel/blob";
 
 // Allowed MIME types
 const ALLOWED_TYPES = [
@@ -15,7 +13,7 @@ const ALLOWED_TYPES = [
   "image/gif",
 ];
 
-const MAX_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+const MAX_SIZE_BYTES = 100 * 1024 * 1024; // 100MB
 
 export async function POST(req: Request) {
   const session = await getAdminSession();
@@ -26,7 +24,7 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
-    const folder = (formData.get("folder") as string) || "ads";
+    const folder = (formData.get("folder") as string) || "luxury";
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -34,7 +32,7 @@ export async function POST(req: Request) {
 
     if (file.size > MAX_SIZE_BYTES) {
       return NextResponse.json(
-        { error: "Skedari është shumë i madh (Maksimumi 50MB)." },
+        { error: "Skedari është shumë i madh (Maksimumi 100MB)." },
         { status: 400 }
       );
     }
@@ -46,25 +44,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // Determine extension safely
-    const originalExt = path.extname(file.name).toLowerCase() || (file.type.startsWith("video/") ? ".mp4" : ".jpg");
-    const safeFilename = `${crypto.randomUUID()}${originalExt}`;
-
-    const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
-    await mkdir(uploadDir, { recursive: true });
-
-    const filePath = path.join(uploadDir, safeFilename);
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    await writeFile(filePath, buffer);
-
-    const publicUrl = `/uploads/${folder}/${safeFilename}`;
     const mediaType = file.type.startsWith("video/") ? "VIDEO" : "IMAGE";
+
+    // Upload to Vercel Blob (persistent CDN storage)
+    const blob = await put(`${folder}/${Date.now()}-${file.name}`, file, {
+      access: "public",
+    });
 
     return NextResponse.json({
       success: true,
-      url: publicUrl,
+      url: blob.url,
       mediaType,
       size: file.size,
       originalName: file.name,
