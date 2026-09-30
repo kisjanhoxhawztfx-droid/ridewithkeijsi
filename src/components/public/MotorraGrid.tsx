@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import {
   Bike,
+  Heart,
   CheckCircle2,
   Calendar,
   Gauge,
@@ -14,13 +15,10 @@ import {
   ChevronLeft,
   ChevronRight,
   ImageIcon,
-  Maximize2,
+  MapPin,
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/Icons";
-import {
-  parseMotorcycleCaption,
-  ParsedMotorcycle,
-} from "@/lib/motorcycleParser";
+import { parseMotorcycleCaption } from "@/lib/motorcycleParser";
 
 export interface MotorraPostItem {
   id: string;
@@ -67,7 +65,7 @@ function getPhotoList(post: MotorraPostItem): string[] {
 }
 
 /**
- * Individual motorcycle card displaying photo gallery with cover, specs, and badges.
+ * Motorcycle Card formatted like the BicycleBlueBook marketplace with dark cyber styling.
  */
 function MotorraCardItem({
   post,
@@ -83,18 +81,26 @@ function MotorraCardItem({
   const primaryThumb = photos[0] || (post.instagramId ? `/api/instagram-image?id=${post.instagramId}` : "");
 
   const displayTitle = post.title || post.model || parsed.title || "Motorr";
-  const displayBrand = post.brand || displayTitle.split(" ")[0] || "Motorr";
   const displayYear = post.year || parsed.year;
+  const fullHeading = displayYear ? `${displayYear} ${displayTitle}` : displayTitle;
+
   const displayPrice = post.price
     ? `€${post.price.toLocaleString()}`
     : (parsed.price || "Me Rezervim");
 
-  const displayMileage = post.mileageKm
-    ? `${post.mileageKm.toLocaleString()} km`
-    : (parsed.mileage || null);
+  const specsLine = [
+    post.engine || parsed.engine,
+    post.mileageKm ? `${post.mileageKm.toLocaleString()} km` : parsed.mileage,
+    post.mileageMi ? `${post.mileageMi.toLocaleString()} mi` : null,
+    isSold ? "E Shitur" : "Gjendje Perfekte",
+  ].filter(Boolean).join(" • ");
 
   const [imgSrc, setImgSrc] = useState<string>(primaryThumb);
   const [imgFailed, setImgFailed] = useState(false);
+  const [isFav, setIsFav] = useState(false);
+
+  const cleanPhone = (post.phone || parsed.phone || "+355697738559").replace(/[^0-9+]/g, "");
+  const cleanWa = (post.whatsapp || post.phone || parsed.phone || "+355697738559").replace(/[^0-9]/g, "");
 
   const handleImageError = () => {
     if (post.instagramId) {
@@ -110,84 +116,136 @@ function MotorraCardItem({
   return (
     <div
       onClick={() => onSelect(post)}
-      className="group relative aspect-[9/13.5] rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-b from-[#131d2e] via-[#0c121d] to-[#06090f] border border-white/10 hover:border-[#00b2fe] cursor-pointer shadow-md hover:shadow-[0_0_22px_rgba(0,178,254,0.35)] transition-all duration-300 active:scale-95 flex flex-col justify-between"
+      className="group bg-[#080d17] border border-white/10 hover:border-[#00b2fe] rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_25px_rgba(0,178,254,0.25)] transition-all duration-300 flex flex-col justify-between"
     >
-      {/* Thumbnail Image */}
-      {imgSrc && !imgFailed ? (
-        <Image
-          src={imgSrc}
-          alt={displayTitle}
-          fill
-          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 16vw"
-          className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
-            isSold ? "grayscale opacity-60" : ""
-          }`}
-          onError={handleImageError}
-          unoptimized
-        />
-      ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center bg-gradient-to-b from-[#162338] via-[#0e1624] to-[#070b13]">
-          <div className="w-10 h-10 rounded-full bg-[#00b2fe]/20 border border-[#00b2fe]/40 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,178,254,0.3)]">
-            <Bike className="w-5 h-5 text-[#00b2fe]" />
+      <div>
+        {/* Photo Container: 4:3 Landscape aspect ratio */}
+        <div className="relative aspect-[4/3] bg-black overflow-hidden">
+          {imgSrc && !imgFailed ? (
+            <Image
+              src={imgSrc}
+              alt={fullHeading}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
+                isSold ? "grayscale opacity-60" : ""
+              }`}
+              onError={handleImageError}
+              unoptimized
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center bg-[#0d1422]">
+              <Bike className="w-10 h-10 text-[#00b2fe] mb-1" />
+              <p className="text-[10px] font-bold text-gray-400 line-clamp-1">{fullHeading}</p>
+            </div>
+          )}
+
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
+
+          {/* Top Badges */}
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+            <span
+              className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${
+                isSold
+                  ? "bg-red-500/90 text-white border border-red-400/50"
+                  : "bg-[#00b2fe] text-black font-['Outfit'] font-extrabold shadow-md"
+              }`}
+            >
+              {isSold ? "E Shitur" : "Në Shitje"}
+            </span>
+
+            {photos.length > 1 && (
+              <span className="px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold flex items-center gap-1">
+                <ImageIcon className="w-2.5 h-2.5 text-[#00b2fe]" />
+                <span>{photos.length}</span>
+              </span>
+            )}
           </div>
-          <p className="text-[10px] font-black text-white uppercase font-['Outfit'] line-clamp-2 px-1 leading-tight">
-            {displayTitle}
+
+          {/* Top Right Heart Favorite Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFav(!isFav);
+            }}
+            className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/65 backdrop-blur-md border border-white/20 hover:border-[#00b2fe] flex items-center justify-center transition-all z-10 active:scale-90"
+            title="Ruaj te të preferuarat"
+          >
+            <Heart
+              className={`w-4 h-4 transition-colors ${
+                isFav ? "fill-red-500 text-red-500" : "text-white group-hover:text-red-400"
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Card Body (BicycleBlueBook Format) */}
+        <div className="p-4 space-y-2.5">
+          {/* Title: 2024 Yamaha TMAX 560 Tech Max */}
+          <h3 className="text-sm sm:text-base font-extrabold text-white font-['Outfit'] line-clamp-1 leading-snug group-hover:text-[#00b2fe] transition-colors">
+            {fullHeading}
+          </h3>
+
+          {/* Specs Subline: 560 cc • 15,000 km (9,320 mi) */}
+          <p className="text-[11px] text-gray-400 font-medium line-clamp-1">
+            {specsLine || "Gjendje shumë e mirë"}
           </p>
-          {displayPrice && (
-            <span className="mt-1 text-[9px] font-black text-[#00d2ff] bg-black/60 px-2 py-0.5 rounded border border-[#00b2fe]/30 font-['Outfit']">
+
+          {/* Price & Deal Rating */}
+          <div className="flex items-center gap-2 pt-1">
+            <span className="text-lg sm:text-xl font-black text-white font-['Outfit']">
               {displayPrice}
             </span>
-          )}
+
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-black tracking-wide font-['Outfit']">
+              <CheckCircle2 className="w-2.5 h-2.5" />
+              <span>Çmim i Shkëlqyer</span>
+            </span>
+          </div>
+
+          {/* Seller Row: Ride with Keijsi • Tiranë */}
+          <div className="flex items-center gap-2.5 pt-2 border-t border-white/10 text-xs">
+            <div className="w-7 h-7 rounded-full bg-[#00b2fe]/20 border border-[#00b2fe]/40 text-[#00b2fe] font-black text-[10px] flex items-center justify-center flex-shrink-0">
+              RK
+            </div>
+            <div className="leading-tight overflow-hidden">
+              <span className="text-white font-bold text-[11px] block truncate">
+                Ride with Keijsi
+              </span>
+              <span className="text-gray-400 text-[10px] flex items-center gap-1">
+                <MapPin className="w-2.5 h-2.5 text-[#00b2fe]" />
+                Tiranë, Shqipëri
+              </span>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Gradient overlays for high contrast */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40 pointer-events-none" />
-
-      {/* Top Row Badges: Status & Photos count */}
-      <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between gap-1 pointer-events-none z-10">
-        <span
-          className={`px-1.5 py-0.5 rounded-md text-[8px] sm:text-[9px] font-black uppercase tracking-wider ${
-            isSold
-              ? "bg-zinc-800/90 text-gray-400 border border-zinc-700"
-              : "bg-[#00b2fe] text-black shadow-md font-['Outfit']"
-          }`}
+      {/* Action Buttons: Telefono & WhatsApp */}
+      <div className="p-3 border-t border-white/10 bg-white/[0.01] grid grid-cols-2 gap-2">
+        <a
+          href={`tel:${cleanPhone}`}
+          onClick={(e) => e.stopPropagation()}
+          className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#00b2fe] hover:bg-[#00d2ff] text-black font-extrabold text-[11px] transition-all shadow-[0_0_12px_rgba(0,178,254,0.3)] active:scale-95"
         >
-          {isSold ? "E Shitur" : "Në Shitje"}
-        </span>
+          <Phone className="w-3.5 h-3.5 fill-black" />
+          <span>Telefono</span>
+        </a>
 
-        <div className="flex items-center gap-1">
-          {photos.length > 1 && (
-            <span className="px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-white/20 text-white text-[8px] sm:text-[9px] font-bold flex items-center gap-1">
-              <ImageIcon className="w-2.5 h-2.5 text-[#00b2fe]" />
-              <span>{photos.length}</span>
-            </span>
-          )}
-          {displayPrice && (
-            <span className="px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-[#00b2fe]/40 text-[#00d2ff] text-[8px] sm:text-[9px] font-black font-['Outfit'] shadow-sm">
-              {displayPrice}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Center Image Indicator */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/30 group-hover:bg-[#00b2fe] group-hover:border-[#00b2fe] flex items-center justify-center text-white group-hover:text-black transition-all shadow-lg group-hover:scale-110">
-          <ImageIcon className="w-3.5 h-3.5" />
-        </div>
-      </div>
-
-      {/* Bottom Info: Title & Specs */}
-      <div className="absolute bottom-1.5 left-1.5 right-1.5 pointer-events-none z-10 space-y-0.5">
-        <p className="text-[9px] sm:text-[11px] text-white font-black font-['Outfit'] uppercase line-clamp-1 leading-tight drop-shadow-md">
-          {displayTitle}
-        </p>
-        <div className="flex items-center gap-1 text-[8px] sm:text-[9px] text-gray-300 font-semibold drop-shadow-sm truncate">
-          {displayYear && <span>{displayYear}</span>}
-          {displayYear && displayMileage && <span>•</span>}
-          {displayMileage && <span>{displayMileage}</span>}
-        </div>
+        <a
+          href={`https://wa.me/${cleanWa}?text=${encodeURIComponent(
+            `Përshëndetje, po ju shkruaj nga ridewithkeijsi.com lidhur me motorrin: ${fullHeading} (${displayPrice})`
+          )}`}
+          onClick={(e) => e.stopPropagation()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[11px] transition-all shadow-md active:scale-95"
+        >
+          <WhatsAppIcon className="w-3.5 h-3.5" />
+          <span>WhatsApp</span>
+        </a>
       </div>
     </div>
   );
@@ -237,7 +295,7 @@ export default function MotorraGrid({ posts }: MotorraGridProps) {
 
   if (!posts || posts.length === 0) return null;
 
-  // Selected specs derivation
+  // Selected specs
   const parsed = selectedPost ? parseMotorcycleCaption(selectedPost.caption || "") : null;
   const title = selectedPost?.title || selectedPost?.model || parsed?.title || "Motorr";
   const brand = selectedPost?.brand || title.split(" ")[0] || "Motorr";
@@ -253,21 +311,21 @@ export default function MotorraGrid({ posts }: MotorraGridProps) {
 
   return (
     <div className="space-y-4">
-      {/* 1. COMPACT GRID: 3 COLUMNS ON MOBILE, 4 ON TABLET, 6 ON DESKTOP */}
-      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3.5">
+      {/* Cards Grid: 1 col on small mobile, 2 on tablet, 3 or 4 on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
         {posts.map((post) => (
           <MotorraCardItem key={post.id} post={post} onSelect={handleSelectPost} />
         ))}
       </div>
 
-      {/* 2. EXPANDED MODAL WITH MULTI-PHOTO GALLERY CAROUSEL */}
+      {/* Expanded Modal with Multi-Photo Gallery Carousel */}
       {selectedPost && (
         <div
           className="fixed inset-0 z-[120] flex items-center justify-center p-2 sm:p-6 bg-black/90 backdrop-blur-md animate-in fade-in duration-200"
           onClick={handleClose}
         >
           <div
-            className="relative w-full max-w-[420px] sm:max-w-lg max-h-[95vh] bg-[#090d15] border border-white/20 rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_35px_rgba(0,178,254,0.3)] flex flex-col"
+            className="relative w-full max-w-[440px] sm:max-w-xl max-h-[95vh] bg-[#090d15] border border-white/20 rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_35px_rgba(0,178,254,0.3)] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Bar with Title & Close */}
@@ -297,7 +355,7 @@ export default function MotorraGrid({ posts }: MotorraGridProps) {
                     src={selectedPhotos[activePhotoIndex]}
                     alt={`${title} - Foto ${activePhotoIndex + 1}`}
                     fill
-                    sizes="(max-width: 640px) 100vw, 500px"
+                    sizes="(max-width: 640px) 100vw, 600px"
                     className="object-contain"
                     unoptimized
                     priority
@@ -330,7 +388,7 @@ export default function MotorraGrid({ posts }: MotorraGridProps) {
                     <ChevronRight className="w-5 h-5" />
                   </button>
 
-                  {/* Photo Counter Pill (e.g. 1 / 4) */}
+                  {/* Photo Counter Pill */}
                   <div className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold">
                     📸 {activePhotoIndex + 1} / {selectedPhotos.length}
                   </div>
@@ -377,7 +435,7 @@ export default function MotorraGrid({ posts }: MotorraGridProps) {
                     </span>
                   </div>
                   <h3 className="text-base sm:text-lg font-extrabold text-white font-['Outfit'] uppercase leading-snug">
-                    {title}
+                    {year ? `${year} ` : ""}{title}
                   </h3>
                 </div>
 
