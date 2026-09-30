@@ -21,6 +21,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const storeId = process.env.BLOB_STORE_ID;
+  if (!storeId) {
+    return NextResponse.json(
+      { error: "BLOB_STORE_ID nuk është konfiguruar." },
+      { status: 500 }
+    );
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
@@ -39,16 +47,20 @@ export async function POST(req: Request) {
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: `Lloji i skedarit nuk lejohet (${file.type}). Lejohen vetëm MP4, WebM, MOV, JPG, PNG, WebP.` },
+        {
+          error: `Lloji i skedarit nuk lejohet (${file.type}). Lejohen vetëm MP4, WebM, MOV, JPG, PNG, WebP.`,
+        },
         { status: 400 }
       );
     }
 
     const mediaType = file.type.startsWith("video/") ? "VIDEO" : "IMAGE";
+    const filename = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
 
-    // Upload to Vercel Blob (persistent CDN storage)
-    const blob = await put(`${folder}/${Date.now()}-${file.name}`, file, {
+    // Upload to Vercel Blob using OIDC authentication (no BLOB_READ_WRITE_TOKEN needed)
+    const blob = await put(filename, file, {
       access: "public",
+      storeId,
     });
 
     return NextResponse.json({
