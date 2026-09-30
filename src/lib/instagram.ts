@@ -1,7 +1,6 @@
 import db from "./db";
 import fs from "fs";
 import path from "path";
-import { deduplicateMotorcycles } from "../../scripts/deduplicateMotorcycles";
 
 /**
  * Download a thumbnail image from Instagram CDN and save it locally
@@ -248,8 +247,6 @@ export async function syncInstagramFromRapidApi(customUsername?: string): Promis
         completedAt: new Date(),
       },
     });
-    // Remove duplicate motorcycle posts automatically
-    await deduplicateMotorcycles();
 
     return {
       success: true,
