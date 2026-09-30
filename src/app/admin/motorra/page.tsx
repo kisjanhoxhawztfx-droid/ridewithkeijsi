@@ -24,6 +24,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/Icons";
+import BrandAutocomplete from "@/components/admin/BrandAutocomplete";
 
 interface MotorcycleItem {
   id: string;
@@ -47,24 +48,7 @@ interface MotorcycleItem {
   publishedAt: string;
 }
 
-const COMMON_BRANDS = [
-  "Yamaha",
-  "Honda",
-  "BMW",
-  "Kawasaki",
-  "KTM",
-  "Ducati",
-  "Suzuki",
-  "Vespa",
-  "Piaggio",
-  "CFMOTO",
-  "Harley-Davidson",
-  "Aprilia",
-  "Triumph",
-  "Voge",
-  "Benelli",
-  "Tjetër",
-];
+
 
 export default function AdminMotorraPage() {
   const [motorcycles, setMotorcycles] = useState<MotorcycleItem[]>([]);
@@ -729,15 +713,11 @@ export default function AdminMotorraPage() {
                   <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
                     Marka *
                   </label>
-                  <select
+                  <BrandAutocomplete
                     value={brand}
-                    onChange={(e) => setBrand(e.target.value)}
-                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none"
-                  >
-                    {COMMON_BRANDS.map((b) => (
-                      <option key={b} value={b}>{b}</option>
-                    ))}
-                  </select>
+                    onChange={setBrand}
+                    required
+                  />
                 </div>
               </div>
 
