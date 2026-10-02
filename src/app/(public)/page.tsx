@@ -60,7 +60,7 @@ export default async function HomePage() {
     }),
     db.motorcycle.findMany({
       where: { isVisible: true, status: "FOR_SALE" },
-      orderBy: [{ isFeatured: "desc" }, { publishedAt: "desc" }],
+      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
       take: 6,
     }),
   ]);
@@ -76,6 +76,9 @@ export default async function HomePage() {
     }
     if (imagesList.length === 0 && m.imageUrl) imagesList = [m.imageUrl];
     if (imagesList.length === 0 && m.thumbnailUrl) imagesList = [m.thumbnailUrl];
+
+    const pubDate = m.publishedAt || m.createdAt || new Date();
+    const publishedAtStr = pubDate instanceof Date ? pubDate.toISOString() : String(pubDate);
 
     return {
       id: m.id,
@@ -98,7 +101,8 @@ export default async function HomePage() {
       mediaType: m.mediaType || "IMAGE",
       status: m.status || "FOR_SALE",
       isFeatured: Boolean(m.isFeatured),
-      publishedAt: m.publishedAt || m.createdAt || new Date(),
+      publishedAt: publishedAtStr,
+      postedAt: publishedAtStr,
     };
   });
 

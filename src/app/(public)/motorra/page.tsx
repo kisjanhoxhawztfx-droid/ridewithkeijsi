@@ -16,6 +16,8 @@ function mapMotorcycle(m: any): MotorraPostItem {
   }
   if (imagesList.length === 0 && m.imageUrl) imagesList = [m.imageUrl];
   if (imagesList.length === 0 && m.thumbnailUrl) imagesList = [m.thumbnailUrl];
+  const pubDate = m.publishedAt || m.createdAt || new Date();
+  const publishedAt = pubDate instanceof Date ? pubDate.toISOString() : String(pubDate);
 
   return {
     id: m.id,
@@ -39,14 +41,15 @@ function mapMotorcycle(m: any): MotorraPostItem {
     status: m.status || "FOR_SALE",
     isFeatured: Boolean(m.isFeatured),
     instagramId: m.instagramMediaId,
-    publishedAt: m.publishedAt || m.createdAt || new Date(),
+    publishedAt,
+    postedAt: publishedAt,
   };
 }
 
 export default async function MotorraPage() {
   const rawMotorcycles = await db.motorcycle.findMany({
     where: { isVisible: true },
-    orderBy: [{ isFeatured: "desc" }, { publishedAt: "desc" }],
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
   });
 
   const allMotorcycles = rawMotorcycles.map(mapMotorcycle);

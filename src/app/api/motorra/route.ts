@@ -30,7 +30,7 @@ export async function GET(req: Request) {
 
     const rawMotorcycles = await db.motorcycle.findMany({
       where: whereClause,
-      orderBy: [{ isFeatured: "desc" }, { publishedAt: "desc" }],
+      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
       take: limit,
     });
 
@@ -50,11 +50,13 @@ export async function GET(req: Request) {
         imagesList = [m.thumbnailUrl];
       }
 
+      const pubDate = m.publishedAt || m.createdAt || new Date();
+
       return {
         ...m,
         images: imagesList,
         imageUrl: m.imageUrl || imagesList[0] || m.thumbnailUrl || "",
-        publishedAt: (m.publishedAt || m.createdAt).toISOString(),
+        publishedAt: pubDate instanceof Date ? pubDate.toISOString() : String(pubDate),
       };
     });
 

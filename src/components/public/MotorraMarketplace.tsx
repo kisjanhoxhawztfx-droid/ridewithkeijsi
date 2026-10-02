@@ -58,7 +58,7 @@ export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
   const [selectedBrand, setSelectedBrand] = useState<string>("ALL");
   const [selectedYear, setSelectedYear] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"NEWEST" | "PRICE_ASC" | "PRICE_DESC" | "KM_ASC">("NEWEST");
+  const [sortBy, setSortBy] = useState<"NEWEST" | "OLDEST" | "PRICE_ASC" | "PRICE_DESC" | "KM_ASC">("NEWEST");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Favorites state (local storage or in-memory)
@@ -174,10 +174,17 @@ export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
       if (sortBy === "KM_ASC") {
         return (a.mileageKm || 9999999) - (b.mileageKm || 9999999);
       }
-      // NEWEST
-      const timeB = new Date(b.publishedAt || b.postedAt || 0).getTime();
-      const timeA = new Date(a.publishedAt || a.postedAt || 0).getTime();
-      return timeB - timeA;
+      if (sortBy === "OLDEST") {
+        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        if (timeA !== timeB) return timeA - timeB;
+        return (a.year || 0) - (b.year || 0);
+      }
+      // NEWEST: Most recently published first (descending)
+      const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      if (timeB !== timeA) return timeB - timeA;
+      return (b.year || 0) - (a.year || 0);
     });
 
     return result;
@@ -255,6 +262,7 @@ export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
               className="bg-transparent text-xs text-gray-200 font-bold focus:outline-none cursor-pointer"
             >
               <option value="NEWEST" className="bg-[#080d16] text-white">Më të fundit</option>
+              <option value="OLDEST" className="bg-[#080d16] text-white">Më të vjetrit</option>
               <option value="PRICE_ASC" className="bg-[#080d16] text-white">Çmimi: Nga më i ulëti</option>
               <option value="PRICE_DESC" className="bg-[#080d16] text-white">Çmimi: Nga më i larti</option>
               <option value="KM_ASC" className="bg-[#080d16] text-white">Kilometra: Më pak km</option>
