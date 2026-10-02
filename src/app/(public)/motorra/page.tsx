@@ -39,14 +39,14 @@ function mapMotorcycle(m: any): MotorraPostItem {
     status: m.status || "FOR_SALE",
     isFeatured: Boolean(m.isFeatured),
     instagramId: m.instagramMediaId,
-    publishedAt: m.createdAt || m.publishedAt || new Date(),
+    publishedAt: m.publishedAt || m.createdAt || new Date(),
   };
 }
 
 export default async function MotorraPage() {
   const rawMotorcycles = await db.motorcycle.findMany({
     where: { isVisible: true },
-    orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ isFeatured: "desc" }, { publishedAt: "desc" }],
   });
 
   const allMotorcycles = rawMotorcycles.map(mapMotorcycle);

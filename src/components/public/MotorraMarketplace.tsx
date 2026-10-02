@@ -175,7 +175,9 @@ export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
         return (a.mileageKm || 9999999) - (b.mileageKm || 9999999);
       }
       // NEWEST
-      return new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime();
+      const timeB = new Date(b.publishedAt || b.postedAt || 0).getTime();
+      const timeA = new Date(a.publishedAt || a.postedAt || 0).getTime();
+      return timeB - timeA;
     });
 
     return result;
