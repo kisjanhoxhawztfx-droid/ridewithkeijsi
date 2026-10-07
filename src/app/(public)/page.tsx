@@ -136,37 +136,52 @@ export default async function HomePage() {
 
       {/* 2. Section 01: Motorra (Marketplace / Instagram) */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="surface-card p-4 sm:p-7 lg:p-9 border border-white/10 space-y-6">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#00b2fe]/30 hover:border-[#00b2fe]/50 bg-gradient-to-br from-[#0c1322] via-[#070b13] to-[#04060a] p-4 sm:p-7 lg:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_30px_rgba(0,178,254,0.1)] space-y-6 transition-all duration-300">
+          {/* Ambient Brand Glows */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#00b2fe]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-72 h-72 bg-[#00d2ff]/5 rounded-full blur-3xl pointer-events-none" />
+
           {/* Section Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3.5 border-b border-white/10 pb-4">
-            <div className="space-y-1">
-              <h2 className="text-base sm:text-xl lg:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
-                <Bike className="w-4 h-4 text-[#00b2fe]" />
-                <span>Motorra në Shitje</span>
-              </h2>
-              <p className="text-[11px] sm:text-xs text-gray-400">
-                Motorrat më të fundit në shitje me të gjitha të dhënat dhe çmime konkurruese
-              </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 border-b border-white/10 pb-4 relative z-10">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#00b2fe]/15 border border-[#00b2fe]/40 text-[#00b2fe] flex items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(0,178,254,0.25)]">
+                <Bike className="w-5 h-5 sm:w-6 sm:h-6 text-[#00b2fe]" />
+              </div>
+
+              <div className="space-y-0.5">
+                <h2 className="text-base sm:text-xl lg:text-2xl font-black text-white font-['Outfit'] flex items-center gap-1.5 leading-snug">
+                  <span>Motorra në</span>
+                  <span className="bg-gradient-to-r from-[#00b2fe] via-[#00d2ff] to-[#ffffff] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(0,178,254,0.4)]">
+                    Shitje
+                  </span>
+                </h2>
+                <p className="text-[11px] sm:text-xs text-gray-300/90 max-w-xl leading-relaxed">
+                  Motorrat më të fundit në shitje me të gjitha të dhënat dhe çmime konkurruese
+                </p>
+              </div>
             </div>
 
+            {/* Prominent compact action button */}
             <Link
               href="/motorra"
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#00b2fe] hover:text-[#00d2ff] group transition-colors self-start sm:self-auto py-1"
+              className="inline-flex items-center justify-center gap-1.5 py-2 px-3.5 sm:py-2.5 sm:px-4 rounded-xl bg-gradient-to-r from-[#00b2fe] to-[#0099e6] hover:from-[#00c3ff] hover:to-[#00b2fe] text-black font-black text-xs sm:text-sm shadow-[0_0_18px_rgba(0,178,254,0.35)] hover:shadow-[0_0_25px_rgba(0,178,254,0.55)] transition-all active:scale-95 group self-start sm:self-auto flex-shrink-0"
             >
               <span>Eksploro të gjithë ({mappedMotorraForSale.length})</span>
-              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <ChevronRight className="w-3.5 h-3.5 text-black group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
           {/* Grid of Motorra Cards */}
-          {mappedMotorraForSale.length > 0 ? (
-            <MotorraGrid posts={mappedMotorraForSale} />
-          ) : (
-            <div className="p-8 text-center bg-white/[0.02] rounded-xl border border-white/5">
-              <Bike className="w-8 h-8 text-[#00b2fe] mx-auto mb-2" />
-              <p className="text-xs text-gray-400">Nuk ka motorra për momentin.</p>
-            </div>
-          )}
+          <div className="relative z-10">
+            {mappedMotorraForSale.length > 0 ? (
+              <MotorraGrid posts={mappedMotorraForSale} />
+            ) : (
+              <div className="p-8 text-center bg-white/[0.02] rounded-xl border border-white/5">
+                <Bike className="w-8 h-8 text-[#00b2fe] mx-auto mb-2" />
+                <p className="text-xs text-gray-400">Nuk ka motorra për momentin.</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
