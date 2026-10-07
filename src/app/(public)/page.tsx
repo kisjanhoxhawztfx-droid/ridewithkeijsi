@@ -124,91 +124,17 @@ export default async function HomePage() {
         heroSubtitle={settings.hero_subtitle}
       />
 
-      {/* Section Transition Divider */}
-      <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#00b2fe]/35 to-transparent" />
-        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#080d16] border border-[#00b2fe]/40 text-[10px] sm:text-xs font-black tracking-widest text-[#00b2fe] uppercase shadow-[0_0_15px_rgba(0,178,254,0.2)] flex items-center gap-1.5 whitespace-nowrap">
-          <Sparkles className="w-3.5 h-3.5 text-[#00b2fe]" />
-          <span>01. EMISIONI &amp; VIDEOT</span>
-        </div>
-        <div className="h-px flex-1 bg-gradient-to-r from-[#00b2fe]/35 via-transparent to-transparent" />
-      </div>
-
-      {/* 2. Section 01: Ride with Keijsi (Episodes) */}
-      <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="surface-card p-4 sm:p-7 lg:p-9 border border-white/10 space-y-6">
-          {/* Section Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3.5 border-b border-white/10 pb-4">
-            <div className="space-y-1">
-              <h2 className="text-base sm:text-xl lg:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
-                <Tv className="w-4 h-4 text-[#00b2fe]" />
-                <span>Episodet më të Fundit</span>
-              </h2>
-              <p className="text-[11px] sm:text-xs text-gray-400">
-                Xhiro ekskluzive, teste motorrash dhe intervista nga YouTube @RideWithkeijsi
-              </p>
-            </div>
-
-            <Link
-              href="/episodes"
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#00b2fe] hover:text-[#00d2ff] group transition-colors self-start sm:self-auto py-1"
-            >
-              <span>Shiko të gjitha ({totalEpisodesCount})</span>
-              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Grid of Episodes */}
-          {recentEpisodes.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {recentEpisodes.map((ep) => (
-                <EpisodeCard key={ep.id} episode={ep} />
-              ))}
-            </div>
-          ) : (
-            <div className="p-8 text-center bg-white/[0.02] rounded-xl border border-white/5">
-              <Sparkles className="w-8 h-8 text-[#00b2fe] mx-auto mb-2" />
-              <p className="text-xs text-gray-400">Episodet e reja do të sinkronizohen së shpejti.</p>
-            </div>
-          )}
-
-          {/* For You Sub-section */}
-          {forYouPosts.length > 0 && (
-            <div className="pt-5 border-t border-white/10 space-y-3.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00b2fe]/10 border border-[#00b2fe]/30 text-[10px] font-black text-[#00b2fe] uppercase tracking-wider">
-                    <Heart className="w-3 h-3 text-[#00b2fe]" />
-                    FOR YOU
-                  </span>
-                  <span className="text-[11px] sm:text-xs text-gray-400">Reels &amp; Video nga @ridewithkeijsi</span>
-                </div>
-                <Link
-                  href="/episodes?tab=foryou"
-                  className="text-xs font-bold text-[#00b2fe] hover:text-[#00d2ff] flex items-center gap-1 transition-colors"
-                >
-                  Shiko të gjitha ({forYouPosts.length}) <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-
-              {/* Compact 3-col mobile / 6-col desktop grid with click-to-enlarge modal */}
-              <ForYouGrid posts={forYouPosts} />
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Section Transition Divider */}
+      {/* Section Transition Divider: 01. MOTORRA */}
       <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#00b2fe]/35 to-transparent" />
         <div className="mx-3 px-3.5 py-1 rounded-full bg-[#080d16] border border-[#00b2fe]/40 text-[10px] sm:text-xs font-black tracking-widest text-[#00b2fe] uppercase shadow-[0_0_15px_rgba(0,178,254,0.2)] flex items-center gap-1.5 whitespace-nowrap">
           <Bike className="w-3.5 h-3.5 text-[#00b2fe]" />
-          <span>02. MARKETPLACE &amp; MOTORRA</span>
+          <span>01. MOTORRA NË SHITJE</span>
         </div>
         <div className="h-px flex-1 bg-gradient-to-r from-[#00b2fe]/35 via-transparent to-transparent" />
       </div>
 
-      {/* 3. Section 02: Motorra (Marketplace / Instagram) */}
+      {/* 2. Section 01: Motorra (Marketplace / Instagram) */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
         <div className="surface-card p-4 sm:p-7 lg:p-9 border border-white/10 space-y-6">
           {/* Section Header */}
@@ -244,7 +170,92 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Section Transition Divider */}
+      {/* Section Transition Divider: 02. TAXI KEIJSI */}
+      <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-400/35 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#0c121e] border border-amber-400/40 text-[10px] sm:text-xs font-black tracking-widest text-amber-400 uppercase shadow-[0_0_20px_rgba(245,158,11,0.25)] flex items-center gap-1.5 whitespace-nowrap">
+          <TaxiIcon className="w-3.5 h-3.5 text-amber-400" />
+          <span>02. TAXI KEIJSI 24/7</span>
+        </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-amber-400/35 via-transparent to-transparent" />
+      </div>
+
+      {/* 3. Section 02: TAXI KEIJSI Showcase */}
+      <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-amber-400/20 bg-gradient-to-br from-[#0c121e] via-[#070b12] to-[#04070c] p-4 sm:p-7 lg:p-9 shadow-2xl space-y-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-yellow-400 font-bold flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-yellow-400" />
+                  5.0 Google Reviews
+                </span>
+              </div>
+              <h2 className="text-base sm:text-xl lg:text-2xl font-extrabold text-white font-['Outfit']">
+                Taxi <span className="text-amber-400">Keijsi</span> — Udhëtoni me Siguri &amp; Komoditet
+              </h2>
+              <p className="text-[11px] sm:text-xs text-gray-300 max-w-xl">
+                Shërbim taksie 24/7 në Tiranë, transferta në Aeroportin e Rinasit (TIA) dhe udhëtime në çdo qytet të Shqipërisë me makina moderne.
+              </p>
+            </div>
+
+            {/* Quick Contact Buttons (Taxi yellow and emerald WhatsApp) */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              {settings.taxi_phone && (
+                <a
+                  href={`tel:${settings.taxi_phone}`}
+                  className="inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-black text-xs bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-[0_4px_16px_rgba(245,158,11,0.3)] hover:from-amber-300 hover:to-yellow-300 transition-all"
+                >
+                  <Phone className="w-3.5 h-3.5 fill-black text-black" />
+                  <span>{settings.taxi_phone}</span>
+                </a>
+              )}
+
+              {settings.taxi_whatsapp && (
+                <a
+                  href={`https://wa.me/${cleanTaxiWhatsapp}?text=${encodeURIComponent("Përshëndetje Taxi Keijsi, dëshiroj të porosis një taksi.")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_4px_16px_rgba(16,185,129,0.3)] hover:from-emerald-400 hover:to-green-500 transition-all"
+                >
+                  <WhatsAppIcon className="w-3.5 h-3.5" />
+                  <span>WhatsApp</span>
+                </a>
+              )}
+
+              <Link
+                href="/taxi"
+                className="btn-secondary text-xs font-bold !py-2.5 !px-4 flex items-center justify-center gap-1.5 hover:!border-amber-400 hover:text-amber-400"
+              >
+                <span>Faqja e Taksisë</span>
+                <ChevronRight className="w-3.5 h-3.5 text-amber-400" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Taxi Instagram Posts Preview */}
+          {taxiPosts.length > 0 && (
+            <div className="pt-3.5 border-t border-white/10">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider font-['Outfit'] flex items-center gap-1.5">
+                  <InstagramIcon className="w-3 h-3 text-amber-400" />
+                  POSTIMET NGA @TAXI_KEIJSI
+                </span>
+                <Link href="/taxi" className="text-[11px] sm:text-xs font-bold text-amber-400 hover:underline">
+                  Shiko të gjitha
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                {taxiPosts.map((post) => (
+                  <TaxiPostCard key={post.id} post={post} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Section Transition Divider: 03. LUXURY SERVICES */}
       <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#ffd700]/35 to-transparent" />
         <div className="mx-3 px-3.5 py-1 rounded-full bg-[#0c111c] border border-[#ffd700]/40 text-[10px] sm:text-xs font-black tracking-widest text-[#ffd700] uppercase shadow-[0_0_20px_rgba(255,215,0,0.25)] flex items-center gap-1.5 whitespace-nowrap">
@@ -254,7 +265,7 @@ export default async function HomePage() {
         <div className="h-px flex-1 bg-gradient-to-r from-[#ffd700]/35 via-transparent to-transparent" />
       </div>
 
-      {/* 4. Section 03: 👑 LUXURY SERVICES (NEW) */}
+      {/* 4. Section 03: 👑 LUXURY SERVICES */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
         <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#d4af37]/35 bg-gradient-to-br from-[#121824] via-[#0b0e15] to-[#05070a] p-4 sm:p-7 lg:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.85)] space-y-6">
           {/* Ambient Gold Glows */}
@@ -342,86 +353,75 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Section Transition Divider */}
+      {/* Section Transition Divider: 04. RIDE WITH KEIJSI — EPISODET & FOR YOU */}
       <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-400/35 to-transparent" />
-        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#0c121e] border border-amber-400/40 text-[10px] sm:text-xs font-black tracking-widest text-amber-400 uppercase shadow-[0_0_20px_rgba(245,158,11,0.25)] flex items-center gap-1.5 whitespace-nowrap">
-          <TaxiIcon className="w-3.5 h-3.5 text-amber-400" />
-          <span>04. SHËRBIM TAKSIE 24/7</span>
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#00b2fe]/35 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-[#080d16] border border-[#00b2fe]/40 text-[10px] sm:text-xs font-black tracking-widest text-[#00b2fe] uppercase shadow-[0_0_15px_rgba(0,178,254,0.2)] flex items-center gap-1.5 whitespace-nowrap">
+          <Tv className="w-3.5 h-3.5 text-[#00b2fe]" />
+          <span>04. RIDE WITH KEIJSI — EPISODET &amp; FOR YOU</span>
         </div>
-        <div className="h-px flex-1 bg-gradient-to-r from-amber-400/35 via-transparent to-transparent" />
+        <div className="h-px flex-1 bg-gradient-to-r from-[#00b2fe]/35 via-transparent to-transparent" />
       </div>
 
-      {/* 5. Section 04: TAXI KEIJSI Showcase */}
+      {/* 5. Section 04: Ride with Keijsi (Episodes & For You) */}
       <section className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-amber-400/20 bg-gradient-to-br from-[#0c121e] via-[#070b12] to-[#04070c] p-4 sm:p-7 lg:p-9 shadow-2xl space-y-6">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="surface-card p-4 sm:p-7 lg:p-9 border border-white/10 space-y-6">
+          {/* Section Header */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3.5 border-b border-white/10 pb-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-yellow-400 font-bold flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-yellow-400" />
-                  5.0 Google Reviews
-                </span>
-              </div>
-              <h2 className="text-base sm:text-xl lg:text-2xl font-extrabold text-white font-['Outfit']">
-                Taxi <span className="text-amber-400">Keijsi</span> — Udhëtoni me Siguri &amp; Komoditet
+              <h2 className="text-base sm:text-xl lg:text-2xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
+                <Tv className="w-4 h-4 text-[#00b2fe]" />
+                <span>Episodet më të Fundit</span>
               </h2>
-              <p className="text-[11px] sm:text-xs text-gray-300 max-w-xl">
-                Shërbim taksie 24/7 në Tiranë, transferta në Aeroportin e Rinasit (TIA) dhe udhëtime në çdo qytet të Shqipërisë me makina moderne.
+              <p className="text-[11px] sm:text-xs text-gray-400">
+                Xhiro ekskluzive, teste motorrash dhe intervista nga YouTube @RideWithkeijsi
               </p>
             </div>
 
-            {/* Quick Contact Buttons (Taxi yellow and emerald WhatsApp) */}
-            <div className="flex flex-col sm:flex-row gap-2">
-              {settings.taxi_phone && (
-                <a
-                  href={`tel:${settings.taxi_phone}`}
-                  className="inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-black text-xs bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-[0_4px_16px_rgba(245,158,11,0.3)] hover:from-amber-300 hover:to-yellow-300 transition-all"
-                >
-                  <Phone className="w-3.5 h-3.5 fill-black text-black" />
-                  <span>{settings.taxi_phone}</span>
-                </a>
-              )}
-
-              {settings.taxi_whatsapp && (
-                <a
-                  href={`https://wa.me/${cleanTaxiWhatsapp}?text=${encodeURIComponent("Përshëndetje Taxi Keijsi, dëshiroj të porosis një taksi.")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_4px_16px_rgba(16,185,129,0.3)] hover:from-emerald-400 hover:to-green-500 transition-all"
-                >
-                  <WhatsAppIcon className="w-3.5 h-3.5" />
-                  <span>WhatsApp</span>
-                </a>
-              )}
-
-              <Link
-                href="/taxi"
-                className="btn-secondary text-xs font-bold !py-2.5 !px-4 flex items-center justify-center gap-1.5 hover:!border-amber-400 hover:text-amber-400"
-              >
-                <span>Faqja e Taksisë</span>
-                <ChevronRight className="w-3.5 h-3.5 text-amber-400" />
-              </Link>
-            </div>
+            <Link
+              href="/episodes"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#00b2fe] hover:text-[#00d2ff] group transition-colors self-start sm:self-auto py-1"
+            >
+              <span>Shiko të gjitha ({totalEpisodesCount})</span>
+              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
-          {/* Taxi Instagram Posts Preview */}
-          {taxiPosts.length > 0 && (
-            <div className="pt-3.5 border-t border-white/10">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider font-['Outfit'] flex items-center gap-1.5">
-                  <InstagramIcon className="w-3 h-3 text-amber-400" />
-                  POSTIMET NGA @TAXI_KEIJSI
-                </span>
-                <Link href="/taxi" className="text-[11px] sm:text-xs font-bold text-amber-400 hover:underline">
-                  Shiko të gjitha
+          {/* Grid of Episodes */}
+          {recentEpisodes.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {recentEpisodes.map((ep) => (
+                <EpisodeCard key={ep.id} episode={ep} />
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 text-center bg-white/[0.02] rounded-xl border border-white/5">
+              <Sparkles className="w-8 h-8 text-[#00b2fe] mx-auto mb-2" />
+              <p className="text-xs text-gray-400">Episodet e reja do të sinkronizohen së shpejti.</p>
+            </div>
+          )}
+
+          {/* For You Sub-section */}
+          {forYouPosts.length > 0 && (
+            <div className="pt-5 border-t border-white/10 space-y-3.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00b2fe]/10 border border-[#00b2fe]/30 text-[10px] font-black text-[#00b2fe] uppercase tracking-wider">
+                    <Heart className="w-3 h-3 text-[#00b2fe]" />
+                    FOR YOU
+                  </span>
+                  <span className="text-[11px] sm:text-xs text-gray-400">Reels &amp; Video nga @ridewithkeijsi</span>
+                </div>
+                <Link
+                  href="/episodes?tab=foryou"
+                  className="text-xs font-bold text-[#00b2fe] hover:text-[#00d2ff] flex items-center gap-1 transition-colors"
+                >
+                  Shiko të gjitha ({forYouPosts.length}) <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                {taxiPosts.map((post) => (
-                  <TaxiPostCard key={post.id} post={post} />
-                ))}
-              </div>
+
+              {/* Compact 3-col mobile / 6-col desktop grid with click-to-enlarge modal */}
+              <ForYouGrid posts={forYouPosts} />
             </div>
           )}
         </div>
