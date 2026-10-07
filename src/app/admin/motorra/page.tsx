@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { upload } from "@vercel/blob/client";
 import {
   Bike,
   Plus,
@@ -22,6 +23,8 @@ import {
   Gauge,
   Calendar,
   ExternalLink,
+  Pencil,
+  Save,
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/Icons";
 import BrandAutocomplete from "@/components/admin/BrandAutocomplete";
@@ -73,12 +76,36 @@ export default function AdminMotorraPage() {
   const [status, setStatus] = useState("FOR_SALE");
   const [isFeatured, setIsFeatured] = useState(false);
 
-  // Multiple files state
+  // Multiple files state for Create
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Edit motorcycle state
+  const [editingMotorcycle, setEditingMotorcycle] = useState<MotorcycleItem | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editBrand, setEditBrand] = useState("Yamaha");
+  const [editModel, setEditModel] = useState("");
+  const [editYear, setEditYear] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+  const [editMileageKm, setEditMileageKm] = useState("");
+  const [editMileageMi, setEditMileageMi] = useState("");
+  const [editEngine, setEditEngine] = useState("");
+  const [editPhone, setEditPhone] = useState("+355697738559");
+  const [editWhatsapp, setEditWhatsapp] = useState("+355697738559");
+  const [editDescription, setEditDescription] = useState("");
+  const [editStatus, setEditStatus] = useState("FOR_SALE");
+  const [editIsFeatured, setEditIsFeatured] = useState(false);
+  const [editIsVisible, setEditIsVisible] = useState(true);
+
+  const [editExistingImages, setEditExistingImages] = useState<string[]>([]);
+  const [editNewFiles, setEditNewFiles] = useState<File[]>([]);
+  const [editNewPreviews, setEditNewPreviews] = useState<string[]>([]);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editProgress, setEditProgress] = useState("");
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchMotorcycles = async () => {
     try {
@@ -123,6 +150,19 @@ export default function AdminMotorraPage() {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const makeCoverPhoto = (index: number) => {
+    setSelectedFiles((prev) => {
+      const copy = [...prev];
+      const [file] = copy.splice(index, 1);
+      return [file, ...copy];
+    });
+    setPreviews((prev) => {
+      const copy = [...prev];
+      const [src] = copy.splice(index, 1);
+      return [src, ...copy];
+    });
+  };
+
   const resetForm = () => {
     setTitle("");
     setBrand("Yamaha");
@@ -159,22 +199,12 @@ export default function AdminMotorraPage() {
       for (let i = 0; i < selectedFiles.length; i++) {
         setUploadProgress(`Po ngarkohet fotoja ${i + 1} nga ${selectedFiles.length}...`);
         const file = selectedFiles[i];
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("folder", "motorra");
-
-        const uploadRes = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const blob = await upload(`motorra/${Date.now()}-${safeName}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/upload",
         });
-
-        if (!uploadRes.ok) {
-          const err = await uploadRes.json();
-          throw new Error(err.error || `Dështoi ngarkimi i fotos ${i + 1}`);
-        }
-
-        const { url } = await uploadRes.json();
-        uploadedUrls.push(url);
+        uploadedUrls.push(blob.url);
       }
 
       setUploadProgress("Po ruhet motorri në bazën e të dhënave...");
@@ -183,17 +213,17 @@ export default function AdminMotorraPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title,
-          brand,
-          model,
+          title: title.trim(),
+          brand: brand ? brand.trim() : null,
+          model: model ? model.trim() : null,
           year: year ? parseInt(year, 10) : null,
           price: price ? parseFloat(price) : null,
           mileageKm: mileageKm ? parseInt(mileageKm, 10) : null,
           mileageMi: mileageMi ? parseInt(mileageMi, 10) : null,
-          engine,
-          phone,
-          whatsapp,
-          description,
+          engine: engine ? engine.trim() : null,
+          phone: phone ? phone.trim() : null,
+          whatsapp: whatsapp ? whatsapp.trim() : null,
+          description: description ? description.trim() : null,
           status,
           isFeatured,
           imageUrl: uploadedUrls[0],
@@ -217,6 +247,146 @@ export default function AdminMotorraPage() {
     } finally {
       setUploading(false);
       setUploadProgress("");
+    }
+  };
+
+  // Open Edit Modal
+  const handleOpenEdit = (m: MotorcycleItem) => {
+    setEditingMotorcycle(m);
+    setEditTitle(m.title || "");
+    setEditBrand(m.brand || "Yamaha");
+    setEditModel(m.model || "");
+    setEditYear(m.year ? String(m.year) : "");
+    setEditPrice(m.price ? String(m.price) : "");
+    setEditMileageKm(m.mileageKm !== null && m.mileageKm !== undefined ? String(m.mileageKm) : "");
+    setEditMileageMi(m.mileageMi !== null && m.mileageMi !== undefined ? String(m.mileageMi) : "");
+    setEditEngine(m.engine || "");
+    setEditPhone(m.phone || "+355697738559");
+    setEditWhatsapp(m.whatsapp || m.phone || "+355697738559");
+    setEditDescription(m.description || "");
+    setEditStatus(m.status || "FOR_SALE");
+    setEditIsFeatured(Boolean(m.isFeatured));
+    setEditIsVisible(Boolean(m.isVisible));
+
+    let imgs: string[] = [];
+    if (Array.isArray(m.images) && m.images.length > 0) {
+      imgs = [...m.images];
+    } else if (m.imageUrl) {
+      imgs = [m.imageUrl];
+    }
+    setEditExistingImages(imgs);
+    setEditNewFiles([]);
+    setEditNewPreviews([]);
+    setEditProgress("");
+  };
+
+  const handleEditKmChange = (val: string) => {
+    setEditMileageKm(val);
+    const num = parseInt(val, 10);
+    if (!isNaN(num) && num > 0) {
+      setEditMileageMi(Math.round(num * 0.621371).toString());
+    } else {
+      setEditMileageMi("");
+    }
+  };
+
+  const handleEditNewFilesSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const newFiles = Array.from(files);
+    setEditNewFiles((prev) => [...prev, ...newFiles]);
+
+    const newPreviews = newFiles.map((f) => URL.createObjectURL(f));
+    setEditNewPreviews((prev) => [...prev, ...newPreviews]);
+    if (editFileInputRef.current) editFileInputRef.current.value = "";
+  };
+
+  const removeEditExistingImage = (index: number) => {
+    setEditExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const makeCoverEditExistingImage = (index: number) => {
+    setEditExistingImages((prev) => {
+      const copy = [...prev];
+      const [item] = copy.splice(index, 1);
+      return [item, ...copy];
+    });
+  };
+
+  const removeEditNewFile = (index: number) => {
+    setEditNewFiles((prev) => prev.filter((_, i) => i !== index));
+    setEditNewPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMotorcycle) return;
+
+    if (editExistingImages.length === 0 && editNewFiles.length === 0) {
+      alert("Motorri duhet të ketë të paktën 1 foto.");
+      return;
+    }
+
+    setSavingEdit(true);
+    try {
+      const newUploadedUrls: string[] = [];
+      for (let i = 0; i < editNewFiles.length; i++) {
+        setEditProgress(`Po ngarkohet foto e re ${i + 1} nga ${editNewFiles.length}...`);
+        const file = editNewFiles[i];
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const blob = await upload(`motorra/${Date.now()}-${safeName}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/upload",
+        });
+        newUploadedUrls.push(blob.url);
+      }
+
+      setEditProgress("Po ruhen ndryshimet e motorrit...");
+      const finalImages = [...editExistingImages, ...newUploadedUrls];
+
+      const res = await fetch("/api/motorra", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingMotorcycle.id,
+          title: editTitle.trim(),
+          brand: editBrand ? editBrand.trim() : null,
+          model: editModel ? editModel.trim() : null,
+          year: editYear ? parseInt(editYear, 10) : null,
+          price: editPrice ? parseFloat(editPrice) : null,
+          mileageKm: editMileageKm ? parseInt(editMileageKm, 10) : null,
+          mileageMi: editMileageMi ? parseInt(editMileageMi, 10) : null,
+          engine: editEngine ? editEngine.trim() : null,
+          phone: editPhone ? editPhone.trim() : null,
+          whatsapp: editWhatsapp ? editWhatsapp.trim() : null,
+          description: editDescription ? editDescription.trim() : null,
+          status: editStatus,
+          isFeatured: editIsFeatured,
+          isVisible: editIsVisible,
+          images: finalImages,
+          imageUrl: finalImages[0] || null,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Dështoi përditësimi i motorrit.");
+      }
+
+      setEditingMotorcycle(null);
+      setStatusMessage({
+        type: "success",
+        text: `Motorri "${editTitle}" u përditësua me sukses me ${finalImages.length} foto!`,
+      });
+      await fetchMotorcycles();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Ndodhi një gabim gjatë ruajtjes";
+      alert(msg);
+      setStatusMessage({ type: "error", text: msg });
+    } finally {
+      setSavingEdit(false);
+      setEditProgress("");
     }
   };
 
@@ -572,6 +742,14 @@ export default function AdminMotorraPage() {
                     >
                       {m.isVisible ? <Eye className="w-3.5 h-3.5 text-[#00b2fe]" /> : <EyeOff className="w-3.5 h-3.5" />}
                     </button>
+
+                    <button
+                      onClick={() => handleOpenEdit(m)}
+                      className="p-2 rounded-lg bg-[#00b2fe]/10 hover:bg-[#00b2fe]/20 border border-[#00b2fe]/30 text-[#00b2fe] transition-all"
+                      title="Ndrysho të dhënat e motorrit"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
                   </div>
 
                   <button
@@ -636,10 +814,19 @@ export default function AdminMotorraPage() {
                     {previews.map((src, idx) => (
                       <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/20 group">
                         <Image src={src} alt={`Preview ${idx + 1}`} fill className="object-cover" />
-                        {idx === 0 && (
+                        {idx === 0 ? (
                           <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-[#00b2fe] text-black text-[9px] font-black uppercase">
                             Ballinë
                           </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => makeCoverPhoto(idx)}
+                            className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/80 hover:bg-[#00b2fe] hover:text-black text-white text-[8px] font-bold uppercase transition-colors"
+                            title="Vendos si foto kryesore (ballinë)"
+                          >
+                            Bëje Ballinë
+                          </button>
                         )}
                         <button
                           type="button"
@@ -909,6 +1096,378 @@ export default function AdminMotorraPage() {
                     <>
                       <Upload className="w-4 h-4" />
                       <span>Ngarko &amp; Publiko Motorrin</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Edit Motorcycle */}
+      {editingMotorcycle && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="surface-card max-w-2xl w-full p-5 sm:p-7 border border-white/15 rounded-3xl space-y-5 my-auto max-h-[92vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#00b2fe]/20 border border-[#00b2fe]/40 flex items-center justify-center">
+                  <Pencil className="w-4 h-4 text-[#00b2fe]" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-white font-['Outfit']">
+                    Ndrysho Motorrin: {editingMotorcycle.title || editingMotorcycle.model || "Motorr"}
+                  </h3>
+                  <p className="text-[11px] text-gray-400">
+                    Menaxhoni fotot, specifikat dhe çmimin e motorrit
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingMotorcycle(null)}
+                className="p-1.5 rounded-full bg-white/10 text-gray-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              {/* Photo Management Section */}
+              <div className="space-y-3">
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider font-['Outfit'] flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-[#00b2fe]" />
+                    Fotot e Motorrit ({editExistingImages.length + editNewFiles.length} gjithsej)
+                  </span>
+                  <span className="text-[11px] text-gray-400">
+                    Foto e parë shërben si Ballinë
+                  </span>
+                </label>
+
+                {/* Existing Images */}
+                {editExistingImages.length > 0 && (
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-semibold text-gray-400 block">Fotot Aktuale:</span>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/10">
+                      {editExistingImages.map((src, idx) => (
+                        <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/20 group">
+                          <Image src={src} alt={`Foto ${idx + 1}`} fill className="object-cover" unoptimized />
+                          {idx === 0 ? (
+                            <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-[#00b2fe] text-black text-[9px] font-black uppercase">
+                              Ballinë
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => makeCoverEditExistingImage(idx)}
+                              className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/80 hover:bg-[#00b2fe] hover:text-black text-white text-[8px] font-bold uppercase transition-colors"
+                              title="Vendos si foto kryesore (ballinë)"
+                            >
+                              Bëje Ballinë
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeEditExistingImage(idx)}
+                            className="absolute top-1 right-1 bg-black/80 hover:bg-red-500 rounded-full p-1 text-white transition-colors"
+                            title="Hiq foton"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Newly Added Images Previews */}
+                {editNewPreviews.length > 0 && (
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-semibold text-[#00b2fe] block">Foto të Reja për t&apos;u Ngarkuar:</span>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 p-3 rounded-xl bg-[#00b2fe]/5 border border-[#00b2fe]/20">
+                      {editNewPreviews.map((src, idx) => (
+                        <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-[#00b2fe]/40 group">
+                          <Image src={src} alt={`E re ${idx + 1}`} fill className="object-cover" />
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-emerald-500 text-black text-[8px] font-black uppercase">
+                            E re
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeEditNewFile(idx)}
+                            className="absolute top-1 right-1 bg-black/80 hover:bg-red-500 rounded-full p-1 text-white transition-colors"
+                            title="Hiq foton e re"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Add New Photos Button */}
+                <button
+                  type="button"
+                  onClick={() => editFileInputRef.current?.click()}
+                  className="w-full border-2 border-dashed border-white/20 hover:border-[#00b2fe]/60 rounded-xl p-3 flex items-center justify-center gap-2 text-gray-400 hover:text-[#00b2fe] transition-all bg-white/[0.01]"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="text-xs font-bold text-white">+ Shto Foto të Tjera</span>
+                </button>
+
+                <input
+                  ref={editFileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleEditNewFilesSelect}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Title & Brand */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Titulli i Plotë i Motorrit *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    placeholder="p.sh. Yamaha TMAX 560 Tech Max"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-gray-600 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Marka *
+                  </label>
+                  <BrandAutocomplete
+                    value={editBrand}
+                    onChange={setEditBrand}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Model, Year, Price */}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Modeli
+                  </label>
+                  <input
+                    type="text"
+                    value={editModel}
+                    onChange={(e) => setEditModel(e.target.value)}
+                    placeholder="TMAX 560"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Viti
+                  </label>
+                  <input
+                    type="number"
+                    value={editYear}
+                    onChange={(e) => setEditYear(e.target.value)}
+                    placeholder="2024"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Çmimi (€) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    placeholder="12500"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Engine & Mileage */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/10">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Kubikazhi
+                  </label>
+                  <input
+                    type="text"
+                    value={editEngine}
+                    onChange={(e) => setEditEngine(e.target.value)}
+                    placeholder="560 cc"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit'] flex items-center gap-1.5">
+                    <Gauge className="w-3.5 h-3.5 text-[#00b2fe]" />
+                    Kilometrat (KM)
+                  </label>
+                  <input
+                    type="number"
+                    value={editMileageKm}
+                    onChange={(e) => handleEditKmChange(e.target.value)}
+                    placeholder="15000"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                    Në Milje (Miles)
+                  </label>
+                  <input
+                    type="number"
+                    value={editMileageMi}
+                    onChange={(e) => setEditMileageMi(e.target.value)}
+                    placeholder="9320"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Contact Phone & WhatsApp */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit'] flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-[#00b2fe]" />
+                    Numri i Telefonit
+                  </label>
+                  <input
+                    type="text"
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    placeholder="+355697738559"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit'] flex items-center gap-1.5">
+                    <WhatsAppIcon className="w-3.5 h-3.5 text-green-400" />
+                    Numri i WhatsApp
+                  </label>
+                  <input
+                    type="text"
+                    value={editWhatsapp}
+                    onChange={(e) => setEditWhatsapp(e.target.value)}
+                    placeholder="+355697738559"
+                    className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-xs font-bold text-gray-300 mb-1 uppercase font-['Outfit']">
+                  Përshkrimi i Motorrit
+                </label>
+                <textarea
+                  rows={3}
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  placeholder="Gjendje perfekte, me doganë të paguar, shërbimet e kryera me librezë..."
+                  className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg p-3 text-xs text-white placeholder-gray-600 focus:outline-none resize-none"
+                />
+              </div>
+
+              {/* Status & Featured & Visibility */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 border-t border-white/10">
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-300">
+                    <input
+                      type="radio"
+                      name="editPostStatus"
+                      checked={editStatus === "FOR_SALE"}
+                      onChange={() => setEditStatus("FOR_SALE")}
+                      className="text-[#00b2fe]"
+                    />
+                    <span>Në Shitje ✅</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-300">
+                    <input
+                      type="radio"
+                      name="editPostStatus"
+                      checked={editStatus === "SOLD"}
+                      onChange={() => setEditStatus("SOLD")}
+                      className="text-red-400"
+                    />
+                    <span>E Shitur ❌</span>
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs text-yellow-400 font-bold">
+                    <input
+                      type="checkbox"
+                      checked={editIsFeatured}
+                      onChange={(e) => setEditIsFeatured(e.target.checked)}
+                      className="rounded border-white/20 bg-black text-yellow-400"
+                    />
+                    <span>Motorr VIP</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={editIsVisible}
+                      onChange={(e) => setEditIsVisible(e.target.checked)}
+                      className="rounded border-white/20 bg-black text-[#00b2fe]"
+                    />
+                    <span>I Dukshëm</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Edit Progress Info */}
+              {savingEdit && (
+                <div className="p-3 rounded-xl bg-[#00b2fe]/10 border border-[#00b2fe]/30 flex items-center gap-3 text-xs text-[#00d2ff]">
+                  <div className="w-4 h-4 border-2 border-[#00b2fe] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <span>{editProgress || "Po ruhen ndryshimet..."}</span>
+                </div>
+              )}
+
+              {/* Form Actions */}
+              <div className="flex justify-end gap-2.5 pt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  disabled={savingEdit}
+                  onClick={() => setEditingMotorcycle(null)}
+                  className="btn-secondary !py-2.5 !px-4 text-xs font-bold"
+                >
+                  Anulo
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEdit || (editExistingImages.length === 0 && editNewFiles.length === 0)}
+                  className="btn-primary !py-2.5 !px-6 text-xs font-extrabold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {savingEdit ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      <span>Po ruhet...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      <span>Ruaj Ndryshimet</span>
                     </>
                   )}
                 </button>

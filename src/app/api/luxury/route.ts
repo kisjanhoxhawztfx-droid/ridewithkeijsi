@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
       title,
       description,
       imageUrl,
+      images,
       videoUrl,
       pricePerDay,
       priceText,
@@ -41,7 +42,9 @@ export async function POST(req: NextRequest) {
       orderIndex = 0,
     } = body;
 
-    if (!title || !imageUrl) {
+    const primaryImage = imageUrl || (Array.isArray(images) && images.length > 0 ? images[0] : "");
+
+    if (!title || !primaryImage) {
       return NextResponse.json(
         { error: "Titulli dhe Fotoja janë të detyrueshme" },
         { status: 400 }
@@ -54,7 +57,8 @@ export async function POST(req: NextRequest) {
         category,
         title,
         description: description || "",
-        imageUrl,
+        imageUrl: primaryImage,
+        images: Array.isArray(images) ? JSON.stringify(images) : JSON.stringify([primaryImage]),
         videoUrl: videoUrl || null,
         pricePerDay: pricePerDay ? parseFloat(pricePerDay) : null,
         priceText: priceText || "Me Rezervim / Ditë",
@@ -74,7 +78,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-
 export async function PATCH(req: NextRequest) {
   const session = await getAdminSession();
   if (!session) {
@@ -83,26 +86,36 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { id, isVisible, isFeatured, title, description, priceText, pricePerDay, features, category, imageUrl, videoUrl } = body;
+    const { id, isVisible, isFeatured, name, title, description, priceText, pricePerDay, features, category, imageUrl, images, videoUrl } = body;
 
     if (!id) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
+    const dataToUpdate: any = {};
+    if (typeof isVisible === "boolean") dataToUpdate.isVisible = isVisible;
+    if (typeof isFeatured === "boolean") dataToUpdate.isFeatured = isFeatured;
+    if (typeof name === "string") dataToUpdate.name = name;
+    if (typeof title === "string") dataToUpdate.title = title;
+    if (typeof description === "string") dataToUpdate.description = description;
+    if (typeof priceText === "string") dataToUpdate.priceText = priceText;
+    if (typeof pricePerDay === "number" || pricePerDay === null) dataToUpdate.pricePerDay = pricePerDay;
+    if (typeof features === "string") dataToUpdate.features = features;
+    if (typeof category === "string") dataToUpdate.category = category;
+    if (typeof videoUrl === "string" || videoUrl === null) dataToUpdate.videoUrl = videoUrl;
+
+    if (Array.isArray(images)) {
+      dataToUpdate.images = JSON.stringify(images);
+      if (images.length > 0) {
+        dataToUpdate.imageUrl = images[0];
+      }
+    } else if (typeof imageUrl === "string") {
+      dataToUpdate.imageUrl = imageUrl;
+    }
+
     const updated = await db.luxuryVehicle.update({
       where: { id },
-      data: {
-        ...(typeof isVisible === "boolean" ? { isVisible } : {}),
-        ...(typeof isFeatured === "boolean" ? { isFeatured } : {}),
-        ...(typeof title === "string" ? { title } : {}),
-        ...(typeof description === "string" ? { description } : {}),
-        ...(typeof priceText === "string" ? { priceText } : {}),
-        ...(typeof pricePerDay === "number" ? { pricePerDay } : {}),
-        ...(typeof features === "string" ? { features } : {}),
-        ...(typeof category === "string" ? { category } : {}),
-        ...(typeof imageUrl === "string" ? { imageUrl } : {}),
-        ...(typeof videoUrl === "string" ? { videoUrl } : {}),
-      },
+      data: dataToUpdate,
     });
 
     return NextResponse.json({ success: true, vehicle: updated });

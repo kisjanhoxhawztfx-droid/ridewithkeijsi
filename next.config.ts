@@ -35,6 +35,15 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "instagram.com",
       },
+      // Vercel Blob Storage (public & private stores)
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.blob.vercel-storage.com",
+      },
     ],
   },
 };

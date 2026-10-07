@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { upload } from "@vercel/blob/client";
 import Image from "next/image";
 import {
   Car,
@@ -18,6 +19,7 @@ import {
   Upload,
   X,
   ImageIcon,
+  Pencil,
 } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon, GoogleIcon } from "@/components/ui/Icons";
 
@@ -26,6 +28,7 @@ interface TaxiPost {
   instagramMediaId?: string | null;
   permalink: string;
   thumbnailUrl: string;
+  images?: string | null;
   caption: string;
   isFeatured: boolean;
   isVisible: boolean;
@@ -67,13 +70,26 @@ export default function AdminTaxiPage() {
   const [showAddPostModal, setShowAddPostModal] = useState(false);
   const [showAddReviewModal, setShowAddReviewModal] = useState(false);
 
-  // New post state (file upload)
+  // New post state (multi-file upload)
   const [newPostCaption, setNewPostCaption] = useState("");
   const [newPostFeatured, setNewPostFeatured] = useState(false);
-  const [postImageFile, setPostImageFile] = useState<File | null>(null);
-  const [postImagePreview, setPostImagePreview] = useState<string | null>(null);
+  const [postImageFiles, setPostImageFiles] = useState<File[]>([]);
+  const [postImagePreviews, setPostImagePreviews] = useState<string[]>([]);
   const [uploadingPost, setUploadingPost] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
   const postImageInputRef = useRef<HTMLInputElement>(null);
+
+  // Edit post state
+  const [editingPost, setEditingPost] = useState<TaxiPost | null>(null);
+  const [editCaption, setEditCaption] = useState("");
+  const [editFeatured, setEditFeatured] = useState(false);
+  const [editVisible, setEditVisible] = useState(true);
+  const [editExistingImages, setEditExistingImages] = useState<string[]>([]);
+  const [editNewFiles, setEditNewFiles] = useState<File[]>([]);
+  const [editNewPreviews, setEditNewPreviews] = useState<string[]>([]);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editProgress, setEditProgress] = useState("");
+  const editImageInputRef = useRef<HTMLInputElement>(null);
 
   // New review state
   const [newReviewAuthor, setNewReviewAuthor] = useState("");
@@ -149,45 +165,60 @@ export default function AdminTaxiPage() {
   };
 
   const handlePostImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setPostImageFile(file);
-    setPostImagePreview(URL.createObjectURL(file));
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setPostImageFiles((prev) => [...prev, ...files]);
+    setPostImagePreviews((prev) => [
+      ...prev,
+      ...files.map((f) => URL.createObjectURL(f)),
+    ]);
+    // Reset input so same files can be re-added if needed
+    if (postImageInputRef.current) postImageInputRef.current.value = "";
+  };
+
+  const removePostImage = (index: number) => {
+    setPostImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setPostImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const resetPostForm = () => {
     setNewPostCaption("");
     setNewPostFeatured(false);
-    setPostImageFile(null);
-    setPostImagePreview(null);
+    setPostImageFiles([]);
+    setPostImagePreviews([]);
+    setUploadProgress("");
     if (postImageInputRef.current) postImageInputRef.current.value = "";
   };
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!postImageFile) {
-      alert("Ju lutem zgjidhni një foto për postimin.");
+    if (postImageFiles.length === 0) {
+      alert("Ju lutem zgjidhni të paktën një foto për postimin.");
       return;
     }
     setUploadingPost(true);
     try {
-      // Upload image to Vercel Blob
-      const formData = new FormData();
-      formData.append("file", postImageFile);
-      formData.append("folder", "taxi");
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
-      if (!uploadRes.ok) {
-        const err = await uploadRes.json();
-        throw new Error(err.error || "Upload dështoi");
+      // Upload all images directly from browser to Vercel Blob (no body size limit)
+      const uploadedUrls: string[] = [];
+      for (let i = 0; i < postImageFiles.length; i++) {
+        const file = postImageFiles[i];
+        setUploadProgress(`Po ngarkohet foto ${i + 1} nga ${postImageFiles.length}...`);
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const blob = await upload(`taxi/${Date.now()}-${safeName}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/upload",
+        });
+        uploadedUrls.push(blob.url);
       }
-      const { url: thumbnailUrl } = await uploadRes.json();
 
+      setUploadProgress("Po ruhet postimi...");
       const res = await fetch("/api/taxi/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           permalink: "#",
-          thumbnailUrl,
+          thumbnailUrl: uploadedUrls[0],
+          images: uploadedUrls,
           caption: newPostCaption,
           isFeatured: newPostFeatured,
         }),
@@ -196,15 +227,122 @@ export default function AdminTaxiPage() {
       if (res.ok) {
         setShowAddPostModal(false);
         resetPostForm();
-        setStatusMessage({ type: "success", text: "Fotoja e taksisë u ngarkua dhe u shtua me sukses!" });
+        setStatusMessage({ type: "success", text: `${uploadedUrls.length} foto u ngarkuan dhe u shtuan me sukses!` });
         await fetchData();
       } else {
         alert("Dështoi shtimi i postimit.");
       }
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Ndodhi një gabim");
+      alert(err instanceof Error ? err.message : "Ndodhi një gabim gjatë ngarkimit.");
     } finally {
       setUploadingPost(false);
+      setUploadProgress("");
+    }
+  };
+
+  const handleOpenEdit = (post: TaxiPost) => {
+    setEditingPost(post);
+    setEditCaption(post.caption || "");
+    setEditFeatured(Boolean(post.isFeatured));
+    setEditVisible(Boolean(post.isVisible));
+
+    let imgs: string[] = [];
+    if (post.images) {
+      try {
+        const parsed = JSON.parse(post.images);
+        if (Array.isArray(parsed) && parsed.length > 0) imgs = parsed;
+      } catch {}
+    }
+    if (imgs.length === 0 && post.thumbnailUrl) {
+      imgs = [post.thumbnailUrl];
+    }
+    setEditExistingImages(imgs);
+    setEditNewFiles([]);
+    setEditNewPreviews([]);
+    setEditProgress("");
+  };
+
+  const handleEditNewImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setEditNewFiles((prev) => [...prev, ...files]);
+    setEditNewPreviews((prev) => [
+      ...prev,
+      ...files.map((f) => URL.createObjectURL(f)),
+    ]);
+    if (editImageInputRef.current) editImageInputRef.current.value = "";
+  };
+
+  const removeEditExistingImage = (index: number) => {
+    setEditExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const makeCoverEditExistingImage = (index: number) => {
+    setEditExistingImages((prev) => {
+      const copy = [...prev];
+      const [item] = copy.splice(index, 1);
+      return [item, ...copy];
+    });
+  };
+
+  const removeEditNewFile = (index: number) => {
+    setEditNewFiles((prev) => prev.filter((_, i) => i !== index));
+    setEditNewPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPost) return;
+
+    if (editExistingImages.length === 0 && editNewFiles.length === 0) {
+      alert("Postimi duhet të ketë të paktën një foto.");
+      return;
+    }
+
+    setSavingEdit(true);
+    try {
+      // Upload any new files directly to Vercel Blob
+      const newUrls: string[] = [];
+      for (let i = 0; i < editNewFiles.length; i++) {
+        const file = editNewFiles[i];
+        setEditProgress(`Po ngarkohet foto e re ${i + 1} nga ${editNewFiles.length}...`);
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const blob = await upload(`taxi/${Date.now()}-${safeName}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/upload",
+        });
+        newUrls.push(blob.url);
+      }
+
+      setEditProgress("Po ruhen ndryshimet...");
+      const finalImages = [...editExistingImages, ...newUrls];
+
+      const res = await fetch("/api/taxi/posts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingPost.id,
+          caption: editCaption,
+          isFeatured: editFeatured,
+          isVisible: editVisible,
+          images: finalImages,
+          thumbnailUrl: finalImages[0] || editingPost.thumbnailUrl,
+        }),
+      });
+
+      if (res.ok) {
+        setEditingPost(null);
+        setStatusMessage({ type: "success", text: "Postimi u përditësua me sukses!" });
+        await fetchData();
+      } else {
+        const err = await res.json();
+        alert(err.error || "Dështoi përditësimi i postimit.");
+      }
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Ndodhi një gabim gjatë përditësimit.");
+    } finally {
+      setSavingEdit(false);
+      setEditProgress("");
     }
   };
 
@@ -523,8 +661,15 @@ export default function AdminTaxiPage() {
                     >
                       {post.isVisible ? <Eye className="w-4 h-4 text-[#00b2fe]" /> : <EyeOff className="w-4 h-4" />}
                     </button>
+                    <button
+                      onClick={() => handleOpenEdit(post)}
+                      className="p-2 rounded-lg bg-[#00b2fe]/10 hover:bg-[#00b2fe]/20 border border-[#00b2fe]/30 text-[#00b2fe]"
+                      title="Ndrysho Postimin (Edit)"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
                     <a
-                      href={post.permalink}
+                      href={post.permalink === "#" ? "https://www.instagram.com/taxi_keijsi/" : post.permalink}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 rounded-lg bg-white/5 border border-white/10 text-pink-400 hover:text-pink-300"
@@ -644,38 +789,53 @@ export default function AdminTaxiPage() {
             </div>
 
             <form onSubmit={handleCreatePost} className="space-y-4">
-              {/* Image Upload */}
+              {/* Multi Image Upload */}
               <div>
                 <label className="block text-xs font-bold text-gray-400 mb-1 uppercase flex items-center gap-1.5">
                   <ImageIcon className="w-3.5 h-3.5 text-[#00b2fe]" />
-                  Foto e Taksisë *
+                  Fotot e Taksisë * ({postImagePreviews.length} zgjedhur)
                 </label>
-                {postImagePreview ? (
-                  <div className="relative rounded-lg overflow-hidden border border-[#00b2fe]/30 aspect-video">
-                    <Image src={postImagePreview} alt="Preview" fill className="object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => { setPostImageFile(null); setPostImagePreview(null); if (postImageInputRef.current) postImageInputRef.current.value = ""; }}
-                      className="absolute top-2 right-2 bg-black/70 rounded-full p-1 text-white hover:bg-red-500/80"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
+
+                {/* Preview Grid */}
+                {postImagePreviews.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    {postImagePreviews.map((src, idx) => (
+                      <div key={idx} className="relative aspect-square rounded-lg overflow-hidden bg-black border border-white/10">
+                        <Image src={src} alt={`Foto ${idx + 1}`} fill className="object-cover" />
+                        {idx === 0 && (
+                          <span className="absolute top-1 left-1 text-[8px] font-black bg-amber-400 text-black px-1 rounded">
+                            COVER
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removePostImage(idx)}
+                          className="absolute top-1 right-1 bg-black/70 hover:bg-red-500 rounded-full p-0.5 text-white transition-colors"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => postImageInputRef.current?.click()}
-                    className="w-full border-2 border-dashed border-white/20 hover:border-[#00b2fe]/50 rounded-lg p-6 flex flex-col items-center gap-2 text-gray-400 hover:text-[#00b2fe] transition-colors"
-                  >
-                    <Upload className="w-6 h-6" />
-                    <span className="text-xs font-bold">Zgjidh Foto nga Galeria</span>
-                    <span className="text-[10px] text-gray-500">JPG, PNG, WebP • Maks 100MB</span>
-                  </button>
                 )}
+
+                {/* Add photos button */}
+                <button
+                  type="button"
+                  onClick={() => postImageInputRef.current?.click()}
+                  className="w-full border-2 border-dashed border-white/20 hover:border-[#00b2fe]/50 rounded-lg p-4 flex flex-col items-center gap-2 text-gray-400 hover:text-[#00b2fe] transition-colors"
+                >
+                  <Upload className="w-5 h-5" />
+                  <span className="text-xs font-bold">
+                    {postImagePreviews.length === 0 ? "Zgjidh Foto nga Galeria" : "Shto Foto të Tjera"}
+                  </span>
+                  <span className="text-[10px] text-gray-500">JPG, PNG, WebP • Mund të zgjidhni shumë foto</span>
+                </button>
                 <input
                   ref={postImageInputRef}
                   type="file"
                   accept="image/jpeg,image/png,image/webp,image/gif"
+                  multiple
                   onChange={handlePostImageChange}
                   className="hidden"
                 />
@@ -713,7 +873,7 @@ export default function AdminTaxiPage() {
               {uploadingPost && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-[#00b2fe]/10 border border-[#00b2fe]/20 text-xs text-[#00b2fe]">
                   <div className="w-3 h-3 border-2 border-[#00b2fe] border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                  <span>Po ngarkohet fotoja... ju lutem prisni.</span>
+                  <span>{uploadProgress || "Po ngarkohet... ju lutem prisni."}</span>
                 </div>
               )}
 
@@ -728,7 +888,7 @@ export default function AdminTaxiPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={uploadingPost || !postImageFile}
+                  disabled={uploadingPost || postImageFiles.length === 0}
                   className="btn-primary !py-2 text-xs font-bold flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {uploadingPost ? (
@@ -740,6 +900,204 @@ export default function AdminTaxiPage() {
                     <>
                       <Upload className="w-3 h-3" />
                       <span>Ngarko &amp; Ruaj</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Edit Taxi Post */}
+      {editingPost && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="surface-card max-w-lg w-full p-6 border border-white/15 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <h3 className="text-base font-bold text-white font-['Outfit'] flex items-center gap-2">
+                <Pencil className="w-4 h-4 text-[#00b2fe]" />
+                <span>Ndrysho Postimin e Taksisë</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingPost(null)}
+                className="p-1 rounded text-gray-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              {/* Existing Images */}
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-[#00b2fe]" />
+                    Fotot Aktuale ({editExistingImages.length})
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-normal">Kliko &quot;Bëje Cover&quot; për foton kryesore</span>
+                </label>
+
+                {editExistingImages.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    {editExistingImages.map((src, idx) => (
+                      <div
+                        key={idx}
+                        className={`relative aspect-square rounded-lg overflow-hidden bg-black border ${
+                          idx === 0 ? "border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.3)]" : "border-white/10"
+                        }`}
+                      >
+                        <Image src={src} alt={`Foto ${idx + 1}`} fill className="object-cover" />
+                        {idx === 0 ? (
+                          <span className="absolute top-1 left-1 text-[8px] font-black bg-amber-400 text-black px-1.5 py-0.5 rounded shadow">
+                            COVER
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => makeCoverEditExistingImage(idx)}
+                            className="absolute top-1 left-1 text-[8px] font-bold bg-black/80 hover:bg-amber-400 hover:text-black text-white px-1.5 py-0.5 rounded transition-colors"
+                            title="Bëje këtë foto kryesore (Cover)"
+                          >
+                            Bëje Cover
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeEditExistingImage(idx)}
+                          className="absolute top-1 right-1 bg-black/70 hover:bg-red-500 rounded-full p-0.5 text-white transition-colors"
+                          title="Fshij foton nga postimi"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-yellow-400/80 italic mb-2">Të gjitha fotot ekzistuese u fshinë. Duhet të shtoni të paktën një foto të re më poshtë.</p>
+                )}
+              </div>
+
+              {/* Add New Images Section */}
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase flex items-center gap-1.5">
+                  <Upload className="w-3.5 h-3.5 text-[#00b2fe]" />
+                  Shto Foto të Tjera të Reja ({editNewPreviews.length} të zgjedhura)
+                </label>
+
+                {editNewPreviews.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    {editNewPreviews.map((src, idx) => (
+                      <div key={idx} className="relative aspect-square rounded-lg overflow-hidden bg-black border border-[#00b2fe]/30">
+                        <Image src={src} alt={`Foto e Re ${idx + 1}`} fill className="object-cover" />
+                        <span className="absolute top-1 left-1 text-[8px] font-black bg-[#00b2fe] text-black px-1 rounded">
+                          E RE
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeEditNewFile(idx)}
+                          className="absolute top-1 right-1 bg-black/70 hover:bg-red-500 rounded-full p-0.5 text-white transition-colors"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => editImageInputRef.current?.click()}
+                  className="w-full border-2 border-dashed border-white/20 hover:border-[#00b2fe]/50 rounded-lg p-3 flex items-center justify-center gap-2 text-gray-400 hover:text-[#00b2fe] transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span className="text-xs font-bold">Zgjidh Foto të Reja nga Pajisja</span>
+                </button>
+                <input
+                  ref={editImageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  multiple
+                  onChange={handleEditNewImagesChange}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Caption */}
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">
+                  Përshkrimi / Caption
+                </label>
+                <textarea
+                  rows={3}
+                  value={editCaption}
+                  onChange={(e) => setEditCaption(e.target.value)}
+                  placeholder="Detaje të shërbimit të taksisë, destinacionet..."
+                  className="w-full bg-[#06080d] border border-white/15 focus:border-[#00b2fe] rounded-lg p-3 text-xs text-white focus:outline-none resize-none"
+                />
+              </div>
+
+              {/* Options */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-1">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="editPostFeatured"
+                    checked={editFeatured}
+                    onChange={(e) => setEditFeatured(e.target.checked)}
+                    className="rounded border-white/20 bg-black text-[#00b2fe]"
+                  />
+                  <label htmlFor="editPostFeatured" className="text-xs text-gray-300">
+                    Postim i zgjedhur (Featured)
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="editPostVisible"
+                    checked={editVisible}
+                    onChange={(e) => setEditVisible(e.target.checked)}
+                    className="rounded border-white/20 bg-black text-[#00b2fe]"
+                  />
+                  <label htmlFor="editPostVisible" className="text-xs text-gray-300">
+                    I dukshëm në faqe
+                  </label>
+                </div>
+              </div>
+
+              {/* Progress message */}
+              {savingEdit && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-[#00b2fe]/10 border border-[#00b2fe]/20 text-xs text-[#00b2fe]">
+                  <div className="w-3 h-3 border-2 border-[#00b2fe] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <span>{editProgress || "Po ruhen ndryshimet... ju lutem prisni."}</span>
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setEditingPost(null)}
+                  className="btn-secondary !py-2 text-xs"
+                  disabled={savingEdit}
+                >
+                  Anulo
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEdit || (editExistingImages.length === 0 && editNewFiles.length === 0)}
+                  className="btn-primary !py-2 text-xs font-bold flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {savingEdit ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Po ruan...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Ruaj Ndryshimet</span>
                     </>
                   )}
                 </button>

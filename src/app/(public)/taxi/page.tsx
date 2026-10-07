@@ -110,7 +110,66 @@ export default async function TaxiPage() {
         </div>
       </section>
 
-      {/* 2. WHY CHOOSE TAXI KEIJSI (SPACIOUS 3-CARD GRID) */}
+      {/* Glowing Pill Transition Divider */}
+      <div className="flex items-center justify-center my-6 sm:my-8">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-400/30 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-[10px] sm:text-xs font-black tracking-widest text-amber-400 uppercase shadow-[0_0_15px_rgba(245,158,11,0.2)] flex items-center gap-1.5">
+          <InstagramIcon className="w-3.5 h-3.5 text-amber-400" />
+          <span>01. INSTAGRAM @TAXI_KEIJSI</span>
+        </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-amber-400/30 via-transparent to-transparent" />
+      </div>
+
+      {/* 2. SECTION 01: Instagram Showcase (@taxi_keijsi) */}
+      <section className="surface-card p-4 sm:p-7 border border-white/10 space-y-5 rounded-2xl sm:rounded-3xl">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="space-y-1">
+            <h2 className="text-base sm:text-xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
+              <InstagramIcon className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <span>Postimet nga @taxi_keijsi</span>
+            </h2>
+            <p className="text-[11px] sm:text-xs text-gray-400">
+              Momente, makina dhe njoftime zyrtare të shërbimit të taksisë nga llogaria në Instagram
+            </p>
+          </div>
+
+          <a
+            href="https://instagram.com/taxi_keijsi"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 group transition-colors self-start sm:self-auto py-1"
+          >
+            <span>Ndiqni @taxi_keijsi</span>
+            <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </a>
+        </div>
+
+        {/* Grid of Dedicated Taxi Posts */}
+        {taxiPosts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
+            {taxiPosts.map((post) => (
+              <TaxiPostCard key={post.id} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 text-center bg-white/[0.02] rounded-2xl border border-white/5">
+            <InstagramIcon className="w-7 h-7 text-amber-400 mx-auto mb-2 opacity-70" />
+            <p className="text-xs text-gray-400">Postimet nga @taxi_keijsi do të sinkronizohen së shpejti.</p>
+          </div>
+        )}
+      </section>
+
+      {/* Glowing Pill Transition Divider */}
+      <div className="flex items-center justify-center my-6 sm:my-8">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
+        <div className="mx-3 px-3.5 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-[10px] sm:text-xs font-black tracking-widest text-cyan-400 uppercase shadow-[0_0_15px_rgba(34,211,238,0.2)] flex items-center gap-1.5">
+          <Car className="w-3.5 h-3.5 text-cyan-400" />
+          <span>02. SHËRBIMET TONA VIP</span>
+        </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-cyan-400/30 via-transparent to-transparent" />
+      </div>
+
+      {/* 3. WHY CHOOSE TAXI KEIJSI (SPACIOUS 3-CARD GRID) */}
       <section className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
@@ -191,59 +250,10 @@ export default async function TaxiPage() {
 
       {/* Glowing Pill Transition Divider */}
       <div className="flex items-center justify-center my-6 sm:my-8">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-400/30 to-transparent" />
-        <div className="mx-3 px-3.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-[10px] sm:text-xs font-black tracking-widest text-amber-400 uppercase shadow-[0_0_15px_rgba(245,158,11,0.2)] flex items-center gap-1.5">
-          <InstagramIcon className="w-3.5 h-3.5 text-amber-400" />
-          <span>01. INSTAGRAM @TAXI_KEIJSI</span>
-        </div>
-        <div className="h-px flex-1 bg-gradient-to-r from-amber-400/30 via-transparent to-transparent" />
-      </div>
-
-      {/* 3. SECTION 01: Instagram Showcase (@taxi_keijsi) */}
-      <section className="surface-card p-4 sm:p-7 border border-white/10 space-y-5 rounded-2xl sm:rounded-3xl">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-white/10 pb-3">
-          <div className="space-y-1">
-            <h2 className="text-base sm:text-xl font-extrabold text-white font-['Outfit'] flex items-center gap-2">
-              <InstagramIcon className="w-4 h-4 text-amber-400 flex-shrink-0" />
-              <span>Postimet nga @taxi_keijsi</span>
-            </h2>
-            <p className="text-[11px] sm:text-xs text-gray-400">
-              Momente, makina dhe njoftime zyrtare të shërbimit të taksisë nga llogaria në Instagram
-            </p>
-          </div>
-
-          <a
-            href="https://instagram.com/taxi_keijsi"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 group transition-colors self-start sm:self-auto py-1"
-          >
-            <span>Ndiqni @taxi_keijsi</span>
-            <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-          </a>
-        </div>
-
-        {/* Grid of Dedicated Taxi Posts */}
-        {taxiPosts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
-            {taxiPosts.map((post) => (
-              <TaxiPostCard key={post.id} post={post} />
-            ))}
-          </div>
-        ) : (
-          <div className="p-8 text-center bg-white/[0.02] rounded-2xl border border-white/5">
-            <InstagramIcon className="w-7 h-7 text-amber-400 mx-auto mb-2 opacity-70" />
-            <p className="text-xs text-gray-400">Postimet nga @taxi_keijsi do të sinkronizohen së shpejti.</p>
-          </div>
-        )}
-      </section>
-
-      {/* Glowing Pill Transition Divider */}
-      <div className="flex items-center justify-center my-6 sm:my-8">
         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent" />
         <div className="mx-3 px-3.5 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-[10px] sm:text-xs font-black tracking-widest text-yellow-400 uppercase shadow-[0_0_15px_rgba(234,179,8,0.2)] flex items-center gap-1.5">
           <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-          <span>02. GOOGLE BUSINESS REVIEWS</span>
+          <span>03. GOOGLE BUSINESS REVIEWS</span>
         </div>
         <div className="h-px flex-1 bg-gradient-to-r from-yellow-400/30 via-transparent to-transparent" />
       </div>

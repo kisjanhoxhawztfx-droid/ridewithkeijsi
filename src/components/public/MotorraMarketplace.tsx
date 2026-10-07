@@ -51,6 +51,272 @@ function getPhotoList(post: MotorraPostItem): string[] {
   return [];
 }
 
+function MarketplaceMotorraCardItem({
+  post,
+  isFav,
+  onToggleFav,
+  onOpenModal,
+}: {
+  post: MotorraPostItem;
+  isFav: boolean;
+  onToggleFav: (id: string, e: React.MouseEvent) => void;
+  onOpenModal: (post: MotorraPostItem) => void;
+}) {
+  const photos = getPhotoList(post);
+  const isSold = post.status === "SOLD";
+
+  const displayTitle = post.title || post.model || "Motorr";
+  const displayYear = post.year ? `${post.year}` : "";
+  const fullHeading = displayYear && !displayTitle.includes(displayYear)
+    ? `${displayYear} ${displayTitle}`
+    : displayTitle;
+
+  const displayPrice = post.price
+    ? `€${post.price.toLocaleString()}`
+    : "Me Rezervim";
+
+  const cleanPhone = (post.phone || "+355697738559").replace(/[^0-9+]/g, "");
+  const cleanWa = (post.whatsapp || post.phone || "+355697738559").replace(/[^0-9]/g, "");
+
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+
+  const prevPhoto = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentIdx((i) => (i - 1 + photos.length) % photos.length);
+  };
+
+  const nextPhoto = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentIdx((i) => (i + 1) % photos.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
+    const diff = touchStart - e.changedTouches[0].clientX;
+    if (diff > 40) {
+      nextPhoto();
+    } else if (diff < -40) {
+      prevPhoto();
+    }
+    setTouchStart(null);
+  };
+
+  return (
+    <div
+      onClick={() => onOpenModal(post)}
+      className="group bg-[#080d17] border border-white/10 hover:border-[#00b2fe] rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_25px_rgba(0,178,254,0.25)] transition-all duration-300 flex flex-col justify-between"
+    >
+      <div>
+        {/* Photo Container with Carousel: 4:3 Landscape aspect ratio */}
+        <div
+          className="relative aspect-[4/3] bg-black overflow-hidden select-none"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {photos.length > 0 ? (
+            photos.map((src, idx) => (
+              <div
+                key={idx}
+                className={`absolute inset-0 transition-opacity duration-300 ${
+                  idx === currentIdx ? "opacity-100 z-0" : "opacity-0 pointer-events-none"
+                }`}
+              >
+                <Image
+                  src={src}
+                  alt={`${fullHeading} - ${idx + 1}`}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                  className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
+                    isSold ? "grayscale opacity-60" : ""
+                  }`}
+                  unoptimized
+                />
+              </div>
+            ))
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-zinc-900">
+              <Bike className="w-12 h-12 text-gray-600" />
+            </div>
+          )}
+
+          {/* Top Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none z-10" />
+
+          {/* Carousel Arrows */}
+          {photos.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={prevPhoto}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-[#00b2fe] hover:text-black text-white rounded-full p-1.5 transition-all shadow-md backdrop-blur-sm active:scale-90"
+                aria-label="Foto e mëparshme"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={nextPhoto}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-[#00b2fe] hover:text-black text-white rounded-full p-1.5 transition-all shadow-md backdrop-blur-sm active:scale-90"
+                aria-label="Foto tjetër"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+
+              {/* Dots indicator */}
+              <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1">
+                {photos.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentIdx(idx);
+                    }}
+                    className={`rounded-full transition-all ${
+                      idx === currentIdx
+                        ? "w-4 h-1.5 bg-[#00b2fe]"
+                        : "w-1.5 h-1.5 bg-white/50 hover:bg-white"
+                    }`}
+                    aria-label={`Foto ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Top Left: Status & Multi-photo Badges */}
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20">
+            <span
+              className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${
+                isSold
+                  ? "bg-red-500/90 text-white border border-red-400/50"
+                  : "bg-[#00b2fe] text-black font-['Outfit'] font-extrabold shadow-md"
+              }`}
+            >
+              {isSold ? "E Shitur" : "Në Shitje"}
+            </span>
+
+            {photos.length > 1 && (
+              <span className="px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold flex items-center gap-1">
+                <ImageIcon className="w-2.5 h-2.5 text-[#00b2fe]" />
+                <span>{currentIdx + 1}/{photos.length}</span>
+              </span>
+            )}
+          </div>
+
+          {/* Top Right: Heart / Favorite Button */}
+          <button
+            type="button"
+            onClick={(e) => onToggleFav(post.id, e)}
+            className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/65 backdrop-blur-md border border-white/20 hover:border-[#00b2fe] flex items-center justify-center transition-all z-20 active:scale-90"
+            title="Ruaj te të preferuarat"
+          >
+            <Heart
+              className={`w-4 h-4 transition-colors ${
+                isFav ? "fill-red-500 text-red-500" : "text-white group-hover:text-red-400"
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* 2. Card Content Area */}
+        <div className="p-4 space-y-2.5">
+          <h3 className="text-sm sm:text-base font-extrabold text-white font-['Outfit'] line-clamp-1 leading-snug group-hover:text-[#00b2fe] transition-colors">
+            {fullHeading}
+          </h3>
+
+          {/* Specs Subline */}
+          <div className="flex items-center gap-1.5 text-[11px] font-medium line-clamp-1 flex-wrap">
+            {post.year && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/10 text-white font-bold text-[10px] tracking-wide">
+                <Calendar className="w-2.5 h-2.5 text-[#00b2fe]" />
+                Viti {post.year}
+              </span>
+            )}
+            {post.engine && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#00b2fe]/15 text-[#00d2ff] font-bold text-[10px] tracking-wide">
+                <Zap className="w-2.5 h-2.5 text-[#00b2fe]" />
+                {post.engine}
+              </span>
+            )}
+            {post.mileageKm && (
+              <span className="text-gray-300 text-[11px]">
+                • {post.mileageKm.toLocaleString()} km
+              </span>
+            )}
+            {post.mileageMi && (
+              <span className="text-gray-500 text-[11px]">
+                ({post.mileageMi.toLocaleString()} mi)
+              </span>
+            )}
+            <span className="text-gray-400 text-[11px]">
+              • {isSold ? "E Shitur" : "Gjendje Perfekte"}
+            </span>
+          </div>
+
+          {/* Price & Deal Rating Pill */}
+          <div className="flex items-center gap-2 pt-1">
+            <span className="text-lg sm:text-xl font-black text-white font-['Outfit']">
+              {displayPrice}
+            </span>
+
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-black tracking-wide font-['Outfit']">
+              <CheckCircle2 className="w-2.5 h-2.5" />
+              <span>Çmim i Shkëlqyer</span>
+            </span>
+          </div>
+
+          {/* Seller Row */}
+          <div className="flex items-center gap-2.5 pt-2 border-t border-white/10 text-xs">
+            <div className="w-7 h-7 rounded-full bg-[#00b2fe]/20 border border-[#00b2fe]/40 text-[#00b2fe] font-black text-[10px] flex items-center justify-center flex-shrink-0">
+              RK
+            </div>
+            <div className="leading-tight overflow-hidden">
+              <span className="text-white font-bold text-[11px] block truncate">
+                Ride with Keijsi
+              </span>
+              <span className="text-gray-400 text-[10px] flex items-center gap-1">
+                <MapPin className="w-2.5 h-2.5 text-[#00b2fe]" />
+                Tiranë, Shqipëri
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Action Buttons Row */}
+      <div className="p-3 border-t border-white/10 bg-white/[0.01] grid grid-cols-2 gap-2">
+        <a
+          href={`tel:${cleanPhone}`}
+          onClick={(e) => e.stopPropagation()}
+          className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#00b2fe] hover:bg-[#00d2ff] text-black font-extrabold text-[11px] transition-all shadow-[0_0_12px_rgba(0,178,254,0.3)] active:scale-95"
+        >
+          <Phone className="w-3.5 h-3.5 fill-black" />
+          <span>Telefono</span>
+        </a>
+
+        <a
+          href={`https://wa.me/${cleanWa}?text=${encodeURIComponent(
+            `Përshëndetje, po ju shkruaj nga ridewithkeijsi.com lidhur me motorrin: ${fullHeading} (${displayPrice})`
+          )}`}
+          onClick={(e) => e.stopPropagation()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[11px] transition-all shadow-md active:scale-95"
+        >
+          <WhatsAppIcon className="w-3.5 h-3.5" />
+          <span>WhatsApp</span>
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
   // Filters state
   const [selectedCategoryTab, setSelectedCategoryTab] = useState("Të Gjithë");
@@ -473,189 +739,15 @@ export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
           ) : (
             /* Responsive Grid: 1 col on small mobile, 2 on tablet, 3 on desktop */
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
-              {filteredPosts.map((post) => {
-                const photos = getPhotoList(post);
-                const isSold = post.status === "SOLD";
-                const isFav = !!favorites[post.id];
-
-                const displayTitle = post.title || post.model || "Motorr";
-                const displayYear = post.year ? `${post.year}` : "";
-                const fullHeading = displayYear && !displayTitle.includes(displayYear)
-                  ? `${displayYear} ${displayTitle}`
-                  : displayTitle;
-
-                const displayPrice = post.price
-                  ? `€${post.price.toLocaleString()}`
-                  : "Me Rezervim";
-
-                const specsLine = [
-                  post.year ? `Viti ${post.year}` : null,
-                  post.engine ? `${post.engine}` : null,
-                  post.mileageKm ? `${post.mileageKm.toLocaleString()} km` : null,
-                  post.mileageMi ? `${post.mileageMi.toLocaleString()} mi` : null,
-                  isSold ? "E Shitur" : "Gjendje Perfekte",
-                ].filter(Boolean).join(" • ");
-
-                const cleanPhone = (post.phone || "+355697738559").replace(/[^0-9+]/g, "");
-                const cleanWa = (post.whatsapp || post.phone || "+355697738559").replace(/[^0-9]/g, "");
-
-                return (
-                  <div
-                    key={post.id}
-                    onClick={() => handleOpenModal(post)}
-                    className="group bg-[#080d17] border border-white/10 hover:border-[#00b2fe] rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_25px_rgba(0,178,254,0.25)] transition-all duration-300 flex flex-col justify-between"
-                  >
-                    <div>
-                      {/* 1. Photo Area (Landscape 4:3 style like screenshot) */}
-                      <div className="relative aspect-[4/3] bg-black overflow-hidden">
-                        {photos[0] ? (
-                          <Image
-                            src={photos[0]}
-                            alt={fullHeading}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                            className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
-                              isSold ? "grayscale opacity-60" : ""
-                            }`}
-                            unoptimized
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-zinc-900">
-                            <Bike className="w-12 h-12 text-gray-600" />
-                          </div>
-                        )}
-
-                        {/* Top Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
-
-                        {/* Top Left: Status & Multi-photo Badges */}
-                        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
-                          <span
-                            className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${
-                              isSold
-                                ? "bg-red-500/90 text-white border border-red-400/50"
-                                : "bg-[#00b2fe] text-black font-['Outfit'] font-extrabold shadow-md"
-                            }`}
-                          >
-                            {isSold ? "E Shitur" : "Në Shitje"}
-                          </span>
-
-                          {photos.length > 1 && (
-                            <span className="px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold flex items-center gap-1">
-                              <ImageIcon className="w-2.5 h-2.5 text-[#00b2fe]" />
-                              <span>{photos.length} foto</span>
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Top Right: Heart / Favorite Button (Just like in screenshot!) */}
-                        <button
-                          type="button"
-                          onClick={(e) => toggleFavorite(post.id, e)}
-                          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/65 backdrop-blur-md border border-white/20 hover:border-[#00b2fe] flex items-center justify-center transition-all z-10 active:scale-90"
-                          title="Ruaj te të preferuarat"
-                        >
-                          <Heart
-                            className={`w-4 h-4 transition-colors ${
-                              isFav ? "fill-red-500 text-red-500" : "text-white group-hover:text-red-400"
-                            }`}
-                          />
-                        </button>
-                      </div>
-
-                      {/* 2. Card Content Area (BicycleBlueBook typography & layout) */}
-                      <div className="p-4 space-y-2.5">
-                        {/* Title: 2024 Yamaha TMAX 560 */}
-                        <h3 className="text-sm sm:text-base font-extrabold text-white font-['Outfit'] line-clamp-1 leading-snug group-hover:text-[#00b2fe] transition-colors">
-                          {fullHeading}
-                        </h3>
-
-                        {/* Specs Subline: Viti & Cilindrata highlighted */}
-                        <div className="flex items-center gap-1.5 text-[11px] font-medium line-clamp-1 flex-wrap">
-                          {post.year && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/10 text-white font-bold text-[10px] tracking-wide">
-                              <Calendar className="w-2.5 h-2.5 text-[#00b2fe]" />
-                              Viti {post.year}
-                            </span>
-                          )}
-                          {post.engine && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#00b2fe]/15 text-[#00d2ff] font-bold text-[10px] tracking-wide">
-                              <Zap className="w-2.5 h-2.5 text-[#00b2fe]" />
-                              {post.engine}
-                            </span>
-                          )}
-                          {post.mileageKm && (
-                            <span className="text-gray-300 text-[11px]">
-                              • {post.mileageKm.toLocaleString()} km
-                            </span>
-                          )}
-                          {post.mileageMi && (
-                            <span className="text-gray-500 text-[11px]">
-                              ({post.mileageMi.toLocaleString()} mi)
-                            </span>
-                          )}
-                          <span className="text-gray-400 text-[11px]">
-                            • {isSold ? "E Shitur" : "Gjendje Perfekte"}
-                          </span>
-                        </div>
-
-                        {/* Price & Deal Rating Pill (Like '$1,000 Good deal' in screenshot) */}
-                        <div className="flex items-center gap-2 pt-1">
-                          <span className="text-lg sm:text-xl font-black text-white font-['Outfit']">
-                            {displayPrice}
-                          </span>
-
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-black tracking-wide font-['Outfit']">
-                            <CheckCircle2 className="w-2.5 h-2.5" />
-                            <span>Çmim i Shkëlqyer</span>
-                          </span>
-                        </div>
-
-                        {/* Seller Row (Like 'PS Private seller Okemos, MI' in screenshot) */}
-                        <div className="flex items-center gap-2.5 pt-2 border-t border-white/10 text-xs">
-                          <div className="w-7 h-7 rounded-full bg-[#00b2fe]/20 border border-[#00b2fe]/40 text-[#00b2fe] font-black text-[10px] flex items-center justify-center flex-shrink-0">
-                            RK
-                          </div>
-                          <div className="leading-tight overflow-hidden">
-                            <span className="text-white font-bold text-[11px] block truncate">
-                              Ride with Keijsi
-                            </span>
-                            <span className="text-gray-400 text-[10px] flex items-center gap-1">
-                              <MapPin className="w-2.5 h-2.5 text-[#00b2fe]" />
-                              Tiranë, Shqipëri
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 3. Action Buttons Row (Buy now / Call / WhatsApp) */}
-                    <div className="p-3 border-t border-white/10 bg-white/[0.01] grid grid-cols-2 gap-2">
-                      <a
-                        href={`tel:${cleanPhone}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#00b2fe] hover:bg-[#00d2ff] text-black font-extrabold text-[11px] transition-all shadow-[0_0_12px_rgba(0,178,254,0.3)] active:scale-95"
-                      >
-                        <Phone className="w-3.5 h-3.5 fill-black" />
-                        <span>Telefono</span>
-                      </a>
-
-                      <a
-                        href={`https://wa.me/${cleanWa}?text=${encodeURIComponent(
-                          `Përshëndetje, po ju shkruaj nga ridewithkeijsi.com lidhur me motorrin: ${fullHeading} (${displayPrice})`
-                        )}`}
-                        onClick={(e) => e.stopPropagation()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[11px] transition-all shadow-md active:scale-95"
-                      >
-                        <WhatsAppIcon className="w-3.5 h-3.5" />
-                        <span>WhatsApp</span>
-                      </a>
-                    </div>
-                  </div>
-                );
-              })}
+              {filteredPosts.map((post) => (
+                <MarketplaceMotorraCardItem
+                  key={post.id}
+                  post={post}
+                  isFav={!!favorites[post.id]}
+                  onToggleFav={toggleFavorite}
+                  onOpenModal={handleOpenModal}
+                />
+              ))}
             </div>
           )}
         </div>

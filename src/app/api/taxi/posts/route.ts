@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
     const {
       permalink,
       thumbnailUrl,
+      images,
       caption,
       isFeatured = false,
       isVisible = true,
@@ -46,6 +47,7 @@ export async function POST(req: NextRequest) {
       data: {
         permalink,
         thumbnailUrl,
+        images: images ? JSON.stringify(images) : null,
         caption: caption || "",
         mediaType,
         isFeatured: Boolean(isFeatured),
@@ -71,19 +73,29 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { id, isVisible, isFeatured, caption } = body;
+    const { id, isVisible, isFeatured, caption, images, thumbnailUrl, permalink } = body;
 
     if (!id) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
+    const dataToUpdate: any = {};
+    if (typeof isVisible === "boolean") dataToUpdate.isVisible = isVisible;
+    if (typeof isFeatured === "boolean") dataToUpdate.isFeatured = isFeatured;
+    if (typeof caption === "string") dataToUpdate.caption = caption;
+    if (typeof permalink === "string") dataToUpdate.permalink = permalink;
+    if (Array.isArray(images)) {
+      dataToUpdate.images = JSON.stringify(images);
+      if (images.length > 0) {
+        dataToUpdate.thumbnailUrl = images[0];
+      }
+    } else if (typeof thumbnailUrl === "string") {
+      dataToUpdate.thumbnailUrl = thumbnailUrl;
+    }
+
     const updated = await db.taxiPost.update({
       where: { id },
-      data: {
-        ...(typeof isVisible === "boolean" ? { isVisible } : {}),
-        ...(typeof isFeatured === "boolean" ? { isFeatured } : {}),
-        ...(typeof caption === "string" ? { caption } : {}),
-      },
+      data: dataToUpdate,
     });
 
     return NextResponse.json({ success: true, post: updated });

@@ -98,23 +98,37 @@ function MotorraCardItem({
     isSold ? "E Shitur" : "Gjendje Perfekte",
   ].filter(Boolean).join(" • ");
 
-  const [imgSrc, setImgSrc] = useState<string>(primaryThumb);
-  const [imgFailed, setImgFailed] = useState(false);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
   const [isFav, setIsFav] = useState(false);
+
+  const prevPhoto = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentIdx((i) => (i - 1 + photos.length) % photos.length);
+  };
+
+  const nextPhoto = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentIdx((i) => (i + 1) % photos.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
+    const diff = touchStart - e.changedTouches[0].clientX;
+    if (diff > 40) {
+      nextPhoto();
+    } else if (diff < -40) {
+      prevPhoto();
+    }
+    setTouchStart(null);
+  };
 
   const cleanPhone = (post.phone || parsed.phone || "+355697738559").replace(/[^0-9+]/g, "");
   const cleanWa = (post.whatsapp || post.phone || parsed.phone || "+355697738559").replace(/[^0-9]/g, "");
-
-  const handleImageError = () => {
-    if (post.instagramId) {
-      const rawGithub = `https://raw.githubusercontent.com/kisjanhoxhawztfx-droid/ridewithkeijsi/master/public/instagram/${post.instagramId}.jpg`;
-      if (imgSrc !== rawGithub) {
-        setImgSrc(rawGithub);
-        return;
-      }
-    }
-    setImgFailed(true);
-  };
 
   return (
     <div
@@ -122,20 +136,32 @@ function MotorraCardItem({
       className="group bg-[#080d17] border border-white/10 hover:border-[#00b2fe] rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_25px_rgba(0,178,254,0.25)] transition-all duration-300 flex flex-col justify-between"
     >
       <div>
-        {/* Photo Container: 4:3 Landscape aspect ratio */}
-        <div className="relative aspect-[4/3] bg-black overflow-hidden">
-          {imgSrc && !imgFailed ? (
-            <Image
-              src={imgSrc}
-              alt={fullHeading}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
-                isSold ? "grayscale opacity-60" : ""
-              }`}
-              onError={handleImageError}
-              unoptimized
-            />
+        {/* Photo Container: 4:3 Landscape aspect ratio with carousel */}
+        <div
+          className="relative aspect-[4/3] bg-black overflow-hidden select-none"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {photos.length > 0 ? (
+            photos.map((src, idx) => (
+              <div
+                key={idx}
+                className={`absolute inset-0 transition-opacity duration-300 ${
+                  idx === currentIdx ? "opacity-100 z-0" : "opacity-0 pointer-events-none"
+                }`}
+              >
+                <Image
+                  src={src}
+                  alt={`${fullHeading} - ${idx + 1}`}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
+                    isSold ? "grayscale opacity-60" : ""
+                  }`}
+                  unoptimized
+                />
+              </div>
+            ))
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center bg-[#0d1422]">
               <Bike className="w-10 h-10 text-[#00b2fe] mb-1" />
@@ -144,10 +170,52 @@ function MotorraCardItem({
           )}
 
           {/* Subtle gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none z-10" />
+
+          {/* Carousel Arrows if multiple photos */}
+          {photos.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={prevPhoto}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-[#00b2fe] hover:text-black text-white rounded-full p-1.5 transition-all shadow-md backdrop-blur-sm active:scale-90"
+                aria-label="Foto e mëparshme"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={nextPhoto}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-[#00b2fe] hover:text-black text-white rounded-full p-1.5 transition-all shadow-md backdrop-blur-sm active:scale-90"
+                aria-label="Foto tjetër"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+
+              {/* Dots indicator */}
+              <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1">
+                {photos.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentIdx(idx);
+                    }}
+                    className={`rounded-full transition-all ${
+                      idx === currentIdx
+                        ? "w-4 h-1.5 bg-[#00b2fe]"
+                        : "w-1.5 h-1.5 bg-white/50 hover:bg-white"
+                    }`}
+                    aria-label={`Foto ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Top Badges */}
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20">
             <span
               className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${
                 isSold
@@ -161,7 +229,7 @@ function MotorraCardItem({
             {photos.length > 1 && (
               <span className="px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold flex items-center gap-1">
                 <ImageIcon className="w-2.5 h-2.5 text-[#00b2fe]" />
-                <span>{photos.length}</span>
+                <span>{currentIdx + 1}/{photos.length}</span>
               </span>
             )}
           </div>
