@@ -130,7 +130,7 @@ function MarketplaceMotorraCardItem({
                   src={src}
                   alt={`${fullHeading} - ${idx + 1}`}
                   fill
-                  sizes="(max-width: 640px) 33vw, (max-width: 1280px) 50vw, 33vw"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1280px) 50vw, 33vw"
                   className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
                     isSold ? "grayscale opacity-60" : ""
                   }`}
@@ -156,7 +156,7 @@ function MarketplaceMotorraCardItem({
                 className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-[#00b2fe] hover:text-black text-white rounded-full p-1 sm:p-1.5 transition-all shadow-md backdrop-blur-sm active:scale-90"
                 aria-label="Foto e mëparshme"
               >
-                <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
                 type="button"
@@ -164,10 +164,10 @@ function MarketplaceMotorraCardItem({
                 className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-20 bg-black/70 hover:bg-[#00b2fe] hover:text-black text-white rounded-full p-1 sm:p-1.5 transition-all shadow-md backdrop-blur-sm active:scale-90"
                 aria-label="Foto tjetër"
               >
-                <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
 
-              {/* Dots indicator (hidden on mobile 3-col) */}
+              {/* Dots indicator */}
               <div className="hidden sm:flex absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 items-center gap-1">
                 {photos.map((_, idx) => (
                   <button
@@ -217,7 +217,7 @@ function MarketplaceMotorraCardItem({
             title="Ruaj te të preferuarat"
           >
             <Heart
-              className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors ${
+              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors ${
                 isFav ? "fill-red-500 text-red-500" : "text-white group-hover:text-red-400"
               }`}
             />
@@ -225,13 +225,13 @@ function MarketplaceMotorraCardItem({
         </div>
 
         {/* 2. Card Content Area */}
-        <div className="p-2 sm:p-4 space-y-1 sm:space-y-2.5">
+        <div className="p-2.5 sm:p-4 space-y-1.5 sm:space-y-2.5">
           <h3 className="text-xs sm:text-base font-extrabold text-white font-['Outfit'] line-clamp-1 leading-snug group-hover:text-[#00b2fe] transition-colors">
             {fullHeading}
           </h3>
 
           {/* Specs Subline */}
-          <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-gray-400 font-medium line-clamp-1">
+          <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-gray-400 font-medium line-clamp-1">
             {post.year && <span>{post.year}</span>}
             {post.engine && <span>• {post.engine}</span>}
             {post.mileageKm && (
@@ -243,7 +243,7 @@ function MarketplaceMotorraCardItem({
 
           {/* Price & Deal Rating Pill */}
           <div className="flex items-center gap-1.5 sm:gap-2 pt-0.5 sm:pt-1">
-            <span className="text-xs sm:text-lg font-black text-white font-['Outfit']">
+            <span className="text-sm sm:text-lg font-black text-white font-['Outfit']">
               {displayPrice}
             </span>
 
@@ -253,7 +253,7 @@ function MarketplaceMotorraCardItem({
             </span>
           </div>
 
-          {/* Seller Row (Hidden on mobile 3-col) */}
+          {/* Seller Row (Hidden on mobile 2-col) */}
           <div className="hidden sm:flex items-center gap-2.5 pt-2 border-t border-white/10 text-xs">
             <div className="w-7 h-7 rounded-full bg-[#00b2fe]/20 border border-[#00b2fe]/40 text-[#00b2fe] font-black text-[10px] flex items-center justify-center flex-shrink-0">
               RK
@@ -272,15 +272,15 @@ function MarketplaceMotorraCardItem({
       </div>
 
       {/* 3. Action Buttons Row */}
-      <div className="p-1.5 sm:p-3 border-t border-white/10 bg-white/[0.01] grid grid-cols-2 gap-1 sm:gap-2">
+      <div className="p-2 sm:p-3 border-t border-white/10 bg-white/[0.01] grid grid-cols-2 gap-1.5 sm:gap-2">
         <a
           href={`tel:${cleanPhone}`}
           onClick={(e) => e.stopPropagation()}
-          className="inline-flex items-center justify-center gap-1 py-1.5 sm:py-2 px-1 sm:px-3 rounded-lg sm:rounded-xl bg-[#00b2fe] hover:bg-[#00d2ff] text-black font-extrabold text-[10px] sm:text-[11px] transition-all shadow-[0_0_12px_rgba(0,178,254,0.3)] active:scale-95"
+          className="inline-flex items-center justify-center gap-1 py-1.5 sm:py-2 px-1.5 sm:px-3 rounded-lg sm:rounded-xl bg-[#00b2fe] hover:bg-[#00d2ff] text-black font-extrabold text-[10px] sm:text-[11px] transition-all shadow-[0_0_12px_rgba(0,178,254,0.3)] active:scale-95"
           title="Telefono"
         >
-          <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-black" />
-          <span className="hidden sm:inline">Telefono</span>
+          <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-black flex-shrink-0" />
+          <span className="truncate">Telefono</span>
         </a>
 
         <a
@@ -290,11 +290,11 @@ function MarketplaceMotorraCardItem({
           onClick={(e) => e.stopPropagation()}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-1 py-1.5 sm:py-2 px-1 sm:px-3 rounded-lg sm:rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[10px] sm:text-[11px] transition-all shadow-md active:scale-95"
+          className="inline-flex items-center justify-center gap-1 py-1.5 sm:py-2 px-1.5 sm:px-3 rounded-lg sm:rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[10px] sm:text-[11px] transition-all shadow-md active:scale-95"
           title="WhatsApp"
         >
-          <WhatsAppIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-          <span className="hidden sm:inline">WhatsApp</span>
+          <WhatsAppIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+          <span className="truncate">WhatsApp</span>
         </a>
       </div>
     </div>
@@ -721,8 +721,8 @@ export default function MotorraMarketplace({ posts }: MotorraMarketplaceProps) {
               </button>
             </div>
           ) : (
-            /* Responsive Grid: 3 cols on mobile, 2 on tablet, 3 on desktop */
-            <div className="grid grid-cols-3 sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4 lg:gap-5">
+            /* Responsive Grid: 2 cols on mobile, 2 on tablet, 3 on desktop */
+            <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-4 lg:gap-5">
               {filteredPosts.map((post) => (
                 <MarketplaceMotorraCardItem
                   key={post.id}
