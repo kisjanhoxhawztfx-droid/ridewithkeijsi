@@ -103,13 +103,13 @@ export default function Footer({
                 </Link>
               </li>
               <li>
-                <Link href="/episodes" className="text-gray-400 hover:text-[#00b2fe] transition-colors flex items-center gap-1 group py-1">
-                  <span>Ride with Keijsi (Episodet)</span>
+                <Link href="/motorra" className="text-gray-400 hover:text-[#00b2fe] transition-colors flex items-center gap-1 group py-1">
+                  <span>Motorra në Shitje</span>
                 </Link>
               </li>
               <li>
-                <Link href="/motorra" className="text-gray-400 hover:text-[#00b2fe] transition-colors flex items-center gap-1 group py-1">
-                  <span>Motorra në Shitje</span>
+                <Link href="/taxi" className="text-gray-400 hover:text-[#00b2fe] transition-colors flex items-center gap-1 group py-1">
+                  <span>Taxi Keijsi 24/7</span>
                 </Link>
               </li>
               <li>
@@ -119,8 +119,8 @@ export default function Footer({
                 </Link>
               </li>
               <li>
-                <Link href="/taxi" className="text-gray-400 hover:text-[#00b2fe] transition-colors flex items-center gap-1 group py-1">
-                  <span>Taxi Keijsi 24/7</span>
+                <Link href="/episodes" className="text-gray-400 hover:text-[#00b2fe] transition-colors flex items-center gap-1 group py-1">
+                  <span>Ride with Keijsi (Episodet)</span>
                 </Link>
               </li>
               <li>

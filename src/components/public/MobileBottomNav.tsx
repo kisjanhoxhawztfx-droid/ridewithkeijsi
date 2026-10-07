@@ -16,11 +16,6 @@ export default function MobileBottomNav() {
       exact: true,
     },
     {
-      label: "Episodet",
-      href: "/episodes",
-      icon: Tv,
-    },
-    {
       label: "Motorra",
       href: "/motorra",
       icon: Bike,
@@ -35,6 +30,11 @@ export default function MobileBottomNav() {
       href: "/luxury",
       icon: Crown,
       isGold: true,
+    },
+    {
+      label: "Episodet",
+      href: "/episodes",
+      icon: Tv,
     },
   ];
 

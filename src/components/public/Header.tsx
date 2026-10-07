@@ -47,10 +47,10 @@ export default function Header({ socialLinks = [] }: HeaderProps) {
 
   const navLinks = [
     { name: "KREU", href: "/", icon: Home },
-    { name: "RIDE WITH KEIJSI", href: "/episodes", icon: Tv },
     { name: "MOTORRA", href: "/motorra", icon: Bike },
     { name: "TAXI KEIJSI", href: "/taxi", icon: TaxiIcon },
     { name: "LUXURY SERVICES", href: "/luxury", icon: CrownIcon, isGold: true },
+    { name: "RIDE WITH KEIJSI", href: "/episodes", icon: Tv },
     { name: "KONTAKT", href: "/contact", icon: MessageCircle },
   ];
 
