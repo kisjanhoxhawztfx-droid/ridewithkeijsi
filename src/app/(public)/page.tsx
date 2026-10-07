@@ -122,13 +122,6 @@ export default async function HomePage() {
       <HeroSection
         heroTitle={settings.hero_title}
         heroSubtitle={settings.hero_subtitle}
-        ctaText={settings.hero_cta_text}
-        ctaLink={settings.hero_cta_link}
-        secondaryCtaText={settings.hero_secondary_cta_text}
-        secondaryCtaLink={settings.hero_secondary_cta_link}
-        featuredEpisode={featuredEpisode}
-        totalEpisodes={totalEpisodesCount}
-        totalMotorcycles={totalBikesCount}
       />
 
       {/* Section Transition Divider */}

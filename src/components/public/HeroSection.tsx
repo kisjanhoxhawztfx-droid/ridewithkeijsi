@@ -1,8 +1,3 @@
-import Link from "next/link";
-import { Play, Flame, ChevronRight, Sparkles } from "lucide-react";
-import YouTubePlayer from "./YouTubePlayer";
-import { EpisodeData } from "./EpisodeCard";
-
 interface HeroSectionProps {
   heroTitle?: string;
   heroSubtitle?: string;
@@ -10,151 +5,37 @@ interface HeroSectionProps {
   ctaLink?: string;
   secondaryCtaText?: string;
   secondaryCtaLink?: string;
-  featuredEpisode?: EpisodeData | null;
+  featuredEpisode?: any;
   totalEpisodes?: number;
   totalMotorcycles?: number;
 }
 
 export default function HeroSection({
   heroTitle = "RIDE WITH KEIJSI",
-  heroSubtitle = "Eksploroni botën e shpejtësisë, rrugës dhe motorrave me Keijsin. Episode ekskluzive, rishikime makinash & motorrash, dhe motorrat më të mirë në treg.",
-  ctaText = "Shiko Episodin e Fundit",
-  ctaLink = "/episodes",
-  secondaryCtaText = "Motorra në Shitje",
-  secondaryCtaLink = "/motorra",
-  featuredEpisode,
-  totalEpisodes = 7,
-  totalMotorcycles = 4,
+  heroSubtitle = "Destinacioni juaj kryesor për shitblerje motorrash cilësorë, shërbim taksi komod 24/7, makina dhe shërbime luksoze VIP me qira, si dhe pasionin e botës së motorsportit me Ride with Keijsi.",
 }: HeroSectionProps) {
   return (
-    <section className="relative pt-1 sm:pt-3 pb-6 sm:pb-12 overflow-hidden w-full">
+    <section className="relative pt-6 sm:pt-10 pb-8 sm:pb-12 overflow-hidden w-full">
       {/* Background ambient lighting and subtle radial glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[320px] sm:w-[600px] lg:w-[800px] h-[300px] sm:h-[400px] bg-[#00b2fe]/10 blur-[100px] sm:blur-[140px] rounded-full pointer-events-none" />
-      <div className="absolute top-10 right-5 w-[200px] sm:w-[400px] h-[200px] sm:h-[300px] bg-[#00d2ff]/5 blur-[80px] sm:blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[650px] lg:w-[900px] h-[220px] sm:h-[320px] bg-[#00b2fe]/10 blur-[100px] sm:blur-[140px] rounded-full pointer-events-none" />
+      <div className="absolute top-10 right-1/4 w-[200px] sm:w-[350px] h-[180px] sm:h-[240px] bg-[#00d2ff]/5 blur-[80px] sm:blur-[100px] rounded-full pointer-events-none" />
 
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-center justify-between">
-          {/* Left Column: Headlines & Call to Action (Spostuar lehtë në qendër) */}
-          <div className="lg:col-span-6 space-y-6 text-left max-w-xl">
-            {/* Dynamic Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-gray-300 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-[#00b2fe] shadow-[0_0_8px_#00b2fe] animate-pulse" />
-              <span className="text-[#00d2ff] font-bold">EMISIONI NUMËR 1</span>
-              <span className="text-gray-500">|</span>
-              <span className="text-gray-300">Motorsport & Media</span>
-            </div>
-
-            {/* Main Title */}
-            <h1 className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-['Outfit'] uppercase leading-[1.2]">
-              RIDE WITH{" "}
-              <span className="relative inline-block">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00b2fe] via-[#00d2ff] to-[#ffffff] drop-shadow-[0_0_20px_rgba(0,178,254,0.45)]">
-                  KEIJSI
-                </span>
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4">
+          {/* Main Title */}
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-['Outfit'] uppercase leading-[1.15]">
+            RIDE WITH{" "}
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00b2fe] via-[#00d2ff] to-[#ffffff] drop-shadow-[0_0_25px_rgba(0,178,254,0.5)]">
+                KEIJSI
               </span>
-            </h1>
+            </span>
+          </h1>
 
-            {/* Description */}
-            <p className="text-[11px] sm:text-xs lg:text-sm text-gray-300/90 leading-relaxed font-normal max-w-lg">
-              {heroSubtitle}
-            </p>
-
-            {/* Action Buttons: 2 columns on mobile, flex on desktop */}
-            <div className="pt-1 grid grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3.5 w-full">
-              <Link
-                href={featuredEpisode ? `/episodes/${featuredEpisode.slug}` : ctaLink}
-                className="btn-primary group !py-2.5 sm:!py-3 !px-3 sm:!px-7 text-xs sm:text-sm font-bold shadow-[0_0_25px_rgba(0,178,254,0.4)] w-full sm:w-auto text-center justify-center"
-              >
-                <Play className="w-3.5 h-3.5 fill-current group-hover:scale-110 transition-transform flex-shrink-0" />
-                <span className="truncate">{ctaText}</span>
-              </Link>
-
-              <Link
-                href={secondaryCtaLink}
-                className="btn-secondary !py-2.5 sm:!py-3 !px-3 sm:!px-6 text-xs sm:text-sm font-bold group w-full sm:w-auto text-center justify-center"
-              >
-                <span className="truncate">{secondaryCtaText}</span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-[#00b2fe] flex-shrink-0" />
-              </Link>
-            </div>
-
-            {/* Stats Row */}
-            <div className="pt-3 sm:pt-4 grid grid-cols-3 gap-1.5 sm:gap-4 border-t border-white/10 max-w-lg text-center">
-              <div className="p-1.5 sm:p-0 rounded-xl bg-white/[0.02] sm:bg-transparent">
-                <div className="text-base sm:text-2xl font-extrabold text-white font-['Outfit']">
-                  {totalEpisodes}+
-                </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Episode</div>
-              </div>
-
-              <div className="p-1.5 sm:p-0 rounded-xl bg-white/[0.02] sm:bg-transparent">
-                <div className="text-base sm:text-2xl font-extrabold text-[#00b2fe] font-['Outfit']">
-                  {totalMotorcycles}+
-                </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Motorra</div>
-              </div>
-
-              <div className="p-1.5 sm:p-0 rounded-xl bg-white/[0.02] sm:bg-transparent">
-                <div className="text-base sm:text-2xl font-extrabold text-white font-['Outfit']">
-                  100%
-                </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Pasion</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Featured Episode Player Facade (Spostuar lehtë në qendër) */}
-          <div className="lg:col-span-6 relative mt-4 lg:mt-0 max-w-xl lg:max-w-none ml-auto w-full">
-            <div className="relative">
-              {/* Outer decorative glow frame */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#00b2fe]/30 to-[#0077b6]/20 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
-
-              <div className="relative">
-                {featuredEpisode ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between px-1">
-                      <div className="flex items-center gap-1.5">
-                        <Flame className="w-3.5 h-3.5 text-[#00b2fe]" />
-                        <span className="text-xs font-bold text-[#00d2ff] uppercase tracking-wider font-['Outfit']">
-                          EPISODI I FUNDIT
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-400 font-medium">
-                        {featuredEpisode.duration || "Full HD"}
-                      </span>
-                    </div>
-
-                    <YouTubePlayer
-                      videoId={featuredEpisode.youtubeVideoId}
-                      title={featuredEpisode.title}
-                      thumbnailUrl={featuredEpisode.thumbnailUrl}
-                    />
-
-                    <div className="px-1 pt-1">
-                      <Link
-                        href={`/episodes/${featuredEpisode.slug}`}
-                        className="text-xs sm:text-sm font-bold text-white hover:text-[#00b2fe] transition-colors line-clamp-1 font-['Outfit']"
-                      >
-                        {featuredEpisode.title}
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="aspect-video rounded-2xl bg-[#0b0f16] border border-white/10 flex flex-col items-center justify-center p-6 text-center">
-                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3 text-[#00b2fe]">
-                      <Sparkles className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-base font-bold text-white mb-1 font-['Outfit']">
-                      Episodi i Ri Së Shpejti
-                    </h3>
-                    <p className="text-xs text-gray-400 max-w-xs">
-                      Lidheni kanalin e YouTube në panelin admin për të shfaqur videot automatikisht.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          {/* Shkrim i shkurtër estetik përmbledhës */}
+          <p className="text-xs sm:text-sm lg:text-base text-gray-300/90 leading-relaxed font-normal max-w-2xl mx-auto">
+            {heroSubtitle}
+          </p>
         </div>
       </div>
     </section>

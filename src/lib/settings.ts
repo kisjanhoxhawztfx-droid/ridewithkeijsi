@@ -47,7 +47,7 @@ export async function getSiteSettings(): Promise<SiteSettingsMap> {
     secondary_color: "#05070A",
     accent_color: "#00D2FF",
     hero_title: "RIDE WITH KEIJSI",
-    hero_subtitle: "Eksploroni botën e shpejtësisë, rrugës dhe motorrave me Keijsin. Episode ekskluzive, rishikime makinash & motorrash, dhe motorrat më të mirë në treg.",
+    hero_subtitle: "Destinacioni juaj kryesor për shitblerje motorrash cilësorë, shërbim taksi komod 24/7, makina dhe shërbime luksoze VIP me qira, si dhe pasionin e botës së motorsportit me Ride with Keijsi.",
     hero_cta_text: "Shiko Episodin e Fundit",
     hero_cta_link: "/episodes",
     hero_secondary_cta_text: "Motorra në Shitje",
