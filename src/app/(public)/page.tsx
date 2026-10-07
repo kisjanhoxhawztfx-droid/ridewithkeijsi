@@ -117,7 +117,7 @@ export default async function HomePage() {
   const cleanLuxuryWhatsapp = luxuryWhatsapp.replace(/[^0-9]/g, "");
 
   return (
-    <div className="space-y-10 sm:space-y-14 lg:space-y-16 pb-20 sm:pb-32 w-full">
+    <div className="space-y-6 sm:space-y-10 lg:space-y-14 pb-16 sm:pb-28 w-full">
       {/* 1. Cinematic Hero Section */}
       <HeroSection
         heroTitle={settings.hero_title}
@@ -125,7 +125,7 @@ export default async function HomePage() {
       />
 
       {/* Section Transition Divider: 01. MOTORRA */}
-      <div className="w-full max-w-6xl mx-auto px-4 my-6 sm:my-10 flex items-center justify-center">
+      <div className="w-full max-w-6xl mx-auto px-4 !mt-1.5 sm:!mt-3 my-1 sm:my-3 flex items-center justify-center">
         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#00b2fe]/35 to-transparent" />
         <div className="mx-3 px-3.5 py-1 rounded-full bg-[#080d16] border border-[#00b2fe]/40 text-[10px] sm:text-xs font-black tracking-widest text-[#00b2fe] uppercase shadow-[0_0_15px_rgba(0,178,254,0.2)] flex items-center gap-1.5 whitespace-nowrap">
           <Bike className="w-3.5 h-3.5 text-[#00b2fe]" />
